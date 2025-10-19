@@ -63,3 +63,25 @@ def test_no_match_plan():
     pq["query"]["filters"]["ingredients_include"] = ["ingrediente_inexistente_xyz"]
     res2 = do_search(pq)
     assert res2["results"] == []
+
+def test_cita_romantica_activa_asesor():
+    pq, res = _run("tengo una cita romántica en Palermo")
+    assert "romantic_date" in pq["query"].get("scenario_tags", [])
+    assert pq["query"].get("advisor_summary")
+    assert pq["query"]["filters"]["rating_min"] >= 4.4
+    romantic_hits = [r for r in res["results"][:5] if "romantic" in (r["item"].get("experience_tags") or [])]
+    assert romantic_hits
+
+def test_presupuesto_ajustado_limita_precio():
+    pq, res = _run("quiero comer pero no tengo mucha plata")
+    assert "budget_friendly" in pq["query"].get("scenario_tags", [])
+    price_cap = pq["query"]["filters"]["price_max"]
+    assert price_cap is not None and price_cap <= 4500
+    assert all(r["item"]["price_ars"] <= price_cap for r in res["results"][:10])
+
+def test_almuerzo_rapido_prioriza_eta():
+    pq, res = _run("algo rapido para almorzar")
+    assert "quick_lunch" in pq["query"].get("scenario_tags", [])
+    assert pq["query"]["filters"]["eta_max"] <= 25
+    quick_hits = [r for r in res["results"][:8] if "quick_lunch" in (r["item"].get("experience_tags") or [])]
+    assert quick_hits

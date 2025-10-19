@@ -19,6 +19,7 @@ class Dish(BaseModel):
     allergens: List[str]
     diet_flags: Dict[str, bool]
     health_tags: List[str]
+    experience_tags: List[str] = Field(default_factory=list)
     not_contains: List[str]
     price_ars: int
     popularity: int
@@ -51,6 +52,8 @@ class ParsedQuery(BaseModel):
     hints: List[str] = Field(default_factory=list)
     weights: Dict[str, float] = Field(default_factory=lambda: {"rating":0.3,"price":0.3,"eta":0.1,"pop":0.1,"dist":0.1,"lex":0.1})
     ranking_overrides: RankingOverrides = Field(default_factory=RankingOverrides)
+    advisor_summary: Optional[str] = None
+    scenario_tags: List[str] = Field(default_factory=list)
 
 class SearchRequest(BaseModel):
     query: Optional[ParsedQuery] = None

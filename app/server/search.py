@@ -210,7 +210,7 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
     ro = (q.get("ranking_overrides") or {})
     boost = ro.get("boost_tags") or []
     penal = ro.get("penalize_tags") or []
-    tags = set(d.get("health_tags", []) + d.get("categories", []) + [d["restaurant"]["cuisines"].lower()])
+    tags = set(d.get("health_tags", []) + d.get("categories", []) + d.get("experience_tags", []) + [d["restaurant"]["cuisines"].lower()])
     if any(b in tags for b in boost):
         score *= 1.10
         reasons.append("boost")
@@ -238,4 +238,8 @@ def search(req: Dict[str, Any]) -> Dict[str, Any]:
         "explain": "Se aplicaron filtros duros y luego orden ponderado. Boosts y penalizaciones consideradas.",
         "rejected_sample": rejected[:10]
     }
+    if q.get("advisor_summary"):
+        plan["advisor_summary"] = q.get("advisor_summary")
+    if q.get("scenario_tags"):
+        plan["scenario_tags"] = q.get("scenario_tags")
     return {"results": results, "plan": plan}

@@ -1,33 +1,42 @@
-
 <!doctype html>
 <html lang="es">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Buscador inteligente v2</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Food Search v2</title>
+
+    <!-- Base dinámico: usa subpath en GitHub Pages y raíz en local -->
+    <script>
+      (function() {
+        var pathBase = location.hostname.endsWith('github.io') ? '/food-search-v2/' : '/';
+        var base = document.createElement('base');
+        base.href = pathBase;
+        document.head.prepend(base);
+        window.__PATH_BASE__ = pathBase;
+      })();
+    </script>
+
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="container">
-      <h1>Buscador inteligente v2</h1>
-      <p>Escribí lo que querés comer. Ejemplo: "algo ultra barato apto celíacos y de porción grande porque estoy con hambre"</p>
-      <div class="row">
-        <input id="q" type="text" placeholder="Escribí lo que querés comer..." />
+    <header class="container">
+      <h1>Food Search v2</h1>
+      <p class="muted">Demo mínima para verificar rutas y fetch en GitHub Pages</p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <label for="q">Buscar platos</label>
+        <input id="q" type="text" placeholder="pasta con salsa de tomate sin nueces">
         <button id="btn">Buscar</button>
-      </div>
-      <div class="grid">
-        <div>
-          <h2>Consulta estructurada</h2>
-          <pre id="structured"></pre>
-        </div>
-        <div>
-          <h2>Plan de búsqueda</h2>
-          <pre id="plan"></pre>
-        </div>
-      </div>
-      <h2>Resultados</h2>
-      <div id="results"></div>
-    </div>
-    <script src="app.js"></script>
+      </section>
+
+      <section class="card">
+        <h2>Resultados</h2>
+        <ul id="results"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="main.js"></script>
   </body>
 </html>

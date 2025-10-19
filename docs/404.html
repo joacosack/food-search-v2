@@ -1,0 +1,33 @@
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buscador inteligente v2</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Buscador inteligente v2</h1>
+      <p>Escribí lo que querés comer. Ejemplo: "algo ultra barato apto celíacos y de porción grande porque estoy con hambre"</p>
+      <div class="row">
+        <input id="q" type="text" placeholder="Escribí lo que querés comer..." />
+        <button id="btn">Buscar</button>
+      </div>
+      <div class="grid">
+        <div>
+          <h2>Consulta estructurada</h2>
+          <pre id="structured"></pre>
+        </div>
+        <div>
+          <h2>Plan de búsqueda</h2>
+          <pre id="plan"></pre>
+        </div>
+      </div>
+      <h2>Resultados</h2>
+      <div id="results"></div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

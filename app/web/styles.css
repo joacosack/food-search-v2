@@ -13,6 +13,7 @@ pre { background: white; border: 1px solid #e3e6ea; padding: 12px; border-radius
 .sub, .meta { color: #555; font-size: 14px; margin: 4px 0; }
 .desc { margin: 6px 0; }
 .tags, .reasons { font-size: 13px; color: #333; }
+.error { color: #c0392b; background: #ffecec; border: 1px solid #f5b7b1; padding: 12px; border-radius: 8px; }
 @media (max-width: 800px){
   .grid { grid-template-columns: 1fr; }
 }

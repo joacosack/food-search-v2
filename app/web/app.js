@@ -70,7 +70,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function runSearch(){
     const text = q.value.trim();
-    if(!text) return;
+    if(!text){
+      structured.textContent = "";
+      plan.textContent = "";
+      results.innerHTML = '<p class="error">Ingresá una descripción de lo que querés comer para iniciar la búsqueda.</p>';
+      q.focus();
+      return;
+    }
     const parsed = await doParse(text);
     structured.textContent = JSON.stringify(parsed.query, null, 2);
     plan.textContent = JSON.stringify(parsed.plan, null, 2);

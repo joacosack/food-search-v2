@@ -35,6 +35,8 @@ pre { background: white; border: 1px solid #e3e6ea; padding: 12px; border-radius
 .desc { margin: 6px 0; }
 .tags, .reasons { font-size: 13px; color: #333; }
 .error { color: #c0392b; background: #ffecec; border: 1px solid #f5b7b1; padding: 12px; border-radius: 8px; }
+.advisor { display: none; margin: 18px 0; padding: 12px 16px; border-left: 4px solid #f39c12; background: #fff8e1; border-radius: 8px; color: #7a4a00; font-size: 15px; line-height: 1.5; }
+.advisor.visible { display: block; }
 @media (max-width: 800px){
   .grid { grid-template-columns: 1fr; }
 }

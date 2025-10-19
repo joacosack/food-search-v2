@@ -34,6 +34,18 @@ def get_restaurant_names():
 
 RESTAURANT_NAMES = get_restaurant_names()
 
+def load_catalog_metrics():
+    try:
+        data = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {"prices": [], "etas": [], "ratings": []}
+    prices = sorted(d.get("price_ars", 0) for d in data)
+    etas = sorted(d.get("restaurant", {}).get("eta_min", 0) for d in data)
+    ratings = sorted(d.get("restaurant", {}).get("rating", 0.0) for d in data)
+    return {"prices": prices, "etas": etas, "ratings": ratings}
+
+CATALOG_METRICS = load_catalog_metrics()
+
 def parse_restaurants(text_raw: str, plan: List[str]) -> List[str]:
     t = normalize_soft(text_raw)
     hits = []
@@ -65,6 +77,48 @@ def normalize_soft(s: str) -> str:
     s = s.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ñ","n")
     s = re.sub(r"[^a-z0-9\s\.,]", " ", s)
     return s
+
+def percentile_value(values: List[Any], pct: float):
+    if not values:
+        return None
+    pct = max(0.0, min(1.0, pct))
+    idx = int(len(values) * pct) - 1
+    idx = max(0, min(len(values) - 1, idx))
+    return values[idx]
+
+def price_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("prices", []), pct)
+
+def eta_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("etas", []), pct)
+
+def rating_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("ratings", []), pct)
+
+def tighten_min_limit(current, new_value):
+    if new_value is None:
+        return current
+    if current is None:
+        return new_value
+    return max(current, new_value)
+
+def tighten_max_limit(current, new_value):
+    if new_value is None:
+        return current
+    if current is None:
+        return new_value
+    return min(current, new_value)
+
+def normalize_percentile_limit(limit):
+    if isinstance(limit, str) and limit.startswith("p"):
+        try:
+            pct = int(limit[1:]) / 100.0
+        except ValueError:
+            return None
+        return price_from_percentile(pct)
+    if isinstance(limit, (int, float)):
+        return float(limit)
+    return None
 
 def parse_price(text_norm: str, plan: List[str]):
     PRICE_WORDS = {
@@ -267,6 +321,83 @@ def parse_weights(text_norm: str, plan: List[str]):
         weights["price"] = 0.45
     return weights
 
+def extend_unique_list(lst: List[str], values: List[str]) -> List[str]:
+    existing = set(lst or [])
+    for v in values:
+        if v not in existing:
+            lst.append(v)
+            existing.add(v)
+    return lst
+
+def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_overrides: Dict[str, Any], hints: List[str], plan: List[str]):
+    summaries: List[str] = []
+    scenario_tags: List[str] = []
+    text_soft = normalize_soft(text)
+
+    def note(label: str, details: str):
+        plan.append(f"Escenario conversacional: {label} -> {details}")
+
+    # Escenario: cita romántica
+    romantic_patterns = [
+        r"cita\s+romant", r"salida\s+romant", r"plan\s+romant", r"con\s+mi\s+pareja", r"cena\s+romant"
+    ]
+    if any(re.search(pat, text_soft) for pat in romantic_patterns):
+        scenario_tags.append("romantic_date")
+        filters["rating_min"] = tighten_min_limit(filters.get("rating_min"), 4.4)
+        filters["available_only"] = True
+        extend_unique_list(hints, ["date", "special_evening"])
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["romantic", "date-night", "vino", "intimo"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["rating"] = max(weights.get("rating", 0.3), 0.45)
+        weights["lex"] = max(weights.get("lex", 0.1), 0.15)
+        note("cita romántica", "priorizar lugares íntimos y con alto rating")
+        summaries.append("Prioricé opciones con ambiente romántico, buen rating y etiquetas especiales de cita.")
+
+    # Escenario: presupuesto ajustado
+    budget_patterns = [
+        r"no\s+tengo\s+mucha\s+plata", r"poco\s+presupuesto", r"barato\s+pero\s+rico", r"estoy\s+corto\s+de\s+plata"
+    ]
+    if any(re.search(pat, text_soft) for pat in budget_patterns):
+        scenario_tags.append("budget_friendly")
+        target_price = price_from_percentile(0.28)
+        if target_price is None:
+            target_price = 4500
+        else:
+            target_price = min(target_price, 4500)
+        current = normalize_percentile_limit(filters.get("price_max"))
+        filters["price_max"] = tighten_max_limit(current, target_price)
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["budget_friendly", "ahorro", "combo"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["price"] = max(weights.get("price", 0.3), 0.45)
+        weights["pop"] = max(weights.get("pop", 0.1), 0.12)
+        note("presupuesto ajustado", "fijar tope de precio y dar peso extra a opciones económicas")
+        summaries.append("Ajusté la búsqueda a opciones accesibles y destaqué platos marcados como económicos.")
+
+    # Escenario: almuerzo rápido
+    quick_patterns = [
+        r"algo\s+rapido\s+para\s+almorzar", r"almuerzo\s+rapido", r"comer\s+rapido\s+al\s+mediodia", r"necesito\s+algo\s+express"
+    ]
+    if any(re.search(pat, text_soft) for pat in quick_patterns):
+        scenario_tags.append("quick_lunch")
+        target_eta = eta_from_percentile(0.35) or 20
+        filters["eta_max"] = tighten_max_limit(filters.get("eta_max"), target_eta)
+        filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["almuerzo"]))
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["quick_lunch", "sandwich", "wrap", "express"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["eta"] = max(weights.get("eta", 0.1), 0.22)
+        weights["dist"] = max(weights.get("dist", 0.1), 0.12)
+        note("almuerzo rápido", "limitar tiempos de entrega y priorizar formatos express")
+        summaries.append("Configuré filtros para almuerzos rápidos con entregas cortas y platos listos al paso.")
+
+    # remover duplicados preservando orden
+    seen = set()
+    dedup_tags = []
+    for tag in scenario_tags:
+        if tag not in seen:
+            dedup_tags.append(tag)
+            seen.add(tag)
+    return summaries, dedup_tags
+
 def parse(text: str):
     plan = []
     tn = normalize(text)
@@ -301,6 +432,9 @@ def parse(text: str):
         "penalize_tags": penal,
         "weights": parse_weights(tn, plan)
     }
+
+    scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, plan)
+    advisor_summary = " ".join(scenario_summaries).strip() or None
     if rest_hits:
         # Si el nombre de restaurante contiene "wok", no generes categoría/cocina por esa palabra
         joined = " ".join(rest_hits).lower()
@@ -312,7 +446,9 @@ def parse(text: str):
             q=text,
             filters=ParseFilters(**filters),
             hints=hints,
-            ranking_overrides=RankingOverrides(**ranking_overrides)
+            ranking_overrides=RankingOverrides(**ranking_overrides),
+            advisor_summary=advisor_summary,
+            scenario_tags=scenario_tags
         ).dict(),
         "plan": plan
     }

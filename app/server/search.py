@@ -5,7 +5,9 @@ from pathlib import Path
 from .schema import Dish, SearchRequest, SearchResponse, SearchResult
 
 def _norm_str(t: str) -> str:
-    return (t or "").lower().replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ñ","n")
+    return (t or "").lower()\
+        .replace("á","a").replace("é","e").replace("í","i")\
+        .replace("ó","o").replace("ú","u").replace("ñ","n")
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -45,6 +47,7 @@ def lex_score(q: str, dish: Dict[str, Any], filters: Dict[str, Any]) -> float:
         return 0.0
     qn = _norm_str(q)
     q_words = set(re.findall(r"\w+", qn))
+
     base = " ".join([
         dish["dish_name"],
         dish["description"],
@@ -54,16 +57,20 @@ def lex_score(q: str, dish: Dict[str, Any], filters: Dict[str, Any]) -> float:
     ])
     base = _norm_str(base)
     base_words = set(re.findall(r"\w+", base))
+
     if not q_words:
         return 0.0
+
     inter = q_words & base_words
     score = len(inter) / max(1, len(q_words))
 
+    # boost por nombre de restaurante exacto, pero solo si no contradice categorías pedidas
     rn = _norm_str(dish["restaurant"]["name"])
     cat_filter = set((filters or {}).get("category_any") or [])
     if rn and rn in qn and (not cat_filter or any(c in dish.get("categories", []) for c in cat_filter)):
-        score = min(1.0, score + 0.3)
+        score = min(1.0, score + 0.4)
     return score
+
 
 
 def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]]:

@@ -22,6 +22,30 @@ NEIGHBORHOODS = [
 ]
 CUISINES = ["Argentina","Parrilla","Italiana","Pizzería","Empanadas","Ensaladas","Wok","Árabe","Japonesa","Mexicana","Hamburguesas","Vegana","Vegetariana","Sushi","Tacos","Sandwiches","Bowls","Sopas","Postres"]
 
+# Cargar nombres de restaurantes desde el catálogo para detectar coincidencias exactas en la consulta
+CATALOG_PATH = Path(__file__).resolve().parent.parent / "data" / "catalog.json"
+def get_restaurant_names():
+    try:
+        data = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+        names = sorted({ d["restaurant"]["name"] for d in data })
+        return names
+    except Exception:
+        return []
+
+RESTAURANT_NAMES = get_restaurant_names()
+
+def parse_restaurants(text_raw: str, plan: List[str]) -> List[str]:
+    t = normalize_soft(text_raw)
+    hits = []
+    for rn in RESTAURANT_NAMES:
+        rnn = normalize_soft(rn)
+        if rnn and rnn in t:
+            hits.append(rn)
+    if hits:
+        plan.append(f"Restaurantes detectados: {hits}")
+    return hits
+
+
 MEAL_MOMENTS = {
     "desayuno": ["desayuno","desayunos"],
     "almuerzo": ["almuerzo","almuerzos","almorzar"],
@@ -34,6 +58,13 @@ def normalize(s: str) -> str:
     s = s.lower()
     s = s.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ñ","n")
     return re.sub(r"[^a-z0-9\s]", " ", s)
+
+def normalize_soft(s: str) -> str:
+    # Minusculas y sin tildes, pero conserva dígitos, espacios, punto y coma
+    s = s.lower()
+    s = s.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ñ","n")
+    s = re.sub(r"[^a-z0-9\s\.,]", " ", s)
+    return s
 
 def parse_price(text_norm: str, plan: List[str]):
     PRICE_WORDS = {
@@ -63,16 +94,11 @@ def parse_eta(text_norm: str, plan: List[str]):
     return None
 
 
-def parse_rating(text_norm: str, plan: List[str]):
-    """
-    Accepts:
-      - "buen rating"
-      - "rating mayor a 4,6" or "rating >= 4,6"
-      - "rating 4,6" or "puntaje 4,6"
-      - "4,6 o mas de rating"
-    Uses comma or dot as decimal separator.
-    """
-    if "buen rating" in text_norm or "bien puntuado" in text_norm or "mejor valorado" in text_norm:
+def parse_rating(text_raw: str, plan: List[str]):
+    t = normalize_soft(text_raw)
+
+    # atajos
+    if "buen rating" in t or "bien puntuado" in t or "mejor valorado" in t:
         plan.append("Calidad: rating_min=4.3")
         return 4.3
 
@@ -82,7 +108,7 @@ def parse_rating(text_norm: str, plan: List[str]):
         r"\b([0-5](?:[.,]\d+)?)\b\s*(?:o\s*mas|para\s*arriba)\s*(?:de\s*(?:rating|puntaje|puntuacion))?"
     ]
     for pat in patterns:
-        m = re.search(pat, text_norm)
+        m = re.search(pat, t)
         if m:
             val = float(m.group(1).replace(",", "."))
             val = max(0.0, min(5.0, val))
@@ -244,6 +270,7 @@ def parse_weights(text_norm: str, plan: List[str]):
 def parse(text: str):
     plan = []
     tn = normalize(text)
+    rest_hits = parse_restaurants(text, plan)
     filters = {
         "category_any": parse_category(tn, plan),
         "neighborhood_any": parse_neighborhoods(text, plan),
@@ -267,13 +294,19 @@ def parse(text: str):
     filters["health_any"], hints, boost, penal = parse_health_and_intents(tn, plan)
     filters["price_max"] = parse_price(tn, plan)
     filters["eta_max"] = parse_eta(tn, plan)
-    filters["rating_min"] = parse_rating(tn, plan)
+    filters["rating_min"] = parse_rating(text, plan)
 
     ranking_overrides = {
         "boost_tags": boost,
         "penalize_tags": penal,
         "weights": parse_weights(tn, plan)
     }
+    if rest_hits:
+        # Si el nombre de restaurante contiene "wok", no generes categoría/cocina por esa palabra
+        joined = " ".join(rest_hits).lower()
+        if "wok" in joined:
+            filters["category_any"] = [c for c in (filters.get("category_any") or []) if c != "wok"]
+            filters["cuisines_any"] = [c for c in (filters.get("cuisines_any") or []) if c.lower() != "wok"]
     return {
         "query": ParsedQuery(
             q=text,

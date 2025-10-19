@@ -3,7 +3,40 @@ const APP_VERSION = "v1.1.1";
 
 const DEFAULT_API = "http://127.0.0.1:8000";
 const API_STORAGE_KEY = "foodsearch.apiBase";
-const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "0.0.0.0"]);
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "0.0.0.0", "::1"]);
+
+function tryParseUrl(value) {
+  if (!value) return null;
+  try {
+    return new URL(value);
+  } catch (err) {
+    return null;
+  }
+}
+
+function isLocalHostname(hostname) {
+  if (!hostname) return false;
+  const normalized = hostname.toLowerCase();
+  if (LOCAL_HOSTS.has(normalized)) {
+    return true;
+  }
+  if (normalized.startsWith("127.")) {
+    return true;
+  }
+  return false;
+}
+
+function getLocalApiWarning(apiBase) {
+  const parsed = tryParseUrl(apiBase);
+  if (!parsed) return "";
+  if (!isLocalHostname(parsed.hostname)) {
+    return "";
+  }
+  if (isLocalHostname(location.hostname) || parsed.hostname === location.hostname) {
+    return "";
+  }
+  return `El backend configurado (${parsed.origin}) apunta a tu computadora local. Solo funciona desde el dispositivo que está ejecutando ese servidor. Abrí la app en esa máquina o configurá un backend accesible (por ejemplo con ?apiBase=https://tu-servidor).`;
+}
 
 function normalizeBase(raw) {
   if (!raw) return "";
@@ -70,6 +103,17 @@ function renderApiBase() {
   const input = document.getElementById("api-input");
   if (input && document.activeElement !== input) {
     input.value = API;
+  }
+  const warning = document.getElementById("api-warning");
+  if (warning) {
+    const message = getLocalApiWarning(API);
+    if (message) {
+      warning.hidden = false;
+      warning.textContent = message;
+    } else {
+      warning.hidden = true;
+      warning.textContent = "";
+    }
   }
 }
 
@@ -210,7 +254,12 @@ document.addEventListener("DOMContentLoaded", () => {
         query: text,
         timestamp: new Date().toISOString()
       };
-      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o ajustá la configuración de backend.</p>' + tiny(errorDetails);
+      const localWarning = getLocalApiWarning(API);
+      if (localWarning) {
+        errorDetails.hint = localWarning;
+      }
+      const warningHtml = localWarning ? `<p class="config-warning">${localWarning}</p>` : "";
+      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o ajustá la configuración de backend.</p>' + warningHtml + tiny(errorDetails);
     } finally {
       btn.disabled = false;
     }

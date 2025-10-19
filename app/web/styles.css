@@ -11,6 +11,15 @@ button { padding: 12px 16px; border: 0; background: #0a7cff; color: white; borde
 .config { background: #fff; border: 1px solid #e3e6ea; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; }
 .config summary { font-weight: 600; }
 .config-status { margin: 10px 0 16px; font-size: 14px; color: #333; }
+.config-warning {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-left: 4px solid #f39c12;
+  background-color: rgba(243, 156, 18, 0.15);
+  color: #8a5404;
+  font-size: 13px;
+  line-height: 1.45;
+}
 .config-form label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .config-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .config-row input { flex: 1 1 240px; min-width: 200px; }

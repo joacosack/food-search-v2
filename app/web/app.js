@@ -1,7 +1,7 @@
 import { CATALOG } from "./data/catalog.js";
 import { CATEGORIES, INGREDIENTS, DIETS, ALLERGENS, HEALTH } from "./data/dictionaries.js";
 
-const APP_VERSION = "v2.0.0";
+const APP_VERSION = "v2.2.0";
 
 function stripAccents(text = "") {
   return text
@@ -41,6 +41,35 @@ const RESTAURANT_NAMES = Array.from(
 )
   .filter(Boolean)
   .sort();
+
+const REMOTE_ENDPOINTS = {
+  parse: "/parse",
+  search: "/search",
+};
+let remoteAvailable = window.location.protocol !== "file:";
+
+async function callBackend(endpoint, payload) {
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const message = await res.text();
+    throw new Error(`HTTP ${res.status}: ${message}`);
+  }
+  return res.json();
+}
+
+async function parseTextRemote(text) {
+  if (!remoteAvailable) return null;
+  return callBackend(REMOTE_ENDPOINTS.parse, { text });
+}
+
+async function searchRemote(query) {
+  if (!remoteAvailable) return null;
+  return callBackend(REMOTE_ENDPOINTS.search, { query });
+}
 
 function parseRestaurants(textRaw, plan) {
   const hits = [];
@@ -468,6 +497,129 @@ function parseWeights(textNorm, plan) {
   return weights;
 }
 
+function extendUnique(list, values) {
+  const seen = new Set(list || []);
+  values.forEach((value) => {
+    if (!seen.has(value)) {
+      list.push(value);
+      seen.add(value);
+    }
+  });
+  return list;
+}
+
+function percentileValue(sortedValues, pct) {
+  if (!sortedValues?.length) return null;
+  const clamped = Math.max(0, Math.min(1, pct));
+  let index = Math.floor(clamped * sortedValues.length) - 1;
+  index = Math.max(0, Math.min(sortedValues.length - 1, index));
+  return sortedValues[index];
+}
+
+function priceFromPercentile(pct) {
+  return percentileValue(IDX.prices_sorted, pct);
+}
+
+function etaFromPercentile(pct) {
+  return percentileValue(IDX.etas_sorted, pct);
+}
+
+function tightenMinLimit(current, nextValue) {
+  if (nextValue == null) return current;
+  if (current == null) return nextValue;
+  return Math.max(current, nextValue);
+}
+
+function tightenMaxLimit(current, nextValue) {
+  if (nextValue == null) return current;
+  if (current == null) return nextValue;
+  return Math.min(current, nextValue);
+}
+
+function normalizePriceLimit(limit) {
+  if (typeof limit === "string" && limit.startsWith("p")) {
+    const pct = parseInt(limit.slice(1), 10);
+    if (Number.isNaN(pct)) return null;
+    return priceFromPercentile(pct / 100);
+  }
+  if (typeof limit === "number") return limit;
+  return null;
+}
+
+function applyConversationScenarios(text, filters, rankingOverrides, hints, plan) {
+  const summaries = [];
+  const scenarioTags = [];
+  const soft = normalizeSoft(text || "");
+
+  const note = (label, detail) => {
+    plan.push(`Escenario conversacional: ${label} -> ${detail}`);
+  };
+
+  const romanticPatterns = [
+    /cita\s+romant/i,
+    /salida\s+romant/i,
+    /plan\s+romant/i,
+    /con\s+mi\s+pareja/i,
+    /cena\s+romant/i,
+  ];
+  if (romanticPatterns.some((re) => re.test(soft))) {
+    scenarioTags.push("romantic_date");
+    filters.rating_min = tightenMinLimit(filters.rating_min, 4.4);
+    filters.available_only = true;
+    extendUnique(hints, ["date", "special_evening"]);
+    extendUnique(rankingOverrides.boost_tags, ["romantic", "date-night", "vino", "intimo"]);
+    rankingOverrides.weights.rating = Math.max(rankingOverrides.weights.rating || 0.3, 0.45);
+    rankingOverrides.weights.lex = Math.max(rankingOverrides.weights.lex || 0.1, 0.15);
+    extendUnique(filters.experience_tags_any, ["romantic", "date-night"]);
+    note("cita romántica", "priorizar lugares íntimos y con alto rating");
+    summaries.push("Prioricé opciones con ambiente romántico, buen rating y etiquetas especiales de cita.");
+  }
+
+  const budgetPatterns = [
+    /no\s+tengo\s+mucha\s+plata/i,
+    /poco\s+presupuesto/i,
+    /barato\s+pero\s+rico/i,
+    /estoy\s+corto\s+de\s+plata/i,
+  ];
+  if (budgetPatterns.some((re) => re.test(soft))) {
+    scenarioTags.push("budget_friendly");
+    const basePrice = priceFromPercentile(0.28);
+    const targetPrice = Math.min(basePrice ?? 4500, 4500);
+    const current = normalizePriceLimit(filters.price_max);
+    filters.price_max = tightenMaxLimit(current, targetPrice);
+    extendUnique(rankingOverrides.boost_tags, ["budget_friendly", "ahorro", "combo"]);
+    rankingOverrides.weights.price = Math.max(rankingOverrides.weights.price || 0.3, 0.45);
+    rankingOverrides.weights.pop = Math.max(rankingOverrides.weights.pop || 0.1, 0.12);
+    extendUnique(filters.experience_tags_any, ["budget_friendly"]);
+    note("presupuesto ajustado", "fijar tope de precio y dar peso extra a opciones económicas");
+    summaries.push("Ajusté la búsqueda a opciones accesibles y destaqué platos marcados como económicos.");
+  }
+
+  const quickPatterns = [
+    /algo\s+rapido\s+para\s+almorzar/i,
+    /almuerzo\s+rapido/i,
+    /comer\s+rapido\s+al\s+mediodia/i,
+    /necesito\s+algo\s+express/i,
+  ];
+  if (quickPatterns.some((re) => re.test(soft))) {
+    scenarioTags.push("quick_lunch");
+    const targetEta = etaFromPercentile(0.35) ?? 20;
+    filters.eta_max = tightenMaxLimit(filters.eta_max, targetEta);
+    const mm = new Set(filters.meal_moments_any || []);
+    mm.add("almuerzo");
+    filters.meal_moments_any = Array.from(mm).sort();
+    extendUnique(rankingOverrides.boost_tags, ["quick_lunch", "sandwich", "wrap", "express"]);
+    rankingOverrides.weights.eta = Math.max(rankingOverrides.weights.eta || 0.1, 0.22);
+    rankingOverrides.weights.dist = Math.max(rankingOverrides.weights.dist || 0.1, 0.12);
+    extendUnique(filters.experience_tags_any, ["quick_lunch", "express"]);
+    note("almuerzo rápido", "limitar tiempos de entrega y priorizar formatos express");
+    summaries.push("Configuré filtros para almuerzos rápidos con entregas cortas y platos listos al paso.");
+  }
+
+  const dedup = Array.from(new Set(scenarioTags));
+  return { summaries, scenarioTags: dedup };
+}
+
 function parseText(text) {
   const plan = [];
   const tn = normalize(text || "");
@@ -477,6 +629,7 @@ function parseText(text) {
     category_any: parseCategory(tn, plan),
     neighborhood_any: parseNeighborhoods(text || "", plan),
     cuisines_any: parseCuisines(text || "", plan),
+    experience_tags_any: [],
     ingredients_include: [],
     ingredients_exclude: [],
     diet_must: [],
@@ -516,12 +669,17 @@ function parseText(text) {
     }
   }
 
+  const scenario = applyConversationScenarios(text || "", filters, rankingOverrides, health.hints, plan);
+  const advisorSummary = scenario.summaries.join(" ").trim() || null;
+
   return {
     query: {
       q: text,
       filters,
       hints: health.hints,
       ranking_overrides: rankingOverrides,
+      advisor_summary: advisorSummary,
+      scenario_tags: scenario.scenarioTags,
     },
     plan,
   };
@@ -576,6 +734,10 @@ function applyFilters(dish, filters) {
   const cuisines = filters.cuisines_any || [];
   if (cuisines.length && !cuisines.includes(dish.restaurant?.cuisines)) {
     return { ok: false, reasons: [`Cocina no coincide ${JSON.stringify(cuisines)}`] };
+  }
+  const experience = filters.experience_tags_any || [];
+  if (experience.length && !(dish.experience_tags || []).some((tag) => experience.includes(tag))) {
+    return { ok: false, reasons: [`Experiencia no coincide ${JSON.stringify(experience)}`] };
   }
   const include = filters.ingredients_include || [];
   if (
@@ -662,6 +824,8 @@ const IDX = (() => {
     rating_min: Math.min(...ratings),
     rating_max: Math.max(...ratings),
     prices_sorted: [...prices].sort((a, b) => a - b),
+    etas_sorted: [...etas].sort((a, b) => a - b),
+    ratings_sorted: [...ratings].sort((a, b) => a - b),
   };
 })();
 
@@ -737,6 +901,7 @@ function computeScore(dish, filters, query) {
   const tags = new Set([
     ...(dish.health_tags || []),
     ...(dish.categories || []),
+    ...(dish.experience_tags || []),
     (dish.restaurant?.cuisines || "").toLowerCase(),
   ]);
   if (boost.some((tag) => tags.has(tag))) {
@@ -778,12 +943,44 @@ function searchCatalog(query) {
       "Se aplicaron filtros duros y luego orden ponderado. Boosts y penalizaciones consideradas.",
     rejected_sample: rejected.slice(0, 10),
   };
+  if (query.advisor_summary) {
+    plan.advisor_summary = query.advisor_summary;
+  }
+  if (query.advisor_details) {
+    plan.advisor_details = query.advisor_details;
+  }
+  if (query.scenario_tags?.length) {
+    plan.scenario_tags = query.scenario_tags;
+  }
 
   return { results, plan };
 }
 
 function tiny(obj) {
   return `<pre class="tiny">${typeof obj === "string" ? obj : JSON.stringify(obj, null, 2)}</pre>`;
+}
+
+function updateAdvisor(summary, details) {
+  const advisor = document.getElementById("advisor");
+  const advisorDetails = document.getElementById("advisor-details");
+  if (advisor) {
+    if (summary) {
+      advisor.textContent = summary;
+      advisor.classList.add("visible");
+    } else {
+      advisor.textContent = "";
+      advisor.classList.remove("visible");
+    }
+  }
+  if (advisorDetails) {
+    if (details) {
+      advisorDetails.textContent = details;
+      advisorDetails.classList.add("visible");
+    } else {
+      advisorDetails.textContent = "";
+      advisorDetails.classList.remove("visible");
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -798,6 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!text) {
       structured.textContent = "";
       plan.textContent = "";
+      updateAdvisor(null, null);
       results.innerHTML = '<p class="error">Ingresá una descripción de lo que querés comer para iniciar la búsqueda.</p>';
       q.focus();
       return;
@@ -805,10 +1003,47 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.disabled = true;
     results.innerHTML = "<p>Buscando resultados...</p>";
     try {
-      const parsed = parseText(text);
+      let parsed = null;
+      let usedRemote = false;
+      if (remoteAvailable) {
+        try {
+          const remoteParsed = await parseTextRemote(text);
+          if (remoteParsed) {
+            parsed = remoteParsed;
+            usedRemote = true;
+          }
+        } catch (remoteErr) {
+          console.warn("Fallo parser remoto, usando heurísticas locales", remoteErr);
+          remoteAvailable = false;
+        }
+      }
+      if (!parsed) {
+        parsed = parseText(text);
+        if (!usedRemote) {
+          parsed.plan = parsed.plan || [];
+          parsed.plan.push("LLM remoto no disponible, usando parser local.");
+        }
+      }
       structured.textContent = JSON.stringify(parsed.query, null, 2);
       plan.textContent = JSON.stringify(parsed.plan, null, 2);
-      const searched = searchCatalog(parsed.query);
+
+      let searched = null;
+      if (usedRemote) {
+        try {
+          searched = await searchRemote(parsed.query);
+        } catch (remoteSearchErr) {
+          console.warn("Fallo búsqueda remota, usando motor local", remoteSearchErr);
+          remoteAvailable = false;
+        }
+      }
+      if (!searched) {
+        searched = searchCatalog(parsed.query);
+        if (usedRemote) {
+          searched.plan = searched.plan || {};
+          searched.plan.fallback_notice =
+            "Resultados locales: no se pudo conectar con el motor remoto.";
+        }
+      }
       renderResults(results, searched);
     } catch (err) {
       console.error("Error al buscar", err);
@@ -821,6 +1056,7 @@ document.addEventListener("DOMContentLoaded", () => {
         timestamp: new Date().toISOString(),
       };
       results.innerHTML = '<p class="error">No pudimos completar la búsqueda.</p>' + tiny(errorDetails);
+      updateAdvisor(null, null);
     } finally {
       btn.disabled = false;
     }
@@ -836,6 +1072,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function renderResults(container, data) {
   container.innerHTML = "";
+  const planNode = document.getElementById("plan");
+  if (planNode) planNode.textContent = JSON.stringify(data.plan, null, 2);
+  updateAdvisor(data.plan?.advisor_summary, data.plan?.advisor_details);
   if (!data.results || data.results.length === 0) {
     container.innerHTML = "<p>No hay resultados. Ajustá tu consulta.</p>" + tiny(data.plan);
     return;
@@ -850,6 +1089,7 @@ function renderResults(container, data) {
       allergens: d.allergens,
       diet_flags: d.diet_flags,
       health_tags: d.health_tags,
+      experience_tags: d.experience_tags,
       restaurant: d.restaurant,
     };
     const el = document.createElement("div");
@@ -859,7 +1099,7 @@ function renderResults(container, data) {
       <div class="sub">${d.restaurant.name} · ${d.restaurant.neighborhood} · ${d.restaurant.cuisines}</div>
       <div class="meta">Rating ${d.restaurant.rating} · ETA ${d.restaurant.eta_min} min · Score ${r.score.toFixed(3)}</div>
       <div class="desc">${d.description}</div>
-      <div class="tags">Tags: ${[...d.categories, ...d.health_tags].join(", ")}</div>
+      <div class="tags">Tags: ${[...d.categories, ...d.health_tags, ...(d.experience_tags || [])].join(", ")}</div>
       <div class="reasons">Razones: ${r.reasons.join(", ")}</div>
       <details>
         <summary>Debug</summary>
@@ -868,6 +1108,4 @@ function renderResults(container, data) {
     `;
     container.appendChild(el);
   });
-  const plan = document.getElementById("plan");
-  if (plan) plan.textContent = JSON.stringify(data.plan, null, 2);
 }

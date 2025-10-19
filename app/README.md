@@ -1,7 +1,7 @@
 
 # Buscador inteligente v2 de platos y restaurantes
 
-Aplicación completa y funcional para buscar platos tipo food delivery de Buenos Aires sin LLM en runtime. Usa reglas determinísticas, diccionarios y parsing con expresiones regulares. Incluye backend FastAPI, frontend HTML CSS JS, dataset de 150 platos, y tests con Pytest.
+Aplicación completa y funcional para buscar platos tipo food delivery de Buenos Aires. Combina reglas determinísticas, diccionarios y parsing con expresiones regulares, y opcionalmente puede delegar la interpretación de la intención a un LLM gratuito (Groq o cualquier endpoint compatible con OpenAI/LLaMA). Incluye backend FastAPI, frontend HTML CSS JS, dataset enriquecido de platos y tests con Pytest.
 
 ## Estructura
 
@@ -59,6 +59,32 @@ score = w_rating*norm(rating) + w_price*(1-norm(price)) + w_eta*(1-norm(eta)) + 
 Con boosts y penalizaciones según `ranking_overrides` y tags de salud y categoría.
 
 4. **Plan de búsqueda**: el backend devuelve `plan` con filtros aplicados, pesos y ejemplos de rechazados.
+
+## Modo IA con LLM gratuito (Groq / LLaMA)
+
+1. **Conseguí una API key**:
+   - [Groq](https://console.groq.com/) ofrece un plan gratuito. Creá una cuenta y generá una API key.
+   - Para otro endpoint compatible con OpenAI/LLaMA, asegurate de tener la URL base y el token.
+2. **Exportá las variables de entorno antes de iniciar el backend** (ejemplo Groq):
+
+   ```bash
+   export LLM_PROVIDER=groq
+   export GROQ_API_KEY="tu_api_key"
+   export LLM_MODEL="llama3-8b-8192"   # opcional, por defecto usa ese modelo
+   # Para otras plataformas, podés usar LLM_API_KEY y LLM_BASE_URL
+   ```
+
+3. **Levantá el backend**:
+
+   ```bash
+   uvicorn app.server.main:app --reload
+   ```
+
+4. **Abrí `http://localhost:8000/web/index.html`**. La UI intentará contactar al backend; si el LLM falla o no está configurado seguirá funcionando con reglas locales y mostrará un aviso en el plan.
+
+5. **Depurar sin red**: definí `LLM_PROVIDER=stub` y `LLM_STUB_RESPONSE` con un JSON válido para simular la respuesta del modelo.
+
+El LLM devuelve un resumen conversacional, explicaciones extendidas y ajustes en filtros (`experience_tags_any`, dietas, boosts, etc.). La UI muestra el texto sugerido en dos niveles: un titular corto y un detalle más extenso.
 
 ## Diccionarios
 

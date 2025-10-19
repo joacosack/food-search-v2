@@ -1,8 +1,9 @@
 
 import json, re
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from .schema import ParsedQuery, ParseFilters, RankingOverrides
+from .llm import planner as llm_planner, LLMProviderError
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "dictionaries"
 
@@ -33,6 +34,47 @@ def get_restaurant_names():
         return []
 
 RESTAURANT_NAMES = get_restaurant_names()
+
+def load_catalog_metrics():
+    try:
+        data = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {"prices": [], "etas": [], "ratings": []}
+    prices = sorted(d.get("price_ars", 0) for d in data)
+    etas = sorted(d.get("restaurant", {}).get("eta_min", 0) for d in data)
+    ratings = sorted(d.get("restaurant", {}).get("rating", 0.0) for d in data)
+    return {"prices": prices, "etas": etas, "ratings": ratings}
+
+CATALOG_METRICS = load_catalog_metrics()
+
+def load_experience_tags() -> List[str]:
+    try:
+        data = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    tags = []
+    seen = set()
+    for entry in data:
+        for tag in entry.get("experience_tags", []) or []:
+            if tag not in seen:
+                tags.append(tag)
+                seen.add(tag)
+    return tags
+
+EXPERIENCE_TAGS = load_experience_tags()
+DEFAULT_WEIGHTS = {"rating":0.3,"price":0.3,"eta":0.1,"pop":0.1,"dist":0.1,"lex":0.1}
+LIST_FILTER_KEYS = {
+    "category_any",
+    "meal_moments_any",
+    "neighborhood_any",
+    "cuisines_any",
+    "experience_tags_any",
+    "ingredients_include",
+    "ingredients_exclude",
+    "diet_must",
+    "allergens_exclude",
+    "health_any",
+}
 
 def parse_restaurants(text_raw: str, plan: List[str]) -> List[str]:
     t = normalize_soft(text_raw)
@@ -65,6 +107,48 @@ def normalize_soft(s: str) -> str:
     s = s.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u").replace("ñ","n")
     s = re.sub(r"[^a-z0-9\s\.,]", " ", s)
     return s
+
+def percentile_value(values: List[Any], pct: float):
+    if not values:
+        return None
+    pct = max(0.0, min(1.0, pct))
+    idx = int(len(values) * pct) - 1
+    idx = max(0, min(len(values) - 1, idx))
+    return values[idx]
+
+def price_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("prices", []), pct)
+
+def eta_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("etas", []), pct)
+
+def rating_from_percentile(pct: float):
+    return percentile_value(CATALOG_METRICS.get("ratings", []), pct)
+
+def tighten_min_limit(current, new_value):
+    if new_value is None:
+        return current
+    if current is None:
+        return new_value
+    return max(current, new_value)
+
+def tighten_max_limit(current, new_value):
+    if new_value is None:
+        return current
+    if current is None:
+        return new_value
+    return min(current, new_value)
+
+def normalize_percentile_limit(limit):
+    if isinstance(limit, str) and limit.startswith("p"):
+        try:
+            pct = int(limit[1:]) / 100.0
+        except ValueError:
+            return None
+        return price_from_percentile(pct)
+    if isinstance(limit, (int, float)):
+        return float(limit)
+    return None
 
 def parse_price(text_norm: str, plan: List[str]):
     PRICE_WORDS = {
@@ -267,6 +351,182 @@ def parse_weights(text_norm: str, plan: List[str]):
         weights["price"] = 0.45
     return weights
 
+def extend_unique_list(lst: List[str], values: List[str]) -> List[str]:
+    existing = set(lst or [])
+    for v in values:
+        if v not in existing:
+            lst.append(v)
+            existing.add(v)
+    return lst
+
+def dedup_preserve_order(values: List[Any]) -> List[Any]:
+    seen = set()
+    result: List[Any] = []
+    for val in values or []:
+        if isinstance(val, str):
+            val = val.strip()
+        if not val and val != 0:
+            continue
+        if val not in seen:
+            result.append(val)
+            seen.add(val)
+    return result
+
+def merge_price_limit(base_value, new_value):
+    if new_value is None:
+        return base_value
+    if base_value is None:
+        return new_value
+    base_norm = normalize_percentile_limit(base_value)
+    new_norm = normalize_percentile_limit(new_value)
+    if base_norm is None and new_norm is None:
+        return new_value
+    if base_norm is None:
+        return new_value
+    if new_norm is None:
+        return base_value
+    return new_value if new_norm <= base_norm else base_value
+
+def merge_filters(base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+    merged = {**base}
+    for key in LIST_FILTER_KEYS:
+        base_list = list(base.get(key) or [])
+        patch_list = list(patch.get(key) or [])
+        if base_list or patch_list:
+            merged[key] = dedup_preserve_order(base_list + patch_list)
+    if "price_max" in patch:
+        merged["price_max"] = merge_price_limit(base.get("price_max"), patch.get("price_max"))
+    if "eta_max" in patch and patch.get("eta_max") is not None:
+        merged["eta_max"] = patch.get("eta_max") if base.get("eta_max") is None else min(base.get("eta_max"), patch.get("eta_max"))
+    if "rating_min" in patch and patch.get("rating_min") is not None:
+        merged["rating_min"] = patch.get("rating_min") if base.get("rating_min") is None else max(base.get("rating_min"), patch.get("rating_min"))
+    if "available_only" in patch:
+        merged["available_only"] = bool(patch.get("available_only"))
+    for key, value in patch.items():
+        if key not in merged:
+            merged[key] = value
+    return merged
+
+def merge_ranking_overrides(base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+    base = base or {}
+    patch = patch or {}
+    merged = {
+        "boost_tags": dedup_preserve_order((base.get("boost_tags") or []) + (patch.get("boost_tags") or [])),
+        "penalize_tags": dedup_preserve_order((base.get("penalize_tags") or []) + (patch.get("penalize_tags") or [])),
+        "weights": dict(base.get("weights") or {}),
+    }
+    for key, value in (patch.get("weights") or {}).items():
+        try:
+            merged["weights"][key] = float(value)
+        except (TypeError, ValueError):
+            continue
+    return merged
+
+def merge_weights(base: Dict[str, float], patch: Optional[Dict[str, Any]]) -> Dict[str, float]:
+    merged = dict(DEFAULT_WEIGHTS)
+    for key, value in (base or {}).items():
+        try:
+            merged[key] = float(value)
+        except (TypeError, ValueError):
+            continue
+    for key, value in (patch or {}).items():
+        try:
+            merged[key] = float(value)
+        except (TypeError, ValueError):
+            continue
+    return merged
+
+def merge_with_llm(base_query: Dict[str, Any], patch: Dict[str, Any], plan: List[str]) -> Dict[str, Any]:
+    merged = {**base_query}
+    merged["filters"] = merge_filters(base_query.get("filters", {}), patch.get("filters") or {})
+    merged["ranking_overrides"] = merge_ranking_overrides(base_query.get("ranking_overrides", {}), patch.get("ranking_overrides") or {})
+    merged["hints"] = dedup_preserve_order((base_query.get("hints") or []) + (patch.get("hints") or []))
+    merged["scenario_tags"] = dedup_preserve_order((base_query.get("scenario_tags") or []) + (patch.get("scenario_tags") or []))
+    explanation = patch.get("explanation")
+    if explanation:
+        plan.append(f"LLM explicación: {explanation}")
+    if patch.get("advisor_summary"):
+        merged["advisor_summary"] = patch.get("advisor_summary")
+    if patch.get("advisor_details"):
+        merged["advisor_details"] = patch.get("advisor_details")
+    query_text = patch.get("query_text")
+    if isinstance(query_text, str) and query_text.strip():
+        merged["q"] = query_text.strip()
+    merged["weights"] = merge_weights(base_query.get("weights") or {}, patch.get("weights"))
+    return merged
+
+def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_overrides: Dict[str, Any], hints: List[str], plan: List[str]):
+    summaries: List[str] = []
+    scenario_tags: List[str] = []
+    text_soft = normalize_soft(text)
+
+    def note(label: str, details: str):
+        plan.append(f"Escenario conversacional: {label} -> {details}")
+
+    # Escenario: cita romántica
+    romantic_patterns = [
+        r"cita\s+romant", r"salida\s+romant", r"plan\s+romant", r"con\s+mi\s+pareja", r"cena\s+romant"
+    ]
+    if any(re.search(pat, text_soft) for pat in romantic_patterns):
+        scenario_tags.append("romantic_date")
+        filters["rating_min"] = tighten_min_limit(filters.get("rating_min"), 4.4)
+        filters["available_only"] = True
+        extend_unique_list(hints, ["date", "special_evening"])
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["romantic", "date-night", "vino", "intimo"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["rating"] = max(weights.get("rating", 0.3), 0.45)
+        weights["lex"] = max(weights.get("lex", 0.1), 0.15)
+        extend_unique_list(filters.setdefault("experience_tags_any", []), ["romantic", "date-night"])
+        note("cita romántica", "priorizar lugares íntimos y con alto rating")
+        summaries.append("Prioricé opciones con ambiente romántico, buen rating y etiquetas especiales de cita.")
+
+    # Escenario: presupuesto ajustado
+    budget_patterns = [
+        r"no\s+tengo\s+mucha\s+plata", r"poco\s+presupuesto", r"barato\s+pero\s+rico", r"estoy\s+corto\s+de\s+plata"
+    ]
+    if any(re.search(pat, text_soft) for pat in budget_patterns):
+        scenario_tags.append("budget_friendly")
+        target_price = price_from_percentile(0.28)
+        if target_price is None:
+            target_price = 4500
+        else:
+            target_price = min(target_price, 4500)
+        current = normalize_percentile_limit(filters.get("price_max"))
+        filters["price_max"] = tighten_max_limit(current, target_price)
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["budget_friendly", "ahorro", "combo"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["price"] = max(weights.get("price", 0.3), 0.45)
+        weights["pop"] = max(weights.get("pop", 0.1), 0.12)
+        extend_unique_list(filters.setdefault("experience_tags_any", []), ["budget_friendly"])
+        note("presupuesto ajustado", "fijar tope de precio y dar peso extra a opciones económicas")
+        summaries.append("Ajusté la búsqueda a opciones accesibles y destaqué platos marcados como económicos.")
+
+    # Escenario: almuerzo rápido
+    quick_patterns = [
+        r"algo\s+rapido\s+para\s+almorzar", r"almuerzo\s+rapido", r"comer\s+rapido\s+al\s+mediodia", r"necesito\s+algo\s+express"
+    ]
+    if any(re.search(pat, text_soft) for pat in quick_patterns):
+        scenario_tags.append("quick_lunch")
+        target_eta = eta_from_percentile(0.35) or 20
+        filters["eta_max"] = tighten_max_limit(filters.get("eta_max"), target_eta)
+        filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["almuerzo"]))
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["quick_lunch", "sandwich", "wrap", "express"])
+        weights = ranking_overrides.setdefault("weights", {})
+        weights["eta"] = max(weights.get("eta", 0.1), 0.22)
+        weights["dist"] = max(weights.get("dist", 0.1), 0.12)
+        extend_unique_list(filters.setdefault("experience_tags_any", []), ["quick_lunch", "express"])
+        note("almuerzo rápido", "limitar tiempos de entrega y priorizar formatos express")
+        summaries.append("Configuré filtros para almuerzos rápidos con entregas cortas y platos listos al paso.")
+
+    # remover duplicados preservando orden
+    seen = set()
+    dedup_tags = []
+    for tag in scenario_tags:
+        if tag not in seen:
+            dedup_tags.append(tag)
+            seen.add(tag)
+    return summaries, dedup_tags
+
 def parse(text: str):
     plan = []
     tn = normalize(text)
@@ -275,6 +535,7 @@ def parse(text: str):
         "category_any": parse_category(tn, plan),
         "neighborhood_any": parse_neighborhoods(text, plan),
         "cuisines_any": parse_cuisines(text, plan),
+        "experience_tags_any": [],
         "ingredients_include": [],
         "ingredients_exclude": [],
         "diet_must": [],
@@ -301,19 +562,60 @@ def parse(text: str):
         "penalize_tags": penal,
         "weights": parse_weights(tn, plan)
     }
+
+    scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, plan)
+    advisor_summary = " ".join(scenario_summaries).strip() or None
     if rest_hits:
         # Si el nombre de restaurante contiene "wok", no generes categoría/cocina por esa palabra
         joined = " ".join(rest_hits).lower()
         if "wok" in joined:
             filters["category_any"] = [c for c in (filters.get("category_any") or []) if c != "wok"]
             filters["cuisines_any"] = [c for c in (filters.get("cuisines_any") or []) if c.lower() != "wok"]
+    base_query = {
+        "q": text,
+        "filters": filters,
+        "hints": hints,
+        "weights": dict(DEFAULT_WEIGHTS),
+        "ranking_overrides": ranking_overrides,
+        "advisor_summary": advisor_summary,
+        "advisor_details": None,
+        "scenario_tags": scenario_tags,
+    }
+
+    llm_patch = None
+    llm_context = {
+        **base_query,
+        "_categories": list(CATEGORIES.keys()),
+        "_cuisines": CUISINES,
+        "_diets": list(DIETS.keys()),
+        "_experience_tags": EXPERIENCE_TAGS,
+    }
+    try:
+        llm_patch = llm_planner.plan(text, llm_context)
+    except LLMProviderError as exc:
+        plan.append(f"LLM no disponible: {exc}")
+    except Exception as exc:
+        plan.append(f"LLM error inesperado: {exc}")
+
+    if llm_patch:
+        plan.append("LLM interpretó la intención del usuario y ajustó filtros.")
+        base_query = merge_with_llm(base_query, llm_patch, plan)
+        if base_query.get("advisor_details"):
+            plan.append(f"LLM detalle: {base_query['advisor_details']}")
+
+    parsed = ParsedQuery(
+        q=base_query.get("q", text),
+        filters=ParseFilters(**base_query.get("filters", {})),
+        hints=base_query.get("hints", []),
+        weights=base_query.get("weights", dict(DEFAULT_WEIGHTS)),
+        ranking_overrides=RankingOverrides(**base_query.get("ranking_overrides", {})),
+        advisor_summary=base_query.get("advisor_summary"),
+        advisor_details=base_query.get("advisor_details"),
+        scenario_tags=base_query.get("scenario_tags", []),
+    ).dict()
+
     return {
-        "query": ParsedQuery(
-            q=text,
-            filters=ParseFilters(**filters),
-            hints=hints,
-            ranking_overrides=RankingOverrides(**ranking_overrides)
-        ).dict(),
+        "query": parsed,
         "plan": plan
     }
 

@@ -63,3 +63,53 @@ def test_no_match_plan():
     pq["query"]["filters"]["ingredients_include"] = ["ingrediente_inexistente_xyz"]
     res2 = do_search(pq)
     assert res2["results"] == []
+
+def test_cita_romantica_activa_asesor():
+    pq, res = _run("tengo una cita romántica en Palermo")
+    assert "romantic_date" in pq["query"].get("scenario_tags", [])
+    assert pq["query"].get("advisor_summary")
+    assert pq["query"]["filters"]["rating_min"] >= 4.4
+    assert "romantic" in pq["query"]["filters"].get("experience_tags_any", [])
+    romantic_hits = [r for r in res["results"][:5] if "romantic" in (r["item"].get("experience_tags") or [])]
+    assert romantic_hits
+
+def test_presupuesto_ajustado_limita_precio():
+    pq, res = _run("quiero comer pero no tengo mucha plata")
+    assert "budget_friendly" in pq["query"].get("scenario_tags", [])
+    price_cap = pq["query"]["filters"]["price_max"]
+    assert price_cap is not None and price_cap <= 4500
+    assert "budget_friendly" in pq["query"]["filters"].get("experience_tags_any", [])
+    assert all(r["item"]["price_ars"] <= price_cap for r in res["results"][:10])
+
+def test_almuerzo_rapido_prioriza_eta():
+    pq, res = _run("algo rapido para almorzar")
+    assert "quick_lunch" in pq["query"].get("scenario_tags", [])
+    assert pq["query"]["filters"]["eta_max"] <= 25
+    assert "quick_lunch" in pq["query"]["filters"].get("experience_tags_any", [])
+    quick_hits = [r for r in res["results"][:8] if "quick_lunch" in (r["item"].get("experience_tags") or [])]
+    assert quick_hits
+
+def test_llm_stub_enriches(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "stub")
+    payload = {
+        "advisor_summary": "Voy a recomendar opciones veganas económicas.",
+        "advisor_details": "El modelo detectó que buscás platos veganos accesibles y prioriza combos express.",
+        "filters": {
+            "diet_must": ["veg"],
+            "experience_tags_any": ["budget_friendly", "quick_lunch"]
+        },
+        "ranking_overrides": {
+            "boost_tags": ["vegana"],
+            "weights": {"price": 0.5}
+        },
+        "scenario_tags": ["llm_custom"],
+        "hints": ["veg"],
+        "query_text": "opciones veganas económicas", 
+        "explanation": "Priorizo menús veganos económicos y rápidos."
+    }
+    monkeypatch.setenv("LLM_STUB_RESPONSE", json.dumps(payload))
+    pq = parse("algo barato sin carne")
+    assert "veg" in pq["query"]["filters"].get("diet_must", [])
+    assert "budget_friendly" in pq["query"]["filters"].get("experience_tags_any", [])
+    assert pq["query"].get("advisor_details")
+    assert "llm_custom" in pq["query"].get("scenario_tags", [])

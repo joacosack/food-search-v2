@@ -7003,5 +7003,511 @@
       "almuerzo",
       "cena"
     ]
+  },
+  {
+    "id": "exp101",
+    "dish_name": "Risotto de hongos trufado",
+    "description": "Risotto cremoso con hongos de estación, perfume de trufa y parmesano envejecido.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "risotto",
+      "arroz cremoso",
+      "risotto de hongos"
+    ],
+    "ingredients": [
+      "arroz arborio",
+      "hongos portobello",
+      "parmesano",
+      "trufa",
+      "manteca"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "gourmet"
+    ],
+    "experience_tags": [
+      "romantic",
+      "date-night",
+      "vino",
+      "intimo"
+    ],
+    "not_contains": [
+      "carne roja"
+    ],
+    "price_ars": 18600,
+    "popularity": 82,
+    "restaurant": {
+      "name": "Casa Luminosa",
+      "neighborhood": "Palermo",
+      "cuisines": "Italiana",
+      "rating": 4.8,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "cena"
+    ]
+  },
+  {
+    "id": "exp102",
+    "dish_name": "Lomo grill con papines glaseados",
+    "description": "Filet de lomo grillado en manteca de hierbas, papines andinos y reducción de malbec.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "lomo",
+      "bife de lomo",
+      "filet mignon"
+    ],
+    "ingredients": [
+      "lomo",
+      "papines",
+      "malbec",
+      "hierbas frescas"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "protein_high"
+    ],
+    "experience_tags": [
+      "romantic",
+      "date-night",
+      "vino"
+    ],
+    "not_contains": [
+      "gluten"
+    ],
+    "price_ars": 19440,
+    "popularity": 76,
+    "restaurant": {
+      "name": "Brasa Secreta",
+      "neighborhood": "Recoleta",
+      "cuisines": "Parrilla",
+      "rating": 4.7,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "cena"
+    ]
+  },
+  {
+    "id": "exp201",
+    "dish_name": "Combo ahorro de empanadas",
+    "description": "Seis empanadas a elección con bebida incluida, ideal para fin de mes.",
+    "categories": [
+      "combos",
+      "empanadas"
+    ],
+    "synonyms": [
+      "combo empanadas",
+      "promo empanadas",
+      "pack empanadas"
+    ],
+    "ingredients": [
+      "harina",
+      "carne",
+      "pollo",
+      "queso",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "experience_tags": [
+      "budget_friendly",
+      "ahorro",
+      "combo"
+    ],
+    "not_contains": [],
+    "price_ars": 3200,
+    "popularity": 88,
+    "restaurant": {
+      "name": "Doña Oferta",
+      "neighborhood": "Almagro",
+      "cuisines": "Empanadas",
+      "rating": 4.2,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "exp202",
+    "dish_name": "Bowl económico de fideos salteados",
+    "description": "Fideos salteados con vegetales de estación, salsa de soja ligera y mix de semillas.",
+    "categories": [
+      "wok",
+      "bowls"
+    ],
+    "synonyms": [
+      "wok barato",
+      "bowl economico",
+      "salteado express"
+    ],
+    "ingredients": [
+      "fideos",
+      "zanahoria",
+      "brócoli",
+      "soja",
+      "semillas"
+    ],
+    "allergens": [
+      "gluten",
+      "soja",
+      "sesamo"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "veggie"
+    ],
+    "experience_tags": [
+      "budget_friendly",
+      "quick_lunch"
+    ],
+    "not_contains": [
+      "carne"
+    ],
+    "price_ars": 2900,
+    "popularity": 73,
+    "restaurant": {
+      "name": "Salteado Urbano",
+      "neighborhood": "Microcentro",
+      "cuisines": "Wok",
+      "rating": 4.1,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo"
+    ]
+  },
+  {
+    "id": "exp301",
+    "dish_name": "Wrap express de pollo grillado",
+    "description": "Wrap de pollo grillado con mix de verdes, alioli suave y chips de batata.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "wrap de pollo",
+      "wrap express",
+      "wrap rapido"
+    ],
+    "ingredients": [
+      "pollo",
+      "tortilla",
+      "lechuga",
+      "tomate",
+      "alioli"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled",
+      "no_fry"
+    ],
+    "experience_tags": [
+      "quick_lunch",
+      "express",
+      "sandwich"
+    ],
+    "not_contains": [
+      "panceta"
+    ],
+    "price_ars": 4100,
+    "popularity": 79,
+    "restaurant": {
+      "name": "Metro Bite",
+      "neighborhood": "Belgrano",
+      "cuisines": "Sandwiches",
+      "rating": 4.4,
+      "eta_min": 14
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo"
+    ]
+  },
+  {
+    "id": "exp302",
+    "dish_name": "Ensalada vital express",
+    "description": "Mix de hojas verdes, quinoa, garbanzos asados y aderezo cítrico listo para llevar.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada express",
+      "ensalada rapida",
+      "power bowl"
+    ],
+    "ingredients": [
+      "quinoa",
+      "garbanzos",
+      "hojas verdes",
+      "zanahoria",
+      "limon"
+    ],
+    "allergens": [
+      "sesamo"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "light",
+      "low_sodium"
+    ],
+    "experience_tags": [
+      "quick_lunch",
+      "express",
+      "saludable"
+    ],
+    "not_contains": [
+      "gluten"
+    ],
+    "price_ars": 3800,
+    "popularity": 71,
+    "restaurant": {
+      "name": "Green Flash",
+      "neighborhood": "Palermo",
+      "cuisines": "Ensaladas",
+      "rating": 4.5,
+      "eta_min": 12
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo"
+    ]
+  },
+  {
+    "id": "exp303",
+    "dish_name": "Experiencia degustación Luz de Vela",
+    "description": "Seis pasos creados por el chef con maridaje de espumante y velas aromáticas.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "degustacion",
+      "menu degustacion",
+      "cena romantica",
+      "menu para dos"
+    ],
+    "ingredients": [
+      "vieiras",
+      "lomo",
+      "risotto de hongos",
+      "espumante",
+      "trufas",
+      "mousse de chocolate"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "shellfish"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "no_fry",
+      "special"
+    ],
+    "experience_tags": [
+      "romantic",
+      "date-night",
+      "chef_table"
+    ],
+    "not_contains": [],
+    "price_ars": 16500,
+    "popularity": 93,
+    "restaurant": {
+      "name": "Cielo & Fuego",
+      "neighborhood": "Recoleta",
+      "cuisines": "Parrilla",
+      "rating": 4.8,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "cena"
+    ]
+  },
+  {
+    "id": "exp304",
+    "dish_name": "Combo ejecutivo veggie express",
+    "description": "Wrap integral de falafel, ensalada fresca y limonada casera lista en minutos.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "combo veggie",
+      "wrap falafel",
+      "almuerzo express",
+      "combo ejecutivo"
+    ],
+    "ingredients": [
+      "wrap integral",
+      "falafel",
+      "hummus",
+      "mix de verdes",
+      "tomate",
+      "limonada"
+    ],
+    "allergens": [
+      "sesamo"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "light",
+      "portion_control"
+    ],
+    "experience_tags": [
+      "budget_friendly",
+      "quick_lunch",
+      "veggie_focus"
+    ],
+    "not_contains": [
+      "lactosa"
+    ],
+    "price_ars": 3200,
+    "popularity": 78,
+    "restaurant": {
+      "name": "Mercado Verde",
+      "neighborhood": "Microcentro",
+      "cuisines": "Vegana",
+      "rating": 4.3,
+      "eta_min": 12
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo"
+    ]
+  },
+  {
+    "id": "exp305",
+    "dish_name": "Cesta picnic gourmet para dos",
+    "description": "Tabla de quesos artesanales, panes de masa madre, frutas frescas y limonada para compartir al aire libre.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "picnic",
+      "canasta gourmet",
+      "tabla para dos",
+      "plan al aire libre"
+    ],
+    "ingredients": [
+      "quesos artesanales",
+      "pan de masa madre",
+      "frutas",
+      "mix de frutos secos",
+      "limonada",
+      "dulce de leche"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "nuts"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "sharing",
+      "portion_large"
+    ],
+    "experience_tags": [
+      "romantic",
+      "sharing",
+      "al_aire_libre"
+    ],
+    "not_contains": [
+      "carne roja"
+    ],
+    "price_ars": 8900,
+    "popularity": 84,
+    "restaurant": {
+      "name": "La Canasta Secreta",
+      "neighborhood": "Palermo",
+      "cuisines": "Ensaladas",
+      "rating": 4.6,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda"
+    ]
   }
 ]

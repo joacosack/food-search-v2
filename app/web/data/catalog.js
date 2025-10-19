@@ -1,0 +1,7007 @@
+export const CATALOG = [
+  {
+    "id": "p001",
+    "dish_name": "Ravioles de ricota",
+    "description": "Ravioles caseros con salsa de tomate y albahaca.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "ricota",
+      "tomate",
+      "albahaca",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6440,
+    "popularity": 67,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Belgrano",
+      "cuisines": "Italiana",
+      "rating": 4.5,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p002",
+    "dish_name": "Ñoquis con filetto",
+    "description": "Ñoquis de papa con salsa de tomate suave.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "papa",
+      "harina",
+      "tomate",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6580,
+    "popularity": 74,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Colegiales",
+      "cuisines": "Italiana",
+      "rating": 4.1,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p003",
+    "dish_name": "Lasaña de vegetales",
+    "description": "Capas de pasta con berenjena, zucchini y tomate.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "berenjena",
+      "zucchini",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 6720,
+    "popularity": 81,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Recoleta",
+      "cuisines": "Italiana",
+      "rating": 4.8,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p004",
+    "dish_name": "Tagliatelle al pesto",
+    "description": "Pasta con salsa de albahaca y parmesano.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "albahaca",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6860,
+    "popularity": 88,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Chacarita",
+      "cuisines": "Italiana",
+      "rating": 4.4,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p005",
+    "dish_name": "Sorrentinos jamón y queso",
+    "description": "Pasta rellena con salsa de crema.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "jamon",
+      "queso",
+      "crema"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "creamy"
+    ],
+    "not_contains": [],
+    "price_ars": 7000,
+    "popularity": 95,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Italiana",
+      "rating": 4.0,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p006",
+    "dish_name": "Pizza muzzarella",
+    "description": "Clásica muzza con tomate y orégano.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "oregano"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9180,
+    "popularity": 62,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Almagro",
+      "cuisines": "Pizzería",
+      "rating": 4.7,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p007",
+    "dish_name": "Pizza napolitana",
+    "description": "Con tomate en rodajas y ajo.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "ajo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9360,
+    "popularity": 69,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Caballito",
+      "cuisines": "Pizzería",
+      "rating": 4.3,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p008",
+    "dish_name": "Fugazzeta",
+    "description": "Rellena de queso y cebolla.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "mozzarella",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9540,
+    "popularity": 76,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Núñez",
+      "cuisines": "Pizzería",
+      "rating": 4.0,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p009",
+    "dish_name": "Entraña a la parrilla",
+    "description": "Corte jugoso con chimichurri.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "chimichurri",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 12960,
+    "popularity": 83,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Boedo",
+      "cuisines": "Parrilla",
+      "rating": 4.6,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p010",
+    "dish_name": "Asado de tira",
+    "description": "Clásico corte argentino.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 10800,
+    "popularity": 90,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "San Telmo",
+      "cuisines": "Parrilla",
+      "rating": 4.3,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p011",
+    "dish_name": "Provoleta",
+    "description": "Queso a la parrilla con orégano.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "queso"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 11040,
+    "popularity": 97,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Microcentro",
+      "cuisines": "Parrilla",
+      "rating": 3.9,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p012",
+    "dish_name": "Ensalada caprese",
+    "description": "Tomate, mozzarella y albahaca.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "tomate",
+      "mozzarella",
+      "albahaca"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6110,
+    "popularity": 64,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Balvanera",
+      "cuisines": "Ensaladas",
+      "rating": 4.6,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p013",
+    "dish_name": "Ensalada caesar",
+    "description": "Lechuga, pollo grillado y croutons.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "lechuga",
+      "pollo",
+      "croutons",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 6240,
+    "popularity": 71,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Devoto",
+      "cuisines": "Ensaladas",
+      "rating": 4.2,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p014",
+    "dish_name": "Ensalada quinoa veggie",
+    "description": "Quinoa, palta, tomate, pepino.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "quinoa",
+      "palta",
+      "tomate",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6370,
+    "popularity": 78,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Saavedra",
+      "cuisines": "Ensaladas",
+      "rating": 3.9,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p015",
+    "dish_name": "Burger clásica",
+    "description": "Medallón de carne, queso y lechuga.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "carne",
+      "queso",
+      "pan"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8500,
+    "popularity": 85,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Palermo",
+      "cuisines": "Hamburguesas",
+      "rating": 4.5,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p016",
+    "dish_name": "Burger veggie",
+    "description": "Medallón de garbanzo, palta y tomate.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "garbanzo",
+      "pan",
+      "palta",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8670,
+    "popularity": 92,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Belgrano",
+      "cuisines": "Hamburguesas",
+      "rating": 4.2,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p017",
+    "dish_name": "Lomito completo",
+    "description": "Lomo, queso, tomate y huevo.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "queso",
+      "tomate",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 8112,
+    "popularity": 99,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Colegiales",
+      "cuisines": "Sandwiches",
+      "rating": 3.8,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p018",
+    "dish_name": "Sándwich de milanesa",
+    "description": "Milanesa, lechuga y tomate.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "huevo",
+      "harina",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 8268,
+    "popularity": 66,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Recoleta",
+      "cuisines": "Sandwiches",
+      "rating": 4.5,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p019",
+    "dish_name": "Falafel con hummus",
+    "description": "Croquetas de garbanzo y pasta de sésamo.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "garbanzo",
+      "sesamo",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 8100,
+    "popularity": 73,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Chacarita",
+      "cuisines": "Árabe",
+      "rating": 4.1,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p020",
+    "dish_name": "Shawarma de pollo",
+    "description": "Pollo especiado con verduras.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "pollo",
+      "especias",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 6750,
+    "popularity": 80,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Árabe",
+      "rating": 3.8,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p021",
+    "dish_name": "Tabule",
+    "description": "Ensalada de trigo burgol y perejil.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "trigo",
+      "perejil",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6900,
+    "popularity": 87,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Almagro",
+      "cuisines": "Árabe",
+      "rating": 4.5,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p022",
+    "dish_name": "Roll salmón palta",
+    "description": "Salmón, palta, arroz.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "salmon",
+      "palta",
+      "arroz"
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 10340,
+    "popularity": 94,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Caballito",
+      "cuisines": "Sushi",
+      "rating": 4.1,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p023",
+    "dish_name": "California roll",
+    "description": "Cangrejo, palta, pepino.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "surimi",
+      "palta",
+      "pepino",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 10560,
+    "popularity": 61,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Núñez",
+      "cuisines": "Sushi",
+      "rating": 4.8,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p024",
+    "dish_name": "Nigiri surtido",
+    "description": "Selección de pescados.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "pescado",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 10780,
+    "popularity": 68,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Boedo",
+      "cuisines": "Sushi",
+      "rating": 4.4,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p025",
+    "dish_name": "Milanesa con papas",
+    "description": "Clásica de carne con fritas.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "papas"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9000,
+    "popularity": 75,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "San Telmo",
+      "cuisines": "Argentina",
+      "rating": 4.0,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p026",
+    "dish_name": "Milanesa napolitana",
+    "description": "Con salsa de tomate y queso.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9180,
+    "popularity": 82,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Microcentro",
+      "cuisines": "Argentina",
+      "rating": 4.7,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p027",
+    "dish_name": "Tacos al pastor",
+    "description": "Cerdo marinado con ananá.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "cerdo",
+      "tortilla",
+      "anana"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "spicy"
+    ],
+    "not_contains": [],
+    "price_ars": 8320,
+    "popularity": 89,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Balvanera",
+      "cuisines": "Mexicana",
+      "rating": 4.3,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p028",
+    "dish_name": "Tacos veggie",
+    "description": "Mix de vegetales, palta.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "tortilla",
+      "palta",
+      "tomate",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 8480,
+    "popularity": 96,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Devoto",
+      "cuisines": "Mexicana",
+      "rating": 4.0,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p029",
+    "dish_name": "Sopa de calabaza",
+    "description": "Crema suave de zapallo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "calabaza",
+      "crema"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6480,
+    "popularity": 63,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Saavedra",
+      "cuisines": "Sopas",
+      "rating": 4.6,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p030",
+    "dish_name": "Caldo de pollo",
+    "description": "Ligero con fideos finos.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "pollo",
+      "fideos"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 5400,
+    "popularity": 70,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Palermo",
+      "cuisines": "Sopas",
+      "rating": 4.3,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p031",
+    "dish_name": "Ramen miso",
+    "description": "Caldo con fideos, miso y huevo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "fideos",
+      "miso",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup"
+    ],
+    "not_contains": [],
+    "price_ars": 5520,
+    "popularity": 77,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Belgrano",
+      "cuisines": "Sopas",
+      "rating": 3.9,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p032",
+    "dish_name": "Flan casero",
+    "description": "Con dulce de leche y crema.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "huevo",
+      "leche",
+      "azucar"
+    ],
+    "allergens": [
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 4700,
+    "popularity": 84,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Colegiales",
+      "cuisines": "Postres",
+      "rating": 4.6,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p033",
+    "dish_name": "Helado 1/4 kg",
+    "description": "Sabores clásicos.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "leche"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 4800,
+    "popularity": 91,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Recoleta",
+      "cuisines": "Postres",
+      "rating": 4.2,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p034",
+    "dish_name": "Tiramisú",
+    "description": "Clásico italiano.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "mascarpone",
+      "cafe",
+      "huevo"
+    ],
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 4900,
+    "popularity": 98,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Chacarita",
+      "cuisines": "Postres",
+      "rating": 3.9,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p035",
+    "dish_name": "Poke salmón",
+    "description": "Arroz, salmón, pepino, sésamo.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "salmon",
+      "pepino",
+      "sesamo"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 8500,
+    "popularity": 65,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Bowls",
+      "rating": 4.5,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p036",
+    "dish_name": "Buddha bowl veggie",
+    "description": "Arroz integral, garbanzo, verduras.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "garbanzo",
+      "zanahoria",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 8670,
+    "popularity": 72,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Almagro",
+      "cuisines": "Bowls",
+      "rating": 4.2,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p037",
+    "dish_name": "Empanada de carne",
+    "description": "Clásica jugosa.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "carne",
+      "harina",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1550,
+    "popularity": 79,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Caballito",
+      "cuisines": "Empanadas",
+      "rating": 3.8,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p038",
+    "dish_name": "Empanada de humita",
+    "description": "Choclo y queso.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "choclo",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1600,
+    "popularity": 86,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Núñez",
+      "cuisines": "Empanadas",
+      "rating": 4.5,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p039",
+    "dish_name": "Empanada de jamón y queso",
+    "description": "",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "jamon",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1650,
+    "popularity": 93,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Boedo",
+      "cuisines": "Empanadas",
+      "rating": 4.1,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p040",
+    "dish_name": "Wok de pollo y vegetales",
+    "description": "Salteado con soja.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "pollo",
+      "soja",
+      "zanahoria",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok"
+    ],
+    "not_contains": [],
+    "price_ars": 7200,
+    "popularity": 60,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "San Telmo",
+      "cuisines": "Wok",
+      "rating": 3.8,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p041",
+    "dish_name": "Wok veggie",
+    "description": "Tofu, vegetales y arroz.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "tofu",
+      "arroz",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7360,
+    "popularity": 67,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Microcentro",
+      "cuisines": "Wok",
+      "rating": 4.5,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p042",
+    "dish_name": "Combo familiar pizza + gaseosa",
+    "description": "Para 3 o 4 personas.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "gaseosa"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 16920,
+    "popularity": 74,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Balvanera",
+      "cuisines": "Argentina",
+      "rating": 4.1,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p043",
+    "dish_name": "Parrilla para compartir",
+    "description": "Variados cortes y guarniciones.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "carne",
+      "chorizo",
+      "morcilla"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 17280,
+    "popularity": 81,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Devoto",
+      "cuisines": "Argentina",
+      "rating": 4.8,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p044",
+    "dish_name": "Ravioles de ricota",
+    "description": "Ravioles caseros con salsa de tomate y albahaca.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "ricota",
+      "tomate",
+      "albahaca",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6860,
+    "popularity": 88,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Saavedra",
+      "cuisines": "Italiana",
+      "rating": 4.4,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p045",
+    "dish_name": "Ñoquis con filetto",
+    "description": "Ñoquis de papa con salsa de tomate suave.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "papa",
+      "harina",
+      "tomate",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7000,
+    "popularity": 95,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Palermo",
+      "cuisines": "Italiana",
+      "rating": 4.0,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p046",
+    "dish_name": "Lasaña de vegetales",
+    "description": "Capas de pasta con berenjena, zucchini y tomate.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "berenjena",
+      "zucchini",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 7140,
+    "popularity": 62,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Belgrano",
+      "cuisines": "Italiana",
+      "rating": 4.7,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p047",
+    "dish_name": "Tagliatelle al pesto",
+    "description": "Pasta con salsa de albahaca y parmesano.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "albahaca",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7280,
+    "popularity": 69,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Colegiales",
+      "cuisines": "Italiana",
+      "rating": 4.3,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p048",
+    "dish_name": "Sorrentinos jamón y queso",
+    "description": "Pasta rellena con salsa de crema.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "jamon",
+      "queso",
+      "crema"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "creamy"
+    ],
+    "not_contains": [],
+    "price_ars": 7420,
+    "popularity": 76,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Recoleta",
+      "cuisines": "Italiana",
+      "rating": 4.0,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p049",
+    "dish_name": "Pizza muzzarella",
+    "description": "Clásica muzza con tomate y orégano.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "oregano"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9720,
+    "popularity": 83,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Chacarita",
+      "cuisines": "Pizzería",
+      "rating": 4.6,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p050",
+    "dish_name": "Pizza napolitana",
+    "description": "Con tomate en rodajas y ajo.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "ajo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 8100,
+    "popularity": 90,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Pizzería",
+      "rating": 4.3,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p051",
+    "dish_name": "Fugazzeta",
+    "description": "Rellena de queso y cebolla.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "mozzarella",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 8280,
+    "popularity": 97,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Almagro",
+      "cuisines": "Pizzería",
+      "rating": 3.9,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p052",
+    "dish_name": "Entraña a la parrilla",
+    "description": "Corte jugoso con chimichurri.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "chimichurri",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 11280,
+    "popularity": 64,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Caballito",
+      "cuisines": "Parrilla",
+      "rating": 4.6,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p053",
+    "dish_name": "Asado de tira",
+    "description": "Clásico corte argentino.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 11520,
+    "popularity": 71,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Núñez",
+      "cuisines": "Parrilla",
+      "rating": 4.2,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p054",
+    "dish_name": "Provoleta",
+    "description": "Queso a la parrilla con orégano.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "queso"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 11760,
+    "popularity": 78,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Boedo",
+      "cuisines": "Parrilla",
+      "rating": 3.9,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p055",
+    "dish_name": "Ensalada caprese",
+    "description": "Tomate, mozzarella y albahaca.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "tomate",
+      "mozzarella",
+      "albahaca"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6500,
+    "popularity": 85,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "San Telmo",
+      "cuisines": "Ensaladas",
+      "rating": 4.5,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p056",
+    "dish_name": "Ensalada caesar",
+    "description": "Lechuga, pollo grillado y croutons.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "lechuga",
+      "pollo",
+      "croutons",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 6630,
+    "popularity": 92,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Microcentro",
+      "cuisines": "Ensaladas",
+      "rating": 4.2,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p057",
+    "dish_name": "Ensalada quinoa veggie",
+    "description": "Quinoa, palta, tomate, pepino.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "quinoa",
+      "palta",
+      "tomate",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6760,
+    "popularity": 99,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Balvanera",
+      "cuisines": "Ensaladas",
+      "rating": 3.8,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p058",
+    "dish_name": "Burger clásica",
+    "description": "Medallón de carne, queso y lechuga.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "carne",
+      "queso",
+      "pan"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9010,
+    "popularity": 66,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Devoto",
+      "cuisines": "Hamburguesas",
+      "rating": 4.5,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p059",
+    "dish_name": "Burger veggie",
+    "description": "Medallón de garbanzo, palta y tomate.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "garbanzo",
+      "pan",
+      "palta",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9180,
+    "popularity": 73,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Saavedra",
+      "cuisines": "Hamburguesas",
+      "rating": 4.1,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p060",
+    "dish_name": "Lomito completo",
+    "description": "Lomo, queso, tomate y huevo.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "queso",
+      "tomate",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 7020,
+    "popularity": 80,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Palermo",
+      "cuisines": "Sandwiches",
+      "rating": 3.8,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p061",
+    "dish_name": "Sándwich de milanesa",
+    "description": "Milanesa, lechuga y tomate.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "huevo",
+      "harina",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 7176,
+    "popularity": 87,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Belgrano",
+      "cuisines": "Sandwiches",
+      "rating": 4.5,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p062",
+    "dish_name": "Falafel con hummus",
+    "description": "Croquetas de garbanzo y pasta de sésamo.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "garbanzo",
+      "sesamo",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 7050,
+    "popularity": 94,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Colegiales",
+      "cuisines": "Árabe",
+      "rating": 4.1,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p063",
+    "dish_name": "Shawarma de pollo",
+    "description": "Pollo especiado con verduras.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "pollo",
+      "especias",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 7200,
+    "popularity": 61,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Recoleta",
+      "cuisines": "Árabe",
+      "rating": 4.8,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p064",
+    "dish_name": "Tabule",
+    "description": "Ensalada de trigo burgol y perejil.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "trigo",
+      "perejil",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7350,
+    "popularity": 68,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Chacarita",
+      "cuisines": "Árabe",
+      "rating": 4.4,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p065",
+    "dish_name": "Roll salmón palta",
+    "description": "Salmón, palta, arroz.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "salmon",
+      "palta",
+      "arroz"
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 11000,
+    "popularity": 75,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Sushi",
+      "rating": 4.0,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p066",
+    "dish_name": "California roll",
+    "description": "Cangrejo, palta, pepino.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "surimi",
+      "palta",
+      "pepino",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 11220,
+    "popularity": 82,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Almagro",
+      "cuisines": "Sushi",
+      "rating": 4.7,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p067",
+    "dish_name": "Nigiri surtido",
+    "description": "Selección de pescados.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "pescado",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 11440,
+    "popularity": 89,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Caballito",
+      "cuisines": "Sushi",
+      "rating": 4.3,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p068",
+    "dish_name": "Milanesa con papas",
+    "description": "Clásica de carne con fritas.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "papas"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9540,
+    "popularity": 96,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Núñez",
+      "cuisines": "Argentina",
+      "rating": 4.0,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p069",
+    "dish_name": "Milanesa napolitana",
+    "description": "Con salsa de tomate y queso.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 9720,
+    "popularity": 63,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Boedo",
+      "cuisines": "Argentina",
+      "rating": 4.6,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p070",
+    "dish_name": "Tacos al pastor",
+    "description": "Cerdo marinado con ananá.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "cerdo",
+      "tortilla",
+      "anana"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "spicy"
+    ],
+    "not_contains": [],
+    "price_ars": 7200,
+    "popularity": 70,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "San Telmo",
+      "cuisines": "Mexicana",
+      "rating": 4.3,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p071",
+    "dish_name": "Tacos veggie",
+    "description": "Mix de vegetales, palta.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "tortilla",
+      "palta",
+      "tomate",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 7360,
+    "popularity": 77,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Microcentro",
+      "cuisines": "Mexicana",
+      "rating": 3.9,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p072",
+    "dish_name": "Sopa de calabaza",
+    "description": "Crema suave de zapallo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "calabaza",
+      "crema"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 5640,
+    "popularity": 84,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Balvanera",
+      "cuisines": "Sopas",
+      "rating": 4.6,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p073",
+    "dish_name": "Caldo de pollo",
+    "description": "Ligero con fideos finos.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "pollo",
+      "fideos"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 5760,
+    "popularity": 91,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Devoto",
+      "cuisines": "Sopas",
+      "rating": 4.2,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p074",
+    "dish_name": "Ramen miso",
+    "description": "Caldo con fideos, miso y huevo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "fideos",
+      "miso",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup"
+    ],
+    "not_contains": [],
+    "price_ars": 5880,
+    "popularity": 98,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Saavedra",
+      "cuisines": "Sopas",
+      "rating": 3.9,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p075",
+    "dish_name": "Flan casero",
+    "description": "Con dulce de leche y crema.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "huevo",
+      "leche",
+      "azucar"
+    ],
+    "allergens": [
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 5000,
+    "popularity": 65,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Palermo",
+      "cuisines": "Postres",
+      "rating": 4.5,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p076",
+    "dish_name": "Helado 1/4 kg",
+    "description": "Sabores clásicos.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "leche"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 5100,
+    "popularity": 72,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Belgrano",
+      "cuisines": "Postres",
+      "rating": 4.2,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p077",
+    "dish_name": "Tiramisú",
+    "description": "Clásico italiano.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "mascarpone",
+      "cafe",
+      "huevo"
+    ],
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 5200,
+    "popularity": 79,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Colegiales",
+      "cuisines": "Postres",
+      "rating": 3.8,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p078",
+    "dish_name": "Poke salmón",
+    "description": "Arroz, salmón, pepino, sésamo.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "salmon",
+      "pepino",
+      "sesamo"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 9010,
+    "popularity": 86,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Recoleta",
+      "cuisines": "Bowls",
+      "rating": 4.5,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p079",
+    "dish_name": "Buddha bowl veggie",
+    "description": "Arroz integral, garbanzo, verduras.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "garbanzo",
+      "zanahoria",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 9180,
+    "popularity": 93,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Chacarita",
+      "cuisines": "Bowls",
+      "rating": 4.1,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p080",
+    "dish_name": "Empanada de carne",
+    "description": "Clásica jugosa.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "carne",
+      "harina",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1200,
+    "popularity": 60,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Empanadas",
+      "rating": 3.8,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p081",
+    "dish_name": "Empanada de humita",
+    "description": "Choclo y queso.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "choclo",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1250,
+    "popularity": 67,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Almagro",
+      "cuisines": "Empanadas",
+      "rating": 4.5,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p082",
+    "dish_name": "Empanada de jamón y queso",
+    "description": "",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "jamon",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1300,
+    "popularity": 74,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Caballito",
+      "cuisines": "Empanadas",
+      "rating": 4.1,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p083",
+    "dish_name": "Wok de pollo y vegetales",
+    "description": "Salteado con soja.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "pollo",
+      "soja",
+      "zanahoria",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok"
+    ],
+    "not_contains": [],
+    "price_ars": 7680,
+    "popularity": 81,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Núñez",
+      "cuisines": "Wok",
+      "rating": 4.8,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p084",
+    "dish_name": "Wok veggie",
+    "description": "Tofu, vegetales y arroz.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "tofu",
+      "arroz",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7840,
+    "popularity": 88,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Boedo",
+      "cuisines": "Wok",
+      "rating": 4.4,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p085",
+    "dish_name": "Combo familiar pizza + gaseosa",
+    "description": "Para 3 o 4 personas.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "gaseosa"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 18000,
+    "popularity": 95,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "San Telmo",
+      "cuisines": "Argentina",
+      "rating": 4.0,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p086",
+    "dish_name": "Parrilla para compartir",
+    "description": "Variados cortes y guarniciones.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "carne",
+      "chorizo",
+      "morcilla"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 18360,
+    "popularity": 62,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Microcentro",
+      "cuisines": "Argentina",
+      "rating": 4.7,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p087",
+    "dish_name": "Ravioles de ricota",
+    "description": "Ravioles caseros con salsa de tomate y albahaca.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "ricota",
+      "tomate",
+      "albahaca",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7280,
+    "popularity": 69,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Balvanera",
+      "cuisines": "Italiana",
+      "rating": 4.3,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p088",
+    "dish_name": "Ñoquis con filetto",
+    "description": "Ñoquis de papa con salsa de tomate suave.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "papa",
+      "harina",
+      "tomate",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7420,
+    "popularity": 76,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Devoto",
+      "cuisines": "Italiana",
+      "rating": 4.0,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p089",
+    "dish_name": "Lasaña de vegetales",
+    "description": "Capas de pasta con berenjena, zucchini y tomate.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "berenjena",
+      "zucchini",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 7560,
+    "popularity": 83,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Saavedra",
+      "cuisines": "Italiana",
+      "rating": 4.6,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p090",
+    "dish_name": "Tagliatelle al pesto",
+    "description": "Pasta con salsa de albahaca y parmesano.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "albahaca",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6300,
+    "popularity": 90,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Palermo",
+      "cuisines": "Italiana",
+      "rating": 4.3,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p091",
+    "dish_name": "Sorrentinos jamón y queso",
+    "description": "Pasta rellena con salsa de crema.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "jamon",
+      "queso",
+      "crema"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "creamy"
+    ],
+    "not_contains": [],
+    "price_ars": 6440,
+    "popularity": 97,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Belgrano",
+      "cuisines": "Italiana",
+      "rating": 3.9,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p092",
+    "dish_name": "Pizza muzzarella",
+    "description": "Clásica muzza con tomate y orégano.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "oregano"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 8460,
+    "popularity": 64,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Colegiales",
+      "cuisines": "Pizzería",
+      "rating": 4.6,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p093",
+    "dish_name": "Pizza napolitana",
+    "description": "Con tomate en rodajas y ajo.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "ajo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 8640,
+    "popularity": 71,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Recoleta",
+      "cuisines": "Pizzería",
+      "rating": 4.2,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p094",
+    "dish_name": "Fugazzeta",
+    "description": "Rellena de queso y cebolla.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "mozzarella",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 8820,
+    "popularity": 78,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Chacarita",
+      "cuisines": "Pizzería",
+      "rating": 3.9,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p095",
+    "dish_name": "Entraña a la parrilla",
+    "description": "Corte jugoso con chimichurri.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "chimichurri",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 12000,
+    "popularity": 85,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Parrilla",
+      "rating": 4.5,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p096",
+    "dish_name": "Asado de tira",
+    "description": "Clásico corte argentino.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 12240,
+    "popularity": 92,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Almagro",
+      "cuisines": "Parrilla",
+      "rating": 4.2,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p097",
+    "dish_name": "Provoleta",
+    "description": "Queso a la parrilla con orégano.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "queso"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 12480,
+    "popularity": 99,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Caballito",
+      "cuisines": "Parrilla",
+      "rating": 3.8,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p098",
+    "dish_name": "Ensalada caprese",
+    "description": "Tomate, mozzarella y albahaca.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "tomate",
+      "mozzarella",
+      "albahaca"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6890,
+    "popularity": 66,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Núñez",
+      "cuisines": "Ensaladas",
+      "rating": 4.5,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p099",
+    "dish_name": "Ensalada caesar",
+    "description": "Lechuga, pollo grillado y croutons.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "lechuga",
+      "pollo",
+      "croutons",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 7020,
+    "popularity": 73,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Boedo",
+      "cuisines": "Ensaladas",
+      "rating": 4.1,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p100",
+    "dish_name": "Ensalada quinoa veggie",
+    "description": "Quinoa, palta, tomate, pepino.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "quinoa",
+      "palta",
+      "tomate",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 5850,
+    "popularity": 80,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "San Telmo",
+      "cuisines": "Ensaladas",
+      "rating": 3.8,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p101",
+    "dish_name": "Burger clásica",
+    "description": "Medallón de carne, queso y lechuga.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "carne",
+      "queso",
+      "pan"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 7820,
+    "popularity": 87,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Microcentro",
+      "cuisines": "Hamburguesas",
+      "rating": 4.5,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p102",
+    "dish_name": "Burger veggie",
+    "description": "Medallón de garbanzo, palta y tomate.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "garbanzo",
+      "pan",
+      "palta",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 7990,
+    "popularity": 94,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Balvanera",
+      "cuisines": "Hamburguesas",
+      "rating": 4.1,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p103",
+    "dish_name": "Lomito completo",
+    "description": "Lomo, queso, tomate y huevo.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "queso",
+      "tomate",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 7488,
+    "popularity": 61,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Devoto",
+      "cuisines": "Sandwiches",
+      "rating": 4.8,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p104",
+    "dish_name": "Sándwich de milanesa",
+    "description": "Milanesa, lechuga y tomate.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "huevo",
+      "harina",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 7644,
+    "popularity": 68,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Saavedra",
+      "cuisines": "Sandwiches",
+      "rating": 4.4,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p105",
+    "dish_name": "Falafel con hummus",
+    "description": "Croquetas de garbanzo y pasta de sésamo.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "garbanzo",
+      "sesamo",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 7500,
+    "popularity": 75,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Palermo",
+      "cuisines": "Árabe",
+      "rating": 4.0,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p106",
+    "dish_name": "Shawarma de pollo",
+    "description": "Pollo especiado con verduras.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "pollo",
+      "especias",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 7650,
+    "popularity": 82,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Belgrano",
+      "cuisines": "Árabe",
+      "rating": 4.7,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p107",
+    "dish_name": "Tabule",
+    "description": "Ensalada de trigo burgol y perejil.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "trigo",
+      "perejil",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7800,
+    "popularity": 89,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Colegiales",
+      "cuisines": "Árabe",
+      "rating": 4.3,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p108",
+    "dish_name": "Roll salmón palta",
+    "description": "Salmón, palta, arroz.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "salmon",
+      "palta",
+      "arroz"
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 11660,
+    "popularity": 96,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Recoleta",
+      "cuisines": "Sushi",
+      "rating": 4.0,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p109",
+    "dish_name": "California roll",
+    "description": "Cangrejo, palta, pepino.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "surimi",
+      "palta",
+      "pepino",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 11880,
+    "popularity": 63,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Chacarita",
+      "cuisines": "Sushi",
+      "rating": 4.6,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p110",
+    "dish_name": "Nigiri surtido",
+    "description": "Selección de pescados.",
+    "categories": [
+      "sushi"
+    ],
+    "synonyms": [
+      "sushi",
+      "roll",
+      "nigiri"
+    ],
+    "ingredients": [
+      "pescado",
+      "arroz"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 9900,
+    "popularity": 70,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Sushi",
+      "rating": 4.3,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p111",
+    "dish_name": "Milanesa con papas",
+    "description": "Clásica de carne con fritas.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "papas"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8280,
+    "popularity": 77,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Almagro",
+      "cuisines": "Argentina",
+      "rating": 3.9,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p112",
+    "dish_name": "Milanesa napolitana",
+    "description": "Con salsa de tomate y queso.",
+    "categories": [
+      "milanesa"
+    ],
+    "synonyms": [
+      "milanesa",
+      "napolitana"
+    ],
+    "ingredients": [
+      "carne",
+      "huevo",
+      "harina",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8460,
+    "popularity": 84,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Caballito",
+      "cuisines": "Argentina",
+      "rating": 4.6,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p113",
+    "dish_name": "Tacos al pastor",
+    "description": "Cerdo marinado con ananá.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "cerdo",
+      "tortilla",
+      "anana"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "spicy"
+    ],
+    "not_contains": [],
+    "price_ars": 7680,
+    "popularity": 91,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Núñez",
+      "cuisines": "Mexicana",
+      "rating": 4.2,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p114",
+    "dish_name": "Tacos veggie",
+    "description": "Mix de vegetales, palta.",
+    "categories": [
+      "tacos"
+    ],
+    "synonyms": [
+      "tacos",
+      "mexicano"
+    ],
+    "ingredients": [
+      "tortilla",
+      "palta",
+      "tomate",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 7840,
+    "popularity": 98,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Boedo",
+      "cuisines": "Mexicana",
+      "rating": 3.9,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p115",
+    "dish_name": "Sopa de calabaza",
+    "description": "Crema suave de zapallo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "calabaza",
+      "crema"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6000,
+    "popularity": 65,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "San Telmo",
+      "cuisines": "Sopas",
+      "rating": 4.5,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p116",
+    "dish_name": "Caldo de pollo",
+    "description": "Ligero con fideos finos.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "pollo",
+      "fideos"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6120,
+    "popularity": 72,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Microcentro",
+      "cuisines": "Sopas",
+      "rating": 4.2,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p117",
+    "dish_name": "Ramen miso",
+    "description": "Caldo con fideos, miso y huevo.",
+    "categories": [
+      "sopas"
+    ],
+    "synonyms": [
+      "sopa",
+      "caldo",
+      "ramen"
+    ],
+    "ingredients": [
+      "fideos",
+      "miso",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "soup"
+    ],
+    "not_contains": [],
+    "price_ars": 6240,
+    "popularity": 79,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Balvanera",
+      "cuisines": "Sopas",
+      "rating": 3.8,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p118",
+    "dish_name": "Flan casero",
+    "description": "Con dulce de leche y crema.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "huevo",
+      "leche",
+      "azucar"
+    ],
+    "allergens": [
+      "egg",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 5300,
+    "popularity": 86,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Devoto",
+      "cuisines": "Postres",
+      "rating": 4.5,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p119",
+    "dish_name": "Helado 1/4 kg",
+    "description": "Sabores clásicos.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "leche"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 5400,
+    "popularity": 93,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Saavedra",
+      "cuisines": "Postres",
+      "rating": 4.1,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p120",
+    "dish_name": "Tiramisú",
+    "description": "Clásico italiano.",
+    "categories": [
+      "postres"
+    ],
+    "synonyms": [
+      "postre",
+      "dulce"
+    ],
+    "ingredients": [
+      "mascarpone",
+      "cafe",
+      "huevo"
+    ],
+    "allergens": [
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 4500,
+    "popularity": 60,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Palermo",
+      "cuisines": "Postres",
+      "rating": 3.8,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "postre",
+      "merienda"
+    ]
+  },
+  {
+    "id": "p121",
+    "dish_name": "Poke salmón",
+    "description": "Arroz, salmón, pepino, sésamo.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "salmon",
+      "pepino",
+      "sesamo"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7820,
+    "popularity": 67,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Belgrano",
+      "cuisines": "Bowls",
+      "rating": 4.5,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p122",
+    "dish_name": "Buddha bowl veggie",
+    "description": "Arroz integral, garbanzo, verduras.",
+    "categories": [
+      "bowls"
+    ],
+    "synonyms": [
+      "bowl",
+      "poke"
+    ],
+    "ingredients": [
+      "arroz",
+      "garbanzo",
+      "zanahoria",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 7990,
+    "popularity": 74,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Colegiales",
+      "cuisines": "Bowls",
+      "rating": 4.1,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p123",
+    "dish_name": "Empanada de carne",
+    "description": "Clásica jugosa.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "carne",
+      "harina",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1350,
+    "popularity": 81,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Recoleta",
+      "cuisines": "Empanadas",
+      "rating": 4.8,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p124",
+    "dish_name": "Empanada de humita",
+    "description": "Choclo y queso.",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "choclo",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1400,
+    "popularity": 88,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Chacarita",
+      "cuisines": "Empanadas",
+      "rating": 4.4,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p125",
+    "dish_name": "Empanada de jamón y queso",
+    "description": "",
+    "categories": [
+      "empanadas"
+    ],
+    "synonyms": [
+      "empanadas"
+    ],
+    "ingredients": [
+      "jamon",
+      "queso",
+      "harina"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 1450,
+    "popularity": 95,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Empanadas",
+      "rating": 4.0,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p126",
+    "dish_name": "Wok de pollo y vegetales",
+    "description": "Salteado con soja.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "pollo",
+      "soja",
+      "zanahoria",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok"
+    ],
+    "not_contains": [],
+    "price_ars": 8160,
+    "popularity": 62,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Almagro",
+      "cuisines": "Wok",
+      "rating": 4.7,
+      "eta_min": 19
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p127",
+    "dish_name": "Wok veggie",
+    "description": "Tofu, vegetales y arroz.",
+    "categories": [
+      "wok"
+    ],
+    "synonyms": [
+      "wok",
+      "salteado"
+    ],
+    "ingredients": [
+      "tofu",
+      "arroz",
+      "brocoli"
+    ],
+    "allergens": [
+      "soy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "wok",
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 8320,
+    "popularity": 69,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Caballito",
+      "cuisines": "Wok",
+      "rating": 4.3,
+      "eta_min": 20
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p128",
+    "dish_name": "Combo familiar pizza + gaseosa",
+    "description": "Para 3 o 4 personas.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "gaseosa"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 19080,
+    "popularity": 76,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Núñez",
+      "cuisines": "Argentina",
+      "rating": 4.0,
+      "eta_min": 21
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p129",
+    "dish_name": "Parrilla para compartir",
+    "description": "Variados cortes y guarniciones.",
+    "categories": [
+      "combos"
+    ],
+    "synonyms": [
+      "combo",
+      "para compartir"
+    ],
+    "ingredients": [
+      "carne",
+      "chorizo",
+      "morcilla"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large",
+      "combos",
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 19440,
+    "popularity": 83,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "Boedo",
+      "cuisines": "Argentina",
+      "rating": 4.6,
+      "eta_min": 22
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p130",
+    "dish_name": "Ravioles de ricota",
+    "description": "Ravioles caseros con salsa de tomate y albahaca.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "ricota",
+      "tomate",
+      "albahaca",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6300,
+    "popularity": 90,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "San Telmo",
+      "cuisines": "Italiana",
+      "rating": 4.3,
+      "eta_min": 23
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p131",
+    "dish_name": "Ñoquis con filetto",
+    "description": "Ñoquis de papa con salsa de tomate suave.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "papa",
+      "harina",
+      "tomate",
+      "queso rallado"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6440,
+    "popularity": 97,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Microcentro",
+      "cuisines": "Italiana",
+      "rating": 3.9,
+      "eta_min": 24
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p132",
+    "dish_name": "Lasaña de vegetales",
+    "description": "Capas de pasta con berenjena, zucchini y tomate.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "berenjena",
+      "zucchini",
+      "tomate",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 6580,
+    "popularity": 64,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Balvanera",
+      "cuisines": "Italiana",
+      "rating": 4.6,
+      "eta_min": 25
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p133",
+    "dish_name": "Tagliatelle al pesto",
+    "description": "Pasta con salsa de albahaca y parmesano.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "albahaca",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6720,
+    "popularity": 71,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Devoto",
+      "cuisines": "Italiana",
+      "rating": 4.2,
+      "eta_min": 26
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p134",
+    "dish_name": "Sorrentinos jamón y queso",
+    "description": "Pasta rellena con salsa de crema.",
+    "categories": [
+      "pasta"
+    ],
+    "synonyms": [
+      "pasta",
+      "fideos",
+      "ravioles",
+      "noquis",
+      "lasana",
+      "tallarines"
+    ],
+    "ingredients": [
+      "pasta de trigo",
+      "jamon",
+      "queso",
+      "crema"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "creamy"
+    ],
+    "not_contains": [],
+    "price_ars": 6860,
+    "popularity": 78,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Saavedra",
+      "cuisines": "Italiana",
+      "rating": 3.9,
+      "eta_min": 27
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p135",
+    "dish_name": "Pizza muzzarella",
+    "description": "Clásica muzza con tomate y orégano.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "oregano"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9000,
+    "popularity": 85,
+    "restaurant": {
+      "name": "Green Bowl",
+      "neighborhood": "Palermo",
+      "cuisines": "Pizzería",
+      "rating": 4.5,
+      "eta_min": 28
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p136",
+    "dish_name": "Pizza napolitana",
+    "description": "Con tomate en rodajas y ajo.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "tomate",
+      "mozzarella",
+      "ajo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9180,
+    "popularity": 92,
+    "restaurant": {
+      "name": "Sushi Mirai",
+      "neighborhood": "Belgrano",
+      "cuisines": "Pizzería",
+      "rating": 4.2,
+      "eta_min": 29
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p137",
+    "dish_name": "Fugazzeta",
+    "description": "Rellena de queso y cebolla.",
+    "categories": [
+      "pizza"
+    ],
+    "synonyms": [
+      "pizza",
+      "muzzarella",
+      "napolitana",
+      "fugazzeta"
+    ],
+    "ingredients": [
+      "harina",
+      "mozzarella",
+      "cebolla"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large",
+      "baked"
+    ],
+    "not_contains": [],
+    "price_ars": 9360,
+    "popularity": 99,
+    "restaurant": {
+      "name": "Tacos DF",
+      "neighborhood": "Colegiales",
+      "cuisines": "Pizzería",
+      "rating": 3.8,
+      "eta_min": 30
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p138",
+    "dish_name": "Entraña a la parrilla",
+    "description": "Corte jugoso con chimichurri.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "chimichurri",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 12720,
+    "popularity": 66,
+    "restaurant": {
+      "name": "La Empanadería",
+      "neighborhood": "Recoleta",
+      "cuisines": "Parrilla",
+      "rating": 4.5,
+      "eta_min": 31
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p139",
+    "dish_name": "Asado de tira",
+    "description": "Clásico corte argentino.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "carne",
+      "sal"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": false
+    },
+    "health_tags": [
+      "grilled",
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 12960,
+    "popularity": 73,
+    "restaurant": {
+      "name": "Wok Street",
+      "neighborhood": "Chacarita",
+      "cuisines": "Parrilla",
+      "rating": 4.1,
+      "eta_min": 32
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p140",
+    "dish_name": "Provoleta",
+    "description": "Queso a la parrilla con orégano.",
+    "categories": [
+      "parrilla"
+    ],
+    "synonyms": [
+      "parrilla",
+      "asado",
+      "carne",
+      "grillado"
+    ],
+    "ingredients": [
+      "queso"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 10800,
+    "popularity": 80,
+    "restaurant": {
+      "name": "Arabian House",
+      "neighborhood": "Villa Crespo",
+      "cuisines": "Parrilla",
+      "rating": 3.8,
+      "eta_min": 33
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p141",
+    "dish_name": "Ensalada caprese",
+    "description": "Tomate, mozzarella y albahaca.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "tomate",
+      "mozzarella",
+      "albahaca"
+    ],
+    "allergens": [
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": false,
+      "keto": true,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 5980,
+    "popularity": 87,
+    "restaurant": {
+      "name": "Sandwich Club",
+      "neighborhood": "Almagro",
+      "cuisines": "Ensaladas",
+      "rating": 4.5,
+      "eta_min": 34
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p142",
+    "dish_name": "Ensalada caesar",
+    "description": "Lechuga, pollo grillado y croutons.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "lechuga",
+      "pollo",
+      "croutons",
+      "queso"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 6110,
+    "popularity": 94,
+    "restaurant": {
+      "name": "Postres Tina",
+      "neighborhood": "Caballito",
+      "cuisines": "Ensaladas",
+      "rating": 4.1,
+      "eta_min": 35
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p143",
+    "dish_name": "Ensalada quinoa veggie",
+    "description": "Quinoa, palta, tomate, pepino.",
+    "categories": [
+      "ensalada"
+    ],
+    "synonyms": [
+      "ensalada",
+      "salad",
+      "liviano"
+    ],
+    "ingredients": [
+      "quinoa",
+      "palta",
+      "tomate",
+      "pepino"
+    ],
+    "allergens": [],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": true,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry",
+      "low_sodium"
+    ],
+    "not_contains": [],
+    "price_ars": 6240,
+    "popularity": 61,
+    "restaurant": {
+      "name": "Sopas del Sur",
+      "neighborhood": "Núñez",
+      "cuisines": "Ensaladas",
+      "rating": 4.8,
+      "eta_min": 36
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p144",
+    "dish_name": "Burger clásica",
+    "description": "Medallón de carne, queso y lechuga.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "carne",
+      "queso",
+      "pan"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8330,
+    "popularity": 68,
+    "restaurant": {
+      "name": "Parrilla Don Julio",
+      "neighborhood": "Boedo",
+      "cuisines": "Hamburguesas",
+      "rating": 4.4,
+      "eta_min": 37
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p145",
+    "dish_name": "Burger veggie",
+    "description": "Medallón de garbanzo, palta y tomate.",
+    "categories": [
+      "burger"
+    ],
+    "synonyms": [
+      "hamburguesa",
+      "burger"
+    ],
+    "ingredients": [
+      "garbanzo",
+      "pan",
+      "palta",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "portion_large"
+    ],
+    "not_contains": [],
+    "price_ars": 8500,
+    "popularity": 75,
+    "restaurant": {
+      "name": "Rincón Porteño",
+      "neighborhood": "San Telmo",
+      "cuisines": "Hamburguesas",
+      "rating": 4.0,
+      "eta_min": 38
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p146",
+    "dish_name": "Lomito completo",
+    "description": "Lomo, queso, tomate y huevo.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "queso",
+      "tomate",
+      "huevo"
+    ],
+    "allergens": [
+      "gluten",
+      "dairy",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [],
+    "not_contains": [],
+    "price_ars": 7956,
+    "popularity": 82,
+    "restaurant": {
+      "name": "La Esquina de Palermo",
+      "neighborhood": "Microcentro",
+      "cuisines": "Sandwiches",
+      "rating": 4.7,
+      "eta_min": 39
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p147",
+    "dish_name": "Sándwich de milanesa",
+    "description": "Milanesa, lechuga y tomate.",
+    "categories": [
+      "sandwich"
+    ],
+    "synonyms": [
+      "sandwich",
+      "lomito"
+    ],
+    "ingredients": [
+      "carne",
+      "pan",
+      "huevo",
+      "harina",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": false
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 8112,
+    "popularity": 89,
+    "restaurant": {
+      "name": "Pastas Nonna",
+      "neighborhood": "Balvanera",
+      "cuisines": "Sandwiches",
+      "rating": 4.3,
+      "eta_min": 40
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "merienda",
+      "cena"
+    ]
+  },
+  {
+    "id": "p148",
+    "dish_name": "Falafel con hummus",
+    "description": "Croquetas de garbanzo y pasta de sésamo.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "garbanzo",
+      "sesamo",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "fried"
+    ],
+    "not_contains": [],
+    "price_ars": 7950,
+    "popularity": 96,
+    "restaurant": {
+      "name": "Il Bel Piato",
+      "neighborhood": "Devoto",
+      "cuisines": "Árabe",
+      "rating": 4.0,
+      "eta_min": 41
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p149",
+    "dish_name": "Shawarma de pollo",
+    "description": "Pollo especiado con verduras.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "pollo",
+      "especias",
+      "pan pita"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": false,
+      "vegan": false,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "grilled"
+    ],
+    "not_contains": [],
+    "price_ars": 8100,
+    "popularity": 63,
+    "restaurant": {
+      "name": "Pizza al Paso",
+      "neighborhood": "Saavedra",
+      "cuisines": "Árabe",
+      "rating": 4.6,
+      "eta_min": 42
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  },
+  {
+    "id": "p150",
+    "dish_name": "Tabule",
+    "description": "Ensalada de trigo burgol y perejil.",
+    "categories": [
+      "arabe"
+    ],
+    "synonyms": [],
+    "ingredients": [
+      "trigo",
+      "perejil",
+      "tomate"
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "diet_flags": {
+      "veg": true,
+      "vegan": true,
+      "keto": false,
+      "gluten_free": false,
+      "halal": true
+    },
+    "health_tags": [
+      "no_fry"
+    ],
+    "not_contains": [],
+    "price_ars": 6750,
+    "popularity": 70,
+    "restaurant": {
+      "name": "Burgers Napo",
+      "neighborhood": "Palermo",
+      "cuisines": "Árabe",
+      "rating": 4.3,
+      "eta_min": 18
+    },
+    "available": true,
+    "meal_moments": [
+      "almuerzo",
+      "cena"
+    ]
+  }
+];

@@ -1,0 +1,45 @@
+{
+  "veg": {
+    "synonyms": [
+      "vegetarian",
+      "vegetariana",
+      "vegetarianas",
+      "vegetariano",
+      "vegetarianos",
+      "veggie",
+      "veggies"
+    ]
+  },
+  "vegan": {
+    "synonyms": [
+      "vegan",
+      "vegana",
+      "veganas",
+      "vegano",
+      "veganos"
+    ]
+  },
+  "keto": {
+    "synonyms": [
+      "keto",
+      "cetogenica"
+    ]
+  },
+  "gluten_free": {
+    "synonyms": [
+      "apto celiaco",
+      "apto celiacos",
+      "apto celíaco",
+      "celiaco",
+      "celiacos",
+      "celíacos",
+      "gluten free",
+      "sin gluten"
+    ]
+  },
+  "halal": {
+    "synonyms": [
+      "halal"
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "parrilla": [
+    "parrilla",
+    "asado",
+    "vacio",
+    "entrana",
+    "matambre",
+    "costillas"
+  ],
+  "pasta": [
+    "pasta",
+    "fideos",
+    "tallarines",
+    "ravioles",
+    "noquis",
+    "lasana"
+  ],
+  "ensalada": [
+    "ensalada",
+    "salad"
+  ],
+  "wok": [
+    "wok",
+    "salteado"
+  ],
+  "pizza": [
+    "pizza",
+    "muzza",
+    "napolitana"
+  ],
+  "burger": [
+    "hamburguesa",
+    "burger"
+  ],
+  "sandwich": [
+    "sandwich",
+    "sandiwch",
+    "sanguches",
+    "lomito"
+  ],
+  "arabe": [
+    "arabe",
+    "shawarma",
+    "falafel",
+    "hummus",
+    "kebab",
+    "tabule"
+  ],
+  "sushi": [
+    "sushi",
+    "roll",
+    "nigiri"
+  ],
+  "milanesa": [
+    "milanesa",
+    "mila"
+  ],
+  "tacos": [
+    "taco",
+    "tacos",
+    "burrito"
+  ],
+  "sopas": [
+    "sopa",
+    "sopas",
+    "caldo",
+    "ramen"
+  ],
+  "postres": [
+    "postre",
+    "helado",
+    "flan",
+    "tiramisu",
+    "cheesecake"
+  ],
+  "bowls": [
+    "bowl",
+    "poke",
+    "buddha"
+  ],
+  "empanadas": [
+    "empanada",
+    "empanadas"
+  ],
+  "combos": [
+    "combo",
+    "para compartir",
+    "menu para dos"
+  ]
+}

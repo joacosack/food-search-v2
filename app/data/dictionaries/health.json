@@ -1,0 +1,48 @@
+{
+  "tags": {
+    "no_fry": [
+      "sin fritura",
+      "no frito",
+      "liviano",
+      "saludable",
+      "saludables"
+    ],
+    "grilled": [
+      "grillado",
+      "a la parrilla"
+    ],
+    "baked": [
+      "al horno"
+    ],
+    "low_sodium": [
+      "poco sodio",
+      "bajo en sodio",
+      "poca sal",
+      "sin sal",
+      "baja en sal"
+    ],
+    "spicy": [
+      "picante"
+    ],
+    "creamy": [
+      "cremoso",
+      "con crema"
+    ],
+    "very_greasy": [
+      "muy grasoso",
+      "grasoso"
+    ],
+    "portion_large": [
+      "porcion grande",
+      "abundante",
+      "para compartir"
+    ],
+    "soup": [
+      "sopa",
+      "caldo"
+    ],
+    "rice": [
+      "arroz"
+    ]
+  }
+}

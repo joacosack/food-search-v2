@@ -1,0 +1,52 @@
+{
+  "gluten": {
+    "synonyms": [
+      "gluten",
+      "trigo"
+    ]
+  },
+  "dairy": {
+    "synonyms": [
+      "lacteos",
+      "leche",
+      "queso",
+      "manteca",
+      "mantequilla"
+    ]
+  },
+  "egg": {
+    "synonyms": [
+      "huevo",
+      "huevos"
+    ]
+  },
+  "soy": {
+    "synonyms": [
+      "soja",
+      "soya"
+    ]
+  },
+  "peanut": {
+    "synonyms": [
+      "mani",
+      "cacahuate",
+      "peanut"
+    ]
+  },
+  "tree_nut": {
+    "synonyms": [
+      "nuez",
+      "nueces",
+      "almendra",
+      "avellana"
+    ]
+  },
+  "shellfish": {
+    "synonyms": [
+      "camaron",
+      "langostino",
+      "camarones",
+      "mariscos"
+    ]
+  }
+}

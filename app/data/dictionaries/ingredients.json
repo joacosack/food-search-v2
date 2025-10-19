@@ -1,0 +1,432 @@
+{
+  "tomate": {
+    "synonyms": [
+      "salsa de tomate",
+      "tomate",
+      "tomates"
+    ]
+  },
+  "espinaca": {
+    "synonyms": [
+      "espinaca",
+      "acelga"
+    ]
+  },
+  "queso": {
+    "synonyms": [
+      "cheddar",
+      "mozzarella",
+      "queso",
+      "queso rallado",
+      "quesos"
+    ]
+  },
+  "pollo": {
+    "synonyms": [
+      "chicken",
+      "pollo",
+      "pollos"
+    ]
+  },
+  "carne": {
+    "synonyms": [
+      "asado",
+      "bife",
+      "carne",
+      "carnes",
+      "vacuna"
+    ]
+  },
+  "cerdo": {
+    "synonyms": [
+      "cerdo",
+      "cerdos",
+      "puerco"
+    ]
+  },
+  "pescado": {
+    "synonyms": [
+      "atun",
+      "merluza",
+      "pescado",
+      "pescados",
+      "salmon"
+    ]
+  },
+  "camaron": {
+    "synonyms": [
+      "camaron",
+      "langostino",
+      "gamba"
+    ]
+  },
+  "cebolla": {
+    "synonyms": [
+      "cebolla",
+      "cebollas"
+    ]
+  },
+  "huevo": {
+    "synonyms": [
+      "huevo",
+      "huevos"
+    ]
+  },
+  "nueces": {
+    "synonyms": [
+      "nuez",
+      "nueces",
+      "walnut"
+    ]
+  },
+  "mani": {
+    "synonyms": [
+      "mani",
+      "cacahuate",
+      "peanut"
+    ]
+  },
+  "gluten": {
+    "synonyms": [
+      "gluten",
+      "trigo",
+      "harina de trigo"
+    ]
+  },
+  "lacteos": {
+    "synonyms": [
+      "lacteo",
+      "lacteos",
+      "leche",
+      "crema"
+    ]
+  },
+  "soja": {
+    "synonyms": [
+      "soja",
+      "sojas",
+      "soya"
+    ]
+  },
+  "arroz": {
+    "synonyms": [
+      "arroces",
+      "arroz",
+      "rice"
+    ]
+  },
+  "palta": {
+    "synonyms": [
+      "aguacate",
+      "palta",
+      "paltas"
+    ]
+  },
+  "pepino": {
+    "synonyms": [
+      "pepino",
+      "pepinos"
+    ]
+  },
+  "frito": {
+    "synonyms": [
+      "frito",
+      "fried"
+    ]
+  },
+  "cremoso": {
+    "synonyms": [
+      "cremoso",
+      "crema",
+      "creamy"
+    ]
+  },
+  "berenjena": {
+    "synonyms": [
+      "berenjena",
+      "berenjenas"
+    ]
+  },
+  "zucchini": {
+    "synonyms": [
+      "zapallito",
+      "zapallito italiano",
+      "zucchini",
+      "zucchinis"
+    ]
+  },
+  "lechuga": {
+    "synonyms": [
+      "lechuga",
+      "lechugas"
+    ]
+  },
+  "brocoli": {
+    "synonyms": [
+      "brocoli",
+      "brocolis",
+      "brócoli"
+    ]
+  },
+  "zanahoria": {
+    "synonyms": [
+      "zanahoria",
+      "zanahorias"
+    ]
+  },
+  "choclo": {
+    "synonyms": [
+      "choclo",
+      "choclos",
+      "maiz",
+      "maíz"
+    ]
+  },
+  "sesamo": {
+    "synonyms": [
+      "ajonjoli",
+      "sesamo",
+      "sesamos",
+      "sésamo"
+    ]
+  },
+  "perejil": {
+    "synonyms": [
+      "perejil",
+      "perejiles"
+    ]
+  },
+  "quinoa": {
+    "synonyms": [
+      "quinoa",
+      "quinoas",
+      "quinua"
+    ]
+  },
+  "anana": {
+    "synonyms": [
+      "anana",
+      "ananas",
+      "piña"
+    ]
+  },
+  "surimi": {
+    "synonyms": [
+      "kanikama",
+      "surimi",
+      "surimis"
+    ]
+  },
+  "miso": {
+    "synonyms": [
+      "miso",
+      "misos"
+    ]
+  },
+  "tofu": {
+    "synonyms": [
+      "tofu",
+      "tofus"
+    ]
+  },
+  "garbanzo": {
+    "synonyms": [
+      "garbanzo",
+      "garbanzos"
+    ]
+  },
+  "albahaca": {
+    "synonyms": [
+      "albahaca",
+      "albahacas"
+    ]
+  },
+  "pasta de trigo": {
+    "synonyms": [
+      "pasta",
+      "pasta de trigo",
+      "pasta de trigos",
+      "pastas"
+    ]
+  },
+  "ricota": {
+    "synonyms": [
+      "ricota",
+      "ricotas"
+    ]
+  },
+  "queso rallado": {
+    "synonyms": [
+      "queso rallado",
+      "queso rallados"
+    ]
+  },
+  "papa": {
+    "synonyms": [
+      "papa",
+      "papas"
+    ]
+  },
+  "harina": {
+    "synonyms": [
+      "harina",
+      "harinas"
+    ]
+  },
+  "jamon": {
+    "synonyms": [
+      "jamon",
+      "jamones"
+    ]
+  },
+  "crema": {
+    "synonyms": [
+      "crema",
+      "cremas"
+    ]
+  },
+  "mozzarella": {
+    "synonyms": [
+      "mozzarella",
+      "mozzarellas"
+    ]
+  },
+  "oregano": {
+    "synonyms": [
+      "oregano",
+      "oreganos"
+    ]
+  },
+  "ajo": {
+    "synonyms": [
+      "ajo",
+      "ajos"
+    ]
+  },
+  "chimichurri": {
+    "synonyms": [
+      "chimichurri",
+      "chimichurris"
+    ]
+  },
+  "sal": {
+    "synonyms": [
+      "sal",
+      "sales"
+    ]
+  },
+  "croutons": {
+    "synonyms": [
+      "croutons",
+      "croutonses"
+    ]
+  },
+  "pan": {
+    "synonyms": [
+      "pan",
+      "panes"
+    ]
+  },
+  "pan pita": {
+    "synonyms": [
+      "pan pita",
+      "pan pitas"
+    ]
+  },
+  "especias": {
+    "synonyms": [
+      "especias",
+      "especiases"
+    ]
+  },
+  "trigo": {
+    "synonyms": [
+      "trigo",
+      "trigos"
+    ]
+  },
+  "salmon": {
+    "synonyms": [
+      "salmon",
+      "salmones"
+    ]
+  },
+  "papas": {
+    "synonyms": [
+      "papas",
+      "papases"
+    ]
+  },
+  "tortilla": {
+    "synonyms": [
+      "tortilla",
+      "tortillas"
+    ]
+  },
+  "calabaza": {
+    "synonyms": [
+      "calabaza",
+      "calabazas"
+    ]
+  },
+  "fideos": {
+    "synonyms": [
+      "fideos",
+      "fideoses"
+    ]
+  },
+  "leche": {
+    "synonyms": [
+      "leche",
+      "leches"
+    ]
+  },
+  "azucar": {
+    "synonyms": [
+      "azucar",
+      "azucares"
+    ]
+  },
+  "mascarpone": {
+    "synonyms": [
+      "mascarpone",
+      "mascarpones"
+    ]
+  },
+  "cafe": {
+    "synonyms": [
+      "cafe",
+      "cafes"
+    ]
+  },
+  "gaseosa": {
+    "synonyms": [
+      "gaseosa",
+      "gaseosas"
+    ]
+  },
+  "chorizo": {
+    "synonyms": [
+      "chorizo",
+      "chorizos"
+    ]
+  },
+  "morcilla": {
+    "synonyms": [
+      "morcilla",
+      "morcillas"
+    ]
+  },
+  "dulce de leche": {
+    "synonyms": [
+      "dulce de leche",
+      "dulce de leches"
+    ]
+  },
+  "quesito": {
+    "synonyms": [
+      "quesito",
+      "quesitos"
+    ]
+  }
+}

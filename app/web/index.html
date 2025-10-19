@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="food-search-api-base" content="http://127.0.0.1:8000" />
     <title>Buscador gastronómico inteligente</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -15,6 +16,19 @@
         <input id="q" type="text" placeholder="Escribí lo que querés comer..." />
         <button id="btn">Buscar</button>
       </div>
+      <details class="config" open>
+        <summary>Configuración de backend</summary>
+        <p class="config-status">Usando <code id="api-base"></code> como backend.</p>
+        <form id="api-form" class="config-form">
+          <label for="api-input">URL del backend</label>
+          <div class="config-row">
+            <input id="api-input" type="url" placeholder="http://127.0.0.1:8000" autocomplete="off" />
+            <button type="submit">Guardar</button>
+            <button id="api-reset" type="button">Restablecer</button>
+          </div>
+          <p class="hint">También podés usar la URL con <code>?apiBase=https://tu-servidor</code>. Se guarda protocolo + host y un path opcional.</p>
+        </form>
+      </details>
       <div class="grid">
         <div>
           <h2>Consulta estructurada</h2>

@@ -1,5 +1,6 @@
 
-const API = (location.origin.includes("127.0.0.1") || location.origin.includes("localhost")) ? "http://127.0.0.1:8000" : "http://127.0.0.1:8000";
+const isLocal = ["127.0.0.1", "localhost"].some((host) => location.origin.includes(host));
+const API = (isLocal || location.origin === "null") ? "http://127.0.0.1:8000" : location.origin;
 
 async function doParse(text){
   const res = await fetch(`${API}/parse`, {
@@ -77,12 +78,21 @@ document.addEventListener("DOMContentLoaded", () => {
       q.focus();
       return;
     }
-    const parsed = await doParse(text);
-    structured.textContent = JSON.stringify(parsed.query, null, 2);
-    plan.textContent = JSON.stringify(parsed.plan, null, 2);
-    // Send only parsed.query to /search
-    const searched = await doSearch(parsed.query);
-    renderResults(results, searched);
+    btn.disabled = true;
+    results.innerHTML = "<p>Buscando resultados...</p>";
+    try {
+      const parsed = await doParse(text);
+      structured.textContent = JSON.stringify(parsed.query, null, 2);
+      plan.textContent = JSON.stringify(parsed.plan, null, 2);
+      // Send only parsed.query to /search
+      const searched = await doSearch(parsed.query);
+      renderResults(results, searched);
+    } catch (err) {
+      console.error("Error al buscar", err);
+      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o volvé a intentar.</p>';
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   btn.addEventListener("click", runSearch);

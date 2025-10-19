@@ -1,6 +1,6 @@
 
 import json, math, re
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Set
 from pathlib import Path
 from .schema import Dish, SearchRequest, SearchResponse, SearchResult
 
@@ -10,8 +10,39 @@ def _norm_str(t: str) -> str:
         .replace("ó","o").replace("ú","u").replace("ñ","n")
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DICT_DIR = DATA_DIR / "dictionaries"
 
 CATALOG: List[Dict[str, Any]] = json.loads((DATA_DIR / "catalog.json").read_text(encoding="utf-8"))
+
+def load_ingredient_synonyms() -> Dict[str, str]:
+    mapping: Dict[str, str] = {}
+    try:
+        data = json.loads((DICT_DIR / "ingredients.json").read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return mapping
+    for canonical, obj in data.items():
+        norm_canon = _norm_str(canonical)
+        mapping.setdefault(norm_canon, canonical)
+        for syn in obj.get("synonyms", []):
+            mapping.setdefault(_norm_str(syn), canonical)
+    return mapping
+
+INGREDIENT_SYNONYM_MAP = load_ingredient_synonyms()
+
+def load_ingredient_groups() -> Dict[str, Set[str]]:
+    groups: Dict[str, Set[str]] = {}
+    try:
+        data = json.loads((DICT_DIR / "ingredients.json").read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return groups
+    for canonical, obj in data.items():
+        normalized = { _norm_str(canonical) }
+        for syn in obj.get("synonyms", []):
+            normalized.add(_norm_str(syn))
+        groups[canonical] = normalized
+    return groups
+
+INGREDIENT_GROUPS = load_ingredient_groups()
 
 def norm(val, vmin, vmax):
     if vmax == vmin:
@@ -73,8 +104,17 @@ def lex_score(q: str, dish: Dict[str, Any], filters: Dict[str, Any]) -> float:
 
 
 
+def expand_ingredients(ingredients: List[str]) -> Set[str]:
+    tokens = {_norm_str(raw) for raw in ingredients}
+    canonical_hits = set()
+    for canonical, group in INGREDIENT_GROUPS.items():
+        if group & tokens:
+            canonical_hits.add(canonical)
+    return tokens | canonical_hits
+
 def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]]:
     reasons = []
+    dish_ingredients = expand_ingredients(d.get("ingredients", []))
     if f.get("available_only", True) and not d.get("available", True):
         return False, ["No disponible"]
     # categories
@@ -95,11 +135,11 @@ def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]
         return False, [f"Cocina no coincide {cu}"]
     # include ingredients
     inc = f.get("ingredients_include") or []
-    if inc and not all(i in d["ingredients"] for i in inc):
+    if inc and not all((_norm_str(i) in dish_ingredients) or (INGREDIENT_SYNONYM_MAP.get(_norm_str(i)) in dish_ingredients) or (i in dish_ingredients) for i in inc):
         return False, [f"Falta ingrediente requerido"]
     # exclude ingredients
     exc = f.get("ingredients_exclude") or []
-    if exc and any(i in d["ingredients"] for i in exc):
+    if exc and any((_norm_str(i) in dish_ingredients) or (INGREDIENT_SYNONYM_MAP.get(_norm_str(i)) in dish_ingredients) or (i in dish_ingredients) for i in exc):
         return False, [f"Contiene ingrediente excluido"]
     # diet must
     dm = f.get("diet_must") or []

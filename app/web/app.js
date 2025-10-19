@@ -1,7 +1,93 @@
 
-const APP_VERSION = "v1.1.0";
-const isLocal = ["127.0.0.1", "localhost"].some((host) => location.origin.includes(host));
-const API = (isLocal || location.origin === "null") ? "http://127.0.0.1:8000" : location.origin;
+const APP_VERSION = "v1.1.1";
+
+const DEFAULT_API = "http://127.0.0.1:8000";
+const API_STORAGE_KEY = "foodsearch.apiBase";
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "0.0.0.0"]);
+
+function normalizeBase(raw) {
+  if (!raw) return "";
+  let candidate = String(raw).trim();
+  if (!candidate) return "";
+  if (!/^https?:\/\//i.test(candidate)) {
+    candidate = `${location.protocol}//${candidate}`;
+  }
+  try {
+    const parsed = new URL(candidate);
+    const cleanPath = parsed.pathname === "/" ? "" : parsed.pathname.replace(/\/$/, "");
+    return `${parsed.protocol}//${parsed.host}${cleanPath}`;
+  } catch (err) {
+    return "";
+  }
+}
+
+function resolveApiBase() {
+  const params = new URLSearchParams(location.search);
+  const paramValue = params.get("apiBase") || params.get("api");
+  if (paramValue) {
+    const normalized = normalizeBase(paramValue);
+    if (normalized) {
+      localStorage.setItem(API_STORAGE_KEY, normalized);
+      return normalized;
+    }
+  }
+
+  const stored = localStorage.getItem(API_STORAGE_KEY);
+  if (stored) {
+    const normalized = normalizeBase(stored);
+    if (normalized) {
+      return normalized;
+    }
+    localStorage.removeItem(API_STORAGE_KEY);
+  }
+
+  const meta = document.querySelector('meta[name="food-search-api-base"]');
+  if (meta?.content) {
+    const normalized = normalizeBase(meta.content);
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  if (LOCAL_HOSTS.has(location.hostname)) {
+    return `${location.protocol}//${location.host}`;
+  }
+
+  if (location.origin === "null") {
+    return DEFAULT_API;
+  }
+
+  return DEFAULT_API;
+}
+
+let API = resolveApiBase();
+
+function renderApiBase() {
+  const label = document.getElementById("api-base");
+  if (label) {
+    label.textContent = API;
+  }
+  const input = document.getElementById("api-input");
+  if (input && document.activeElement !== input) {
+    input.value = API;
+  }
+}
+
+function setApiBase(value) {
+  const normalized = normalizeBase(value);
+  if (!normalized) {
+    throw new Error("URL inválida. Usá un formato como https://servidor:puerto");
+  }
+  API = normalized;
+  localStorage.setItem(API_STORAGE_KEY, API);
+  renderApiBase();
+}
+
+function resetApiBase() {
+  localStorage.removeItem(API_STORAGE_KEY);
+  API = resolveApiBase();
+  renderApiBase();
+}
 
 async function doParse(text){
   const res = await fetch(`${API}/parse`, {
@@ -69,6 +155,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const structured = document.getElementById("structured");
   const plan = document.getElementById("plan");
   const results = document.getElementById("results");
+  const apiForm = document.getElementById("api-form");
+  const apiReset = document.getElementById("api-reset");
+
+  renderApiBase();
+
+  if (apiForm) {
+    apiForm.addEventListener("submit", (evt) => {
+      evt.preventDefault();
+      const input = document.getElementById("api-input");
+      const value = input?.value ?? "";
+      try {
+        setApiBase(value);
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  }
+
+  if (apiReset) {
+    apiReset.addEventListener("click", (evt) => {
+      evt.preventDefault();
+      resetApiBase();
+    });
+  }
 
   async function runSearch(){
     const text = q.value.trim();
@@ -100,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
         query: text,
         timestamp: new Date().toISOString()
       };
-      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o volvé a intentar.</p>' + tiny(errorDetails);
+      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o ajustá la configuración de backend.</p>' + tiny(errorDetails);
     } finally {
       btn.disabled = false;
     }

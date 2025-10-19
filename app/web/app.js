@@ -1,4 +1,5 @@
 
+const APP_VERSION = "v1.1.0";
 const isLocal = ["127.0.0.1", "localhost"].some((host) => location.origin.includes(host));
 const API = (isLocal || location.origin === "null") ? "http://127.0.0.1:8000" : location.origin;
 
@@ -89,7 +90,17 @@ document.addEventListener("DOMContentLoaded", () => {
       renderResults(results, searched);
     } catch (err) {
       console.error("Error al buscar", err);
-      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o volvé a intentar.</p>';
+      const errorDetails = {
+        version: APP_VERSION,
+        message: err?.message ?? String(err),
+        name: err?.name,
+        stack: err?.stack,
+        apiBase: API,
+        online: navigator.onLine,
+        query: text,
+        timestamp: new Date().toISOString()
+      };
+      results.innerHTML = '<p class="error">No pudimos completar la búsqueda. Verificá tu conexión o volvé a intentar.</p>' + tiny(errorDetails);
     } finally {
       btn.disabled = false;
     }
@@ -97,4 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btn.addEventListener("click", runSearch);
   q.addEventListener("keydown", (e) => { if(e.key === "Enter") runSearch(); });
+  const versionBadge = document.getElementById("app-version");
+  if(versionBadge) versionBadge.textContent = APP_VERSION;
 });

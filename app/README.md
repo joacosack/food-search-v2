@@ -45,13 +45,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Ejecutar backend FastAPI
-```
-uvicorn app.server.main:app --reload
-```
-
-4. Abrir el frontend
-Abrí `app/web/index.html` en el navegador. El frontend llama al backend en `http://127.0.0.1:8000`.
+3. Abrir el frontend
+Abrí `app/web/index.html` en el navegador. Toda la lógica de parseo y ranking corre en el navegador con los datos locales.
 
 ## Pipeline
 

@@ -616,6 +616,14 @@ def parse(text: str):
 
     return {
         "query": parsed,
+        "query": ParsedQuery(
+            q=text,
+            filters=ParseFilters(**filters),
+            hints=hints,
+            ranking_overrides=RankingOverrides(**ranking_overrides),
+            advisor_summary=advisor_summary,
+            scenario_tags=scenario_tags
+        ).dict(),
         "plan": plan
     }
 

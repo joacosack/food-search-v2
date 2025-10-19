@@ -2,6 +2,7 @@ import { CATALOG } from "./data/catalog.js";
 import { CATEGORIES, INGREDIENTS, DIETS, ALLERGENS, HEALTH } from "./data/dictionaries.js";
 
 const APP_VERSION = "v2.2.0";
+const APP_VERSION = "v2.1.0";
 
 function stripAccents(text = "") {
   return text
@@ -988,6 +989,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("btn");
   const structured = document.getElementById("structured");
   const plan = document.getElementById("plan");
+  const advisor = document.getElementById("advisor");
   const results = document.getElementById("results");
 
   async function runSearch() {
@@ -996,6 +998,10 @@ document.addEventListener("DOMContentLoaded", () => {
       structured.textContent = "";
       plan.textContent = "";
       updateAdvisor(null, null);
+      if (advisor) {
+        advisor.textContent = "";
+        advisor.classList.remove("visible");
+      }
       results.innerHTML = '<p class="error">Ingresá una descripción de lo que querés comer para iniciar la búsqueda.</p>';
       q.focus();
       return;
@@ -1044,6 +1050,16 @@ document.addEventListener("DOMContentLoaded", () => {
             "Resultados locales: no se pudo conectar con el motor remoto.";
         }
       }
+      if (advisor) {
+        if (parsed.query.advisor_summary) {
+          advisor.textContent = parsed.query.advisor_summary;
+          advisor.classList.add("visible");
+        } else {
+          advisor.textContent = "";
+          advisor.classList.remove("visible");
+        }
+      }
+      const searched = searchCatalog(parsed.query);
       renderResults(results, searched);
     } catch (err) {
       console.error("Error al buscar", err);
@@ -1057,6 +1073,10 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       results.innerHTML = '<p class="error">No pudimos completar la búsqueda.</p>' + tiny(errorDetails);
       updateAdvisor(null, null);
+      if (advisor) {
+        advisor.textContent = "";
+        advisor.classList.remove("visible");
+      }
     } finally {
       btn.disabled = false;
     }
@@ -1108,4 +1128,16 @@ function renderResults(container, data) {
     `;
     container.appendChild(el);
   });
+  const plan = document.getElementById("plan");
+  if (plan) plan.textContent = JSON.stringify(data.plan, null, 2);
+  const advisor = document.getElementById("advisor");
+  if (advisor) {
+    if (data.plan?.advisor_summary) {
+      advisor.textContent = data.plan.advisor_summary;
+      advisor.classList.add("visible");
+    } else {
+      advisor.textContent = "";
+      advisor.classList.remove("visible");
+    }
+  }
 }

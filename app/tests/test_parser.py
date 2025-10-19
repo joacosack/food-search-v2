@@ -113,3 +113,5 @@ def test_llm_stub_enriches(monkeypatch):
     assert "budget_friendly" in pq["query"]["filters"].get("experience_tags_any", [])
     assert pq["query"].get("advisor_details")
     assert "llm_custom" in pq["query"].get("scenario_tags", [])
+    quick_hits = [r for r in res["results"][:8] if "quick_lunch" in (r["item"].get("experience_tags") or [])]
+    assert quick_hits

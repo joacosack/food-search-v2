@@ -416,7 +416,15 @@ def extend_unique_list(lst: List[str], values: List[str]) -> List[str]:
             existing.add(v)
     return lst
 
-def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_overrides: Dict[str, Any], hints: List[str], intent_tags: List[str], plan: List[str]):
+def apply_conversation_scenarios(
+    text: str,
+    filters: Dict[str, Any],
+    ranking_overrides: Dict[str, Any],
+    hints: List[str],
+    intent_tags: List[str],
+    auto_constraints: List[str],
+    plan: List[str],
+):
     summaries: List[str] = []
     scenario_tags: List[str] = []
     text_soft = normalize_soft(text)
@@ -430,7 +438,12 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
     ]
     if any(re.search(pat, text_soft) for pat in romantic_patterns):
         scenario_tags.append("romantic_date")
-        filters["rating_min"] = tighten_min_limit(filters.get("rating_min"), 4.4)
+        current_rating = filters.get("rating_min")
+        tightened_rating = tighten_min_limit(current_rating, 4.4)
+        if tightened_rating != current_rating:
+            filters["rating_min"] = tightened_rating
+            if "rating_min" not in auto_constraints:
+                auto_constraints.append("rating_min")
         filters["available_only"] = True
         extend_unique_list(intent_tags, ["romantic_evening", "date_night"])
         extend_unique_list(hints, ["date", "special_evening"])
@@ -452,8 +465,11 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
             target_price = 4500
         else:
             target_price = min(target_price, 4500)
-        current = normalize_percentile_limit(filters.get("price_max"))
-        filters["price_max"] = tighten_max_limit(current, target_price)
+        new_price_cap = tighten_max_limit(filters.get("price_max"), target_price)
+        if new_price_cap != filters.get("price_max"):
+            filters["price_max"] = new_price_cap
+            if "price_max" not in auto_constraints:
+                auto_constraints.append("price_max")
         extend_unique_list(intent_tags, ["budget_friendly"])
         extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["budget_friendly", "ahorro", "combo"])
         weights = ranking_overrides.setdefault("weights", {})
@@ -469,7 +485,11 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
     if any(re.search(pat, text_soft) for pat in quick_patterns):
         scenario_tags.append("quick_lunch")
         target_eta = eta_from_percentile(0.35) or 20
-        filters["eta_max"] = tighten_max_limit(filters.get("eta_max"), target_eta)
+        new_eta = tighten_max_limit(filters.get("eta_max"), target_eta)
+        if new_eta != filters.get("eta_max"):
+            filters["eta_max"] = new_eta
+            if "eta_max" not in auto_constraints:
+                auto_constraints.append("eta_max")
         filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["almuerzo"]))
         extend_unique_list(intent_tags, ["quick_lunch"])
         extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["quick_lunch", "sandwich", "wrap", "express"])
@@ -508,6 +528,7 @@ def parse(text: str):
         "rating_min": None,
         "available_only": True
     }
+    auto_constraints: List[str] = []
     inc, exc, allerg_exc = extract_include_exclude(tn, plan)
     filters["ingredients_include"] = inc
     filters["ingredients_exclude"] = exc
@@ -525,14 +546,16 @@ def parse(text: str):
     }
 
     intent_tags_local: List[str] = []
-    scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, intent_tags_local, plan)
+    scenario_summaries, scenario_tags = apply_conversation_scenarios(
+        text, filters, ranking_overrides, hints, intent_tags_local, auto_constraints, plan
+    )
     if intent_tags_local:
         filters["intent_tags_any"] = sorted(set((filters.get("intent_tags_any") or []) + intent_tags_local))
     advisor_summary = " ".join(scenario_summaries).strip() or None
 
     llm_headline = None
     llm_details = None
-    strategies_meta: List[Dict[str, Any]] = []
+    llm_notes_accum: List[str] = []
     llm_info: Dict[str, Any]
     llm_provider = llm.provider_name()
     llm_enabled_flag = llm.llm_enabled()
@@ -563,10 +586,9 @@ def parse(text: str):
 
     if enrichment:
         llm_info["status"] = "used"
-        llm_info["strategies"] = len(enrichment.get("strategies") or [])
         notes = enrichment.get("notes") or []
         if notes:
-            llm_info["notes"] = notes
+            llm_notes_accum.extend(notes)
         plan.append("LLM activado: se combinaron sugerencias con heurísticas.")
         llm_filters = enrichment.get("filters") or {}
         user_defined_constraints = {
@@ -588,7 +610,13 @@ def parse(text: str):
             "intent_tags_any",
         }
         for key in list_keys:
-            if key in llm_filters and _merge_list_field(filters, key, llm_filters[key]):
+            if key not in llm_filters:
+                continue
+            existing_values = filters.get(key) or []
+            allow_merge = bool(existing_values) or key == "intent_tags_any"
+            if not allow_merge:
+                continue
+            if _merge_list_field(filters, key, llm_filters[key]):
                 applied_filters[key] = filters[key]
         if "price_max" in llm_filters and user_defined_constraints.get("price_max"):
             merged = _merge_max_limit(filters.get("price_max"), llm_filters["price_max"], _price_value)
@@ -642,26 +670,16 @@ def parse(text: str):
         llm_details = enrichment.get("details")
         for note in enrichment.get("notes", []) or []:
             plan.append(f"LLM nota: {note}")
+        llm_notes_accum.extend(enrichment.get("notes", []) or [])
 
         strategies = enrichment.get("strategies") or []
-        for idx, strategy in enumerate(strategies):
-            label = strategy.get("label") or strategy.get("headline") or f"Estrategia {idx + 1}"
+        for strategy in strategies:
             summary = strategy.get("summary") or strategy.get("details") or strategy.get("explanation")
+            if summary:
+                llm_notes_accum.append(summary)
             strategy_filters = strategy.get("filters") or {}
             strategy_overrides = strategy.get("ranking_overrides") or {}
             strategy_hints = strategy.get("hints") or []
-
-            strategies_meta.append(
-                {
-                    "label": label,
-                    "summary": summary,
-                    "filters": strategy_filters,
-                    "ranking_overrides": strategy_overrides,
-                    "hints": strategy_hints,
-                }
-            )
-            plan.append(f"Estrategia LLM '{label}': {summary or 'sin resumen adicional.'}")
-
             if strategy_filters.get("intent_tags_any"):
                 extend_unique_list(filters["intent_tags_any"], [str(v) for v in _as_list(strategy_filters["intent_tags_any"])])
             if strategy_hints:
@@ -720,9 +738,14 @@ def parse(text: str):
         if "wok" in joined:
             filters["category_any"] = [c for c in (filters.get("category_any") or []) if c != "wok"]
             filters["cuisines_any"] = [c for c in (filters.get("cuisines_any") or []) if c.lower() != "wok"]
+    if llm_notes_accum:
+        llm_info["notes"] = llm_notes_accum
+
     metadata = {
         "llm": llm_info,
-        "strategies": strategies_meta,
+        "auto_constraints": auto_constraints,
+        "restaurant_hits": rest_hits,
+        "llm_notes": llm_notes_accum,
     }
     return {
         "query": ParsedQuery(

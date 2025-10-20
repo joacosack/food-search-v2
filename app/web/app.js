@@ -7,24 +7,28 @@ let backendAvailable = null;
 
 const PROMPT_SAMPLES = [
   {
-    label: "Cita romántica elegante con envío gratis",
-    value: "cita romántica con plato elegante, vino y envío gratis en Palermo",
+    label: "Combo para el partido con envío gratis",
+    value: "combo gigante para ver el partido con amigos y envío gratis",
   },
   {
-    label: "Partido con amigos, porciones grandes",
-    value: "combo abundante para ver el partido con amigos, porciones grandes y buena promo",
+    label: "Ensalada vegana express con promo",
+    value: "ensalada vegana sin gluten con descuento y entrega rápida",
   },
   {
-    label: "Almuerzo saludable sin gluten ni nueces",
-    value: "almuerzo saludable sin gluten ni nueces para la oficina que llegue en menos de 25 minutos",
+    label: "Postre artesanal mismo precio",
+    value: "postre artesanal con mismo precio que en el local",
   },
   {
-    label: "Postre con descuento y mismo precio",
-    value: "helado artesanal con descuento y mismo precio que en el local para postre después de cenar",
+    label: "Sushi premium con promo y envío gratis",
+    value: "sushi premium con promo y envío gratis",
   },
   {
-    label: "Sushi vegano express",
-    value: "sushi vegano express con costo de envío bajo y restaurantes bien calificados",
+    label: "Brunch saludable con café",
+    value: "brunch saludable con café y postre",
+  },
+  {
+    label: "Pollo crispy para compartir",
+    value: "pollo crispy para compartir con niños",
   },
 ];
 
@@ -76,6 +80,9 @@ function resolveStrategies(source) {
 
 function buildStatusMessage(parseStatus, searchPlan) {
   const lines = [];
+  if (Array.isArray(searchPlan?.relaxed_filters) && searchPlan.relaxed_filters.length) {
+    lines.push(`Se relajaron filtros automáticos para mostrar resultados: ${searchPlan.relaxed_filters.join(". ")}.`);
+  }
   const llmInfo = (searchPlan && searchPlan.llm_status) || (parseStatus && parseStatus.llm);
   if (llmInfo) {
     const provider = llmInfo.provider || "IA";
@@ -148,19 +155,56 @@ function updateStatusBanner(banner, parseStatus, searchPlan) {
   }
 }
 
-function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
-  if (!box || !headlineEl || !detailsEl || !notesEl) return;
+function renderAdvisor(box, headlineEl, detailsEl, notesEl, statusEl, summary, notes, llmStatus) {
+  if (!box || !headlineEl || !detailsEl || !notesEl || !statusEl) return;
   const cleanSummary = typeof summary === "string" ? summary.trim() : "";
-  const parts = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
+  const partsRaw = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
+  const seenParts = new Set();
+  const parts = [];
+  partsRaw.forEach((p) => {
+    if (!seenParts.has(p)) {
+      seenParts.add(p);
+      parts.push(p);
+    }
+  });
   const headline = parts.shift() || "";
   const detailText = parts.join(" ");
-  const noteItems = Array.isArray(notes) ? notes.filter(Boolean) : [];
+  const noteItemsRaw = Array.isArray(notes) ? notes.filter(Boolean) : [];
+  const noteSeen = new Set();
+  const noteItems = [];
+  noteItemsRaw.forEach((n) => {
+    if (!noteSeen.has(n)) {
+      noteSeen.add(n);
+      noteItems.push(n);
+    }
+  });
 
-  if (!headline && !detailText && noteItems.length === 0) {
+  const statusText = (() => {
+    if (!llmStatus || typeof llmStatus !== "object") return "";
+    const status = llmStatus.status || "";
+    if (status === "used") {
+      const provider = llmStatus.provider || "IA";
+      return `Modo IA (${provider}) activo.`;
+    }
+    if (status === "disabled") {
+      return "IA desactivada: usando reglas locales.";
+    }
+    if (status === "error") {
+      return `IA sin conexión: ${llmStatus.message || "se usan reglas locales"}.`;
+    }
+    if (status === "no_data") {
+      return "IA sin respuesta útil: se mantienen reglas locales.";
+    }
+    return "";
+  })();
+
+  if (!headline && !detailText && noteItems.length === 0 && !statusText) {
     box.classList.remove("visible");
+    box.hidden = true;
     headlineEl.textContent = "";
     detailsEl.textContent = "";
     notesEl.innerHTML = "";
+    statusEl.textContent = "";
     return;
   }
 
@@ -187,7 +231,11 @@ function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
     notesEl.style.display = "none";
   }
 
+  statusEl.textContent = statusText;
+  statusEl.style.display = statusText ? "block" : "none";
+
   box.classList.add("visible");
+  box.hidden = false;
 }
 
 function stripAccents(text = "") {
@@ -1194,9 +1242,6 @@ function searchCatalog(query) {
   if (query.metadata?.llm) {
     plan.llm_status = query.metadata.llm;
   }
-  if (query.metadata?.strategies) {
-    plan.llm_strategies = query.metadata.strategies;
-  }
   return { results, plan };
 }
 
@@ -1217,6 +1262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const advisorNotes = document.getElementById("advisor-notes");
   const sampleSelect = document.getElementById("prompt-samples");
   const useSampleBtn = document.getElementById("use-sample");
+  const showAllBtn = document.getElementById("show-all");
 
   if (sampleSelect) {
     PROMPT_SAMPLES.forEach((sample, index) => {
@@ -1239,6 +1285,10 @@ document.addEventListener("DOMContentLoaded", () => {
       q.value = sampleSelect.value;
       runSearch("sample");
     });
+  }
+
+  if (showAllBtn) {
+    showAllBtn.addEventListener("click", () => renderAllCatalog());
   }
 
   const versionBadge = document.getElementById("app-version");
@@ -1313,10 +1363,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!searched.plan.llm_status && parsed.status?.llm) {
         searched.plan.llm_status = parsed.status.llm;
       }
-      if (!searched.plan.llm_strategies && parsed.status?.strategies) {
-        searched.plan.llm_strategies = parsed.status.strategies;
-      }
-
       renderResults(results, searched);
 
       const advisorSummary = searched.plan?.advisor_summary || parsed.query?.advisor_summary || "";
@@ -1347,22 +1393,42 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") runSearch();
   });
 
-  const renderInitialCatalog = () => {
-    const catalogResults = CATALOG.map((item) => ({ item, score: 0, reasons: ["catálogo inicial"] }));
+  const PREVIEW_LIMIT = 60;
+
+  function renderPreviewCatalog() {
+    const preview = [...CATALOG]
+      .sort((a, b) => (b.restaurant?.rating ?? 0) - (a.restaurant?.rating ?? 0))
+      .slice(0, PREVIEW_LIMIT)
+      .map((item) => ({ item, score: item.restaurant?.rating ?? 0, reasons: ["vista previa"] }));
+    const planData = {
+      hard_filters: {},
+      explain: "Vista previa de platos destacados. Escribí un prompt o usá el botón de ver todo.",
+      ranking_weights: DEFAULT_WEIGHTS,
+    };
+    renderResults(results, { results: preview, plan: planData });
+    structuredEl.textContent = JSON.stringify({ nota: "Sin filtros aplicados" }, null, 2);
+    planEl.textContent = JSON.stringify(planData, null, 2);
+    statusBanner.textContent = `Mostrando ${PREVIEW_LIMIT} platos destacados. Podés escribir un prompt o ver los ${CATALOG.length} platos disponibles.`;
+    statusBanner.classList.add("visible");
+    resetAdvisor();
+  }
+
+  function renderAllCatalog() {
+    const allResults = CATALOG.map((item) => ({ item, score: 0, reasons: ["catálogo completo"] }));
     const planData = {
       hard_filters: {},
       explain: "Catálogo completo sin filtros.",
       ranking_weights: DEFAULT_WEIGHTS,
     };
-    renderResults(results, { results: catalogResults, plan: planData });
+    renderResults(results, { results: allResults, plan: planData });
     structuredEl.textContent = JSON.stringify({ nota: "Sin filtros aplicados" }, null, 2);
     planEl.textContent = JSON.stringify(planData, null, 2);
-    statusBanner.textContent = `Vista general: ${catalogResults.length} platos disponibles.`;
+    statusBanner.textContent = `Mostrando todos los ${allResults.length} platos disponibles.`;
     statusBanner.classList.add("visible");
     resetAdvisor();
-  };
+  }
 
-  renderInitialCatalog();
+  renderPreviewCatalog();
 });
 
 function renderResults(container, data) {

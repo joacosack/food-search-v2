@@ -53,20 +53,15 @@ def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, s
         '  "hints": string[],\n'
         '  "scenario_tags": string[],\n'
         '  "notes": string[],  # opcional, con insights relevantes\n'
-        '  "strategies": [     # opcional, para búsquedas múltiples coordinadas\n'
-        '     {\n'
-        '       "label": string,\n'
-        '       "summary": string,\n'
-        '       "filters": { ... },\n'
-        '       "ranking_overrides": { ... },\n'
-        '       "hints": string[]\n'
-        "     }\n"
-        "  ]\n"
+        '  "strategies": []    # dejar vacío\n'
         "}\n"
         "Respetá los nombres de campo y usá valores concretos. "
         "Si no tenés información para un campo, devolvé un array vacío, objeto vacío o null según corresponda. "
         "No inventes restaurantes específicos fuera del catálogo. "
-        "El campo 'details' debe describir explícitamente los pasos de razonamiento: qué variables considerás, qué filtros aplicarás y cómo combinarás estrategias."
+        "No agregues filtros nuevos (barrios, rating mínimo, precio máximo, tiempo de entrega, dietas, etc.) a menos que la persona los haya pedido explícitamente. "
+        "Podés sugerir ideas en 'details' o 'notes', pero los campos de 'filters' deben reflejar únicamente restricciones ya presentes. "
+        "El campo 'details' debe describir explícitamente los pasos de razonamiento y mencionar si se mantienen exactamente los filtros solicitados. "
+        "Cuando el usuario nombre un plato o restaurante, devolvé esa referencia textual en 'details' para favorecer coincidencias exactas."
     )
     user_payload = {
         "user_request": user_text,

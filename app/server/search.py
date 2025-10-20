@@ -248,6 +248,7 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
     promo_n = norm(discount, IDX["discount_min"], IDX["discount_max"])
     fee = d.get("delivery_fee", IDX["fee_max"])
     fee_n = norm(fee, IDX["fee_min"], IDX["fee_max"])
+    restaurant_hits = set((q.get("metadata") or {}).get("restaurant_hits") or [])
     score = (
         weights["rating"] * rating_n +
         weights["price"] * (1 - price_n) +
@@ -268,6 +269,11 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
         f"promo:{promo_n:.2f}",
         f"fee_inv:{1-fee_n:.2f}"
     ]
+    if restaurant_hits:
+        rest_name = d.get("restaurant", {}).get("name")
+        if rest_name in restaurant_hits:
+            score += 0.4
+            reasons.append("rest_hit")
     # boosts and penalties
     ro = (q.get("ranking_overrides") or {})
     boost = ro.get("boost_tags") or []
@@ -317,9 +323,55 @@ def _run_single_search(query: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Lis
 def search(req: Dict[str, Any]) -> Dict[str, Any]:
     q = req.get("query") or {"filters": req.get("filters", {})}
     results, rejected, plan = _run_single_search(q)
+    relaxations: List[str] = []
+    if not results:
+        relaxed_query = json.loads(json.dumps(q, ensure_ascii=False))
+        filters_rel = relaxed_query.get("filters", {}) or {}
+        metadata_rel = relaxed_query.setdefault("metadata", {})
+        auto = set(metadata_rel.get("auto_constraints") or [])
+
+        def relax_numeric(field: str, label: str):
+            nonlocal results, rejected, plan
+            if filters_rel.get(field) is None or field not in auto:
+                return False
+            previous = filters_rel.get(field)
+            filters_rel[field] = None
+            relaxations.append(f"Se quitó {label} automático ({previous}).")
+            results, rejected, plan = _run_single_search(relaxed_query)
+            return bool(results)
+
+        def relax_list(field: str, label: str):
+            nonlocal results, rejected, plan
+            if not (filters_rel.get(field) or []):
+                return False
+            previous = list(filters_rel.get(field) or [])
+            filters_rel[field] = []
+            relaxations.append(f"Se ignoró {label}: {previous}.")
+            results, rejected, plan = _run_single_search(relaxed_query)
+            return bool(results)
+
+        if relax_numeric("rating_min", "el mínimo de rating sugerido"):
+            pass
+        elif relax_numeric("eta_max", "el tope de entrega sugerido"):
+            pass
+        elif relax_numeric("price_max", "el tope de precio sugerido"):
+            pass
+        else:
+            relaxed = relax_list("health_any", "los requisitos de salud sugeridos")
+            if not relaxed:
+                relax_list("intent_tags_any", "los tags de intención sugeridos")
+
+        if relaxations:
+            plan.setdefault("relaxed_filters", relaxations)
+            q = relaxed_query
     metadata = q.get("metadata") or {}
     if metadata.get("llm"):
         plan["llm_status"] = metadata["llm"]
-    if metadata.get("strategies"):
-        plan.setdefault("llm_strategies", metadata["strategies"])
+    if metadata.get("llm_notes"):
+        if not isinstance(plan.get("llm_status"), dict):
+            plan["llm_status"] = metadata.get("llm", {})
+        if isinstance(plan.get("llm_status"), dict):
+            existing_notes = plan["llm_status"].get("notes") or []
+            if not existing_notes:
+                plan["llm_status"]["notes"] = metadata["llm_notes"]
     return {"results": results, "plan": plan}

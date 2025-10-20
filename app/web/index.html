@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Buscador gastronómico inteligente</title>
+    <title>Buscador Delivery Inteligente</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
-      <h1>PedidosHome AI Concierge</h1>
-      <p class="subtitle">Descubrí qué pedir en PedidosYa con ayuda de IA. Ejemplo: "pizza vegana con envío gratis y rápida" <span class="subtitle-version">· Versión <span id="app-version" class="version-badge" aria-live="polite"></span></span></p>
+      <h1>Buscador Delivery Inteligente</h1>
+      <p class="subtitle">Descubrí qué pedir con ayuda de IA. Ejemplo: "pizza vegana con envío gratis y rápida" <span class="subtitle-version">· Versión <span id="app-version" class="version-badge" aria-live="polite"></span></span></p>
       <div class="prompt-bar">
         <label for="prompt-samples">Probar con:</label>
         <select id="prompt-samples" aria-label="Prompts de ejemplo">
@@ -21,11 +21,15 @@
         <input id="q" type="text" placeholder="Escribí lo que querés comer..." />
         <button id="btn">Buscar</button>
       </div>
+      <div class="action-row">
+        <button id="show-all" type="button" class="secondary">Ver todo el catálogo</button>
+      </div>
       <div id="llm-box" class="llm-box" aria-live="polite" hidden>
         <div class="llm-box__header">
           <span class="llm-box__badge">IA</span>
           <h2>Asistente de delivery</h2>
         </div>
+        <p id="advisor-status" class="llm-status"></p>
         <h3 id="advisor-headline"></h3>
         <p id="advisor-details"></p>
         <ul id="advisor-notes"></ul>

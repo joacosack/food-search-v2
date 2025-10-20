@@ -121,7 +121,7 @@ def test_llm_stub_merges_filters(monkeypatch):
     )
     pq = parse("busco algo romantico con carne")
     filters = pq["query"]["filters"]
-    assert "Parrilla" in filters["category_any"]
+    assert not filters["category_any"], "El asistente no debe imponer nuevas categorías"
     assert filters["price_max"] is None
     assert "romantic" in pq["query"]["ranking_overrides"]["boost_tags"]
     assert "llm_hint" in pq["query"]["hints"]
@@ -156,8 +156,10 @@ def test_llm_strategies_merge_results(monkeypatch):
     )
     pq = parse("cita romantica barata")
     res = do_search(pq)
-    assert res["plan"].get("llm_strategies")
     assert res["plan"].get("llm_status", {}).get("status") == "used"
+    notes = res["plan"].get("llm_status", {}).get("notes") or []
+    assert any("vegetarian" in note.lower() for note in notes)
+    assert res["results"], "El relajador debería recuperar resultados"
 
 
 def test_extract_json_payload_handles_fences(monkeypatch):

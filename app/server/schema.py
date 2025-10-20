@@ -31,6 +31,7 @@ class ParseFilters(BaseModel):
     meal_moments_any: List[str] = Field(default_factory=list)
     neighborhood_any: List[str] = Field(default_factory=list)
     cuisines_any: List[str] = Field(default_factory=list)
+    restaurant_any: List[str] = Field(default_factory=list)
     ingredients_include: List[str] = Field(default_factory=list)
     ingredients_exclude: List[str] = Field(default_factory=list)
     diet_must: List[str] = Field(default_factory=list)

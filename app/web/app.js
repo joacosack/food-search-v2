@@ -5,6 +5,13 @@ const APP_VERSION = "v2.3.0";
 const BACKEND_TIMEOUT_MS = 8000;
 let backendAvailable = null;
 
+const FORCE_BACKEND = typeof window !== "undefined" && window.ENABLE_BACKEND === true;
+const STATIC_MODE = !FORCE_BACKEND && (window.location.protocol === "file:" || (window.location.hostname && !/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(window.location.hostname)));
+if (STATIC_MODE) {
+  window.DISABLE_BACKEND = true;
+  backendAvailable = false;
+}
+
 const PROMPT_SAMPLES = [
   {
     label: "Cita romántica elegante con envío gratis",
@@ -82,14 +89,14 @@ function buildStatusMessage(parseStatus, searchPlan) {
   const llmInfo = (searchPlan && searchPlan.llm_status) || (parseStatus && parseStatus.llm);
   if (llmInfo) {
     const provider = llmInfo.provider || "IA";
+    if (Array.isArray(llmInfo.notes)) {
+      llmInfo.notes = [...new Set(llmInfo.notes)];
+    }
     switch (llmInfo.status) {
       case "used": {
         let base = `Modo IA (${provider}) activo: combinando heurísticas y modelos.`;
         if (Array.isArray(llmInfo.notes) && llmInfo.notes.length) {
           base += ` ${llmInfo.notes.join(" ")}`;
-        }
-        if (typeof llmInfo.strategies === "number" && llmInfo.strategies > 1) {
-          base += ` Se planificaron ${llmInfo.strategies} estrategias coordinadas.`;
         }
         lines.push(base);
         break;
@@ -135,6 +142,9 @@ function buildStatusMessage(parseStatus, searchPlan) {
   if (summaries.length) {
     lines.push(`Estrategias activas:\n- ${summaries.join("\n- ")}`);
   }
+  if (!llmInfo && (window.DISABLE_BACKEND || backendAvailable === false)) {
+    lines.push("Modo offline: reglas determinísticas locales sin LLM.");
+  }
 
   return lines.join("\n");
 }
@@ -151,20 +161,55 @@ function updateStatusBanner(banner, parseStatus, searchPlan) {
   }
 }
 
-function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
-  if (!box || !headlineEl || !detailsEl || !notesEl) return;
+function renderAdvisor(box, headlineEl, detailsEl, notesEl, statusEl, summary, notes, llmStatus) {
+  if (!box || !headlineEl || !detailsEl || !notesEl || !statusEl) return;
   const cleanSummary = typeof summary === "string" ? summary.trim() : "";
-  const parts = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
-  const headline = parts.shift() || "";
-  const detailText = parts.join(" ");
-  const noteItems = Array.isArray(notes) ? notes.filter(Boolean) : [];
+  const summaryPartsRaw = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
+  const summarySeen = new Set();
+  const summaryParts = [];
+  summaryPartsRaw.forEach((part) => {
+    if (!summarySeen.has(part)) {
+      summarySeen.add(part);
+      summaryParts.push(part);
+    }
+  });
+  const headline = summaryParts.shift() || "";
+  const detailText = summaryParts.join(" ");
 
-  if (!headline && !detailText && noteItems.length === 0) {
+  const noteItemsRaw = Array.isArray(notes) ? notes.filter(Boolean) : [];
+  const noteSeen = new Set();
+  const noteItems = [];
+  noteItemsRaw.forEach((note) => {
+    if (!noteSeen.has(note)) {
+      noteSeen.add(note);
+      noteItems.push(note);
+    }
+  });
+
+  const statusText = (() => {
+    if (!llmStatus || typeof llmStatus !== "object") return "";
+    const provider = llmStatus.provider || "IA";
+    switch (llmStatus.status) {
+      case "used":
+        return `Modo IA (${provider}) activo.`;
+      case "disabled":
+        return "IA desactivada: usando reglas locales.";
+      case "error":
+        return `IA sin conexión: ${llmStatus.message || "se usan reglas locales."}`;
+      case "no_data":
+        return "IA sin respuesta útil: se mantienen reglas locales.";
+      default:
+        return llmStatus.status ? `Estado IA: ${llmStatus.status}` : "";
+    }
+  })();
+
+  if (!headline && !detailText && noteItems.length === 0 && !statusText) {
     box.classList.remove("visible");
     box.hidden = true;
     headlineEl.textContent = "";
     detailsEl.textContent = "";
     notesEl.innerHTML = "";
+    statusEl.textContent = "";
     return;
   }
 
@@ -190,6 +235,9 @@ function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
   } else {
     notesEl.style.display = "none";
   }
+
+  statusEl.textContent = statusText;
+  statusEl.style.display = statusText ? "block" : "none";
 
   box.classList.add("visible");
   box.hidden = false;
@@ -845,6 +893,7 @@ function parseText(text) {
     category_any: parseCategory(tn, plan),
     neighborhood_any: parseNeighborhoods(text || "", plan),
     cuisines_any: parseCuisines(text || "", plan),
+    restaurant_any: restHits.length ? restHits : [],
     ingredients_include: [],
     ingredients_exclude: [],
     diet_must: [],
@@ -949,6 +998,10 @@ function applyFilters(dish, filters) {
   const cuisines = filters.cuisines_any || [];
   if (cuisines.length && !cuisines.includes(dish.restaurant?.cuisines)) {
     return { ok: false, reasons: [`Cocina no coincide ${JSON.stringify(cuisines)}`] };
+  }
+  const restAny = filters.restaurant_any || [];
+  if (restAny.length && !restAny.includes(dish.restaurant?.name)) {
+    return { ok: false, reasons: [`Restaurante no coincide ${JSON.stringify(restAny)}`] };
   }
   const include = filters.ingredients_include || [];
   if (
@@ -1217,6 +1270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const advisorHeadline = document.getElementById("advisor-headline");
   const advisorDetails = document.getElementById("advisor-details");
   const advisorNotes = document.getElementById("advisor-notes");
+  const advisorStatus = document.getElementById("advisor-status");
   const sampleSelect = document.getElementById("prompt-samples");
   const useSampleBtn = document.getElementById("use-sample");
   const showAllBtn = document.getElementById("show-all");
@@ -1252,7 +1306,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (versionBadge) versionBadge.textContent = APP_VERSION;
 
   const resetAdvisor = () => {
-    renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, "", []);
+    renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorStatus, "", [], null);
   };
 
   async function runSearch(trigger = "user") {
@@ -1325,7 +1379,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const advisorSummary = searched.plan?.advisor_summary || parsed.query?.advisor_summary || "";
       const llmNotes =
         searched.plan?.llm_status?.notes || parsed.status?.llm?.notes || parsed.plan?.llm_notes || [];
-      renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorSummary, llmNotes);
+      const llmStatus = searched.plan?.llm_status || parsed.status?.llm;
+      renderAdvisor(
+        advisorBox,
+        advisorHeadline,
+        advisorDetails,
+        advisorNotes,
+        advisorStatus,
+        advisorSummary,
+        llmNotes,
+        llmStatus
+      );
       updateStatusBanner(statusBanner, parsed.status, searched.plan);
     } catch (err) {
       console.error("Error al buscar", err);
@@ -1367,7 +1431,8 @@ document.addEventListener("DOMContentLoaded", () => {
     planEl.textContent = JSON.stringify(planData, null, 2);
     statusBanner.textContent = `Mostrando ${PREVIEW_LIMIT} platos destacados. Podés escribir un prompt o ver los ${CATALOG.length} platos disponibles.`;
     statusBanner.classList.add("visible");
-    resetAdvisor();
+    const offlineLLM = window.DISABLE_BACKEND || backendAvailable === false ? { status: "disabled", provider: "local" } : null;
+    renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorStatus, "", [], offlineLLM);
   }
 
   function renderAllCatalog() {
@@ -1382,10 +1447,12 @@ document.addEventListener("DOMContentLoaded", () => {
     planEl.textContent = JSON.stringify(planData, null, 2);
     statusBanner.textContent = `Mostrando todos los ${allResults.length} platos disponibles.`;
     statusBanner.classList.add("visible");
-    resetAdvisor();
+    const offlineLLM = window.DISABLE_BACKEND || backendAvailable === false ? { status: "disabled", provider: "local" } : null;
+    renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorStatus, "", [], offlineLLM);
   }
 
   renderPreviewCatalog();
+  window.renderAllCatalog = renderAllCatalog;
 });
 
 function renderResults(container, data) {
@@ -1439,6 +1506,14 @@ function renderResults(container, data) {
       delivery_eta_max: d.delivery_eta_max,
       restaurant: d.restaurant,
     };
+    const reasonsHtml = `<div class="reasons">Razones: ${r.reasons.join(", ")}</div>`;
+    const detailsHtml = `
+      <details class="details-block">
+        <summary>Detalles y debug</summary>
+        ${reasonsHtml}
+        ${tiny(debug)}
+      </details>
+    `;
     const el = document.createElement("div");
     el.className = "card";
     el.innerHTML = `
@@ -1451,11 +1526,7 @@ function renderResults(container, data) {
       ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ""}
       <div class="desc">${d.description}</div>
       ${tagHtml ? `<div class="tags"><strong>Tags:</strong>${tagHtml}</div>` : ""}
-      <div class="reasons">Razones: ${r.reasons.join(", ")}</div>
-      <details>
-        <summary>Debug</summary>
-        ${tiny(debug)}
-      </details>
+      ${detailsHtml}
     `;
     container.appendChild(el);
   });

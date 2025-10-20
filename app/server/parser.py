@@ -516,6 +516,7 @@ def parse(text: str):
         "category_any": parse_category(tn, plan),
         "neighborhood_any": parse_neighborhoods(text, plan),
         "cuisines_any": parse_cuisines(text, plan),
+        "restaurant_any": [],
         "ingredients_include": [],
         "ingredients_exclude": [],
         "diet_must": [],
@@ -738,14 +739,16 @@ def parse(text: str):
         if "wok" in joined:
             filters["category_any"] = [c for c in (filters.get("category_any") or []) if c != "wok"]
             filters["cuisines_any"] = [c for c in (filters.get("cuisines_any") or []) if c.lower() != "wok"]
+        filters["restaurant_any"] = rest_hits
     if llm_notes_accum:
-        llm_info["notes"] = llm_notes_accum
+        dedup_notes = list(dict.fromkeys(llm_notes_accum))
+        llm_info["notes"] = dedup_notes
 
     metadata = {
         "llm": llm_info,
         "auto_constraints": auto_constraints,
         "restaurant_hits": rest_hits,
-        "llm_notes": llm_notes_accum,
+        "llm_notes": list(dict.fromkeys(llm_notes_accum)) if llm_notes_accum else [],
     }
     return {
         "query": ParsedQuery(

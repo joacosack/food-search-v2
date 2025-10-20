@@ -178,6 +178,9 @@ def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]
     cu = f.get("cuisines_any") or []
     if cu and d["restaurant"]["cuisines"] not in cu:
         return False, [f"Cocina no coincide {cu}"]
+    rest_any = f.get("restaurant_any") or []
+    if rest_any and d["restaurant"]["name"] not in rest_any:
+        return False, [f"Restaurante no coincide {rest_any}"]
     # include ingredients
     inc = f.get("ingredients_include") or []
     if inc and not all((_norm_str(i) in dish_ingredients) or (INGREDIENT_SYNONYM_MAP.get(_norm_str(i)) in dish_ingredients) or (i in dish_ingredients) for i in inc):

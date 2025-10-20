@@ -34,6 +34,7 @@ class ParseFilters(BaseModel):
     restaurant_any: List[str] = Field(default_factory=list)
     ingredients_include: List[str] = Field(default_factory=list)
     ingredients_exclude: List[str] = Field(default_factory=list)
+    ingredients_any: List[str] = Field(default_factory=list)
     diet_must: List[str] = Field(default_factory=list)
     allergens_exclude: List[str] = Field(default_factory=list)
     health_any: List[str] = Field(default_factory=list)

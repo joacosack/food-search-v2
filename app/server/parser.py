@@ -264,7 +264,15 @@ def parse_category(text_norm: str, plan: List[str]):
     for cat, syns in CATEGORIES.items():
         for s in syns:
             s_norm = normalize(s)
-            if re.search(rf"\b{re.escape(s_norm)}\b", text_norm):
+            pattern = rf"\b{re.escape(s_norm)}\b"
+            if re.search(pattern, text_norm):
+                negative = re.search(
+                    rf"(sin|evitar|alergia(?:s)?|intoleranc(?:ia|ias)|no\s+quiero)(?:\s+\w+){{0,5}}\s+{re.escape(s_norm)}",
+                    text_norm,
+                )
+                if negative:
+                    plan.append(f"Categoría omitida por contexto negativo: {cat}")
+                    continue
                 cats.append(cat)
                 break
     if cats:
@@ -292,6 +300,13 @@ def parse_cuisines(text: str, plan: List[str]):
                 selected.append(c)
         else:
             if re.search(rf"\b{re.escape(c_norm)}\b", t):
+                negative = re.search(
+                    rf"(sin|evitar|alergia(?:s)?|intoleranc(?:ia|ias)|no\s+quiero)(?:\s+\w+){{0,5}}\s+{re.escape(c_norm)}",
+                    t,
+                )
+                if negative:
+                    plan.append(f"Cocina omitida por contexto negativo: {c}")
+                    continue
                 selected.append(c)
     if selected:
         plan.append(f"Cocinas: {selected}")
@@ -317,26 +332,37 @@ def extract_include_exclude(text_norm: str, plan: List[str]):
     def pat(syn):
         return rf"\b{re.escape(syn)}(?:s|es|ito|itos|ita|itas)?\b"
 
-    # Detectar ingredientes en contextos de exclusión
-    # Buscar "sin" seguido de una lista de ingredientes
-    sin_context = re.search(r'\bsin\s+([^,]+(?:,\s*[^,]+)*)', text_norm)
-    if sin_context:
-        # Extraer la lista de ingredientes después de "sin"
-        ingredients_list = sin_context.group(1)
-        # Buscar cada ingrediente en la lista
-        for syn_norm, token in ing_map.items():
-            if re.search(pat(syn_norm), ingredients_list):
-                exclude.append(token)
-        for syn_norm, token in allerg_map.items():
-            if re.search(pat(syn_norm), ingredients_list):
-                allergens_ex.append(token)
-    
-    # También buscar patrones "ni X" independientes
+    negative_prefixes = [
+        r"sin",
+        r"ni",
+        r"odio",
+        r"odio\s+la",
+        r"odio\s+el",
+        r"no\s+quiero",
+        r"evito",
+        r"evitar",
+        r"alergia",
+        r"alergias",
+        r"intolerancia",
+        r"intolerancias",
+        r"nada\s+de",
+        r"nada\s+con",
+    ]
+
+    def in_negative_context(pattern: str) -> bool:
+        for prefix in negative_prefixes:
+            if re.search(rf"{prefix}(?:\s+\w+){{0,5}}\s+{pattern}", text_norm):
+                return True
+        return False
+
     for syn_norm, token in ing_map.items():
-        if re.search(rf"\bni\s+{pat(syn_norm)}\b", text_norm):
+        token_pattern = pat(syn_norm)
+        if in_negative_context(token_pattern):
             exclude.append(token)
+
     for syn_norm, token in allerg_map.items():
-        if re.search(rf"\bni\s+{pat(syn_norm)}\b", text_norm):
+        token_pattern = pat(syn_norm)
+        if in_negative_context(token_pattern):
             allergens_ex.append(token)
 
     # "con X"
@@ -514,8 +540,38 @@ def apply_conversation_scenarios(
         weights = ranking_overrides.setdefault("weights", {})
         weights["eta"] = max(weights.get("eta", 0.1), 0.22)
         weights["dist"] = max(weights.get("dist", 0.1), 0.12)
-        note("almuerzo rápido", "limitar tiempos de entrega y priorizar formatos express")
+        main_cats = ["ensalada", "bowls", "wok", "platos principales", "parrilla", "pasta", "sandwich"]
+        current_cats = filters.get("category_any") or []
+        filtered = [c for c in current_cats if c != "postres"]
+        filters["category_any"] = filtered or main_cats
+        note("almuerzo rápido", "limitar tiempos de entrega, priorizar platos livianos y evitar postres.")
         summaries.append("Configuré filtros para almuerzos rápidos con entregas cortas y platos listos al paso.")
+
+    gamer_patterns = [r"juntada", r"gamer", r"amigos", r"maraton\s+de\s+juego", r"maraton\s+de\s+series"]
+    if any(re.search(pat, text_soft) for pat in gamer_patterns):
+        scenario_tags.append("friends_gathering")
+        extend_unique_list(intent_tags, ["friends_gathering", "movie_night"])
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["portion_large", "combos", "friends_gathering"])
+        filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["cena"]))
+        main_cats = ["platos principales", "parrilla", "wok", "bowls", "ensalada", "pasta", "pizza", "sandwich", "combos", "burger"]
+        current_cats = filters.get("category_any") or []
+        filtered = [c for c in current_cats if c != "postres"]
+        filters["category_any"] = filtered or main_cats
+        note("plan con amigos", "priorizar platos abundantes y dejar los postres para pedidos explícitos.")
+        summaries.append("Ajusté la búsqueda a platos principales abundantes y promociones pensadas para compartir con amigos.")
+
+    family_patterns = [r"familia", r"familiar", r"chicos", r"nen(?:es|os)", r"hijos"]
+    if any(re.search(pat, text_soft) for pat in family_patterns):
+        scenario_tags.append("family_sharing")
+        extend_unique_list(intent_tags, ["family_sharing"])
+        extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["family_sharing", "combos"])
+        filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["cena"]))
+        main_cats = ["platos principales", "parrilla", "bowls", "pasta", "pizza", "sandwich", "combos"]
+        current_cats = filters.get("category_any") or []
+        filtered = [c for c in current_cats if c != "postres"]
+        filters["category_any"] = filtered or main_cats
+        note("plan familiar", "destacar opciones rendidoras y aptas para compartir con chicos.")
+        summaries.append("Configuré la búsqueda a platos principales abundantes pensados para compartir en familia.")
 
     # remover duplicados preservando orden
     seen = set()
@@ -529,6 +585,7 @@ def apply_conversation_scenarios(
 def parse(text: str):
     plan = []
     tn = normalize(text)
+    text_soft = normalize_soft(text)
     rest_hits = parse_restaurants(text, plan)
     filters = {
         "category_any": parse_category(tn, plan),
@@ -537,6 +594,7 @@ def parse(text: str):
         "restaurant_any": [],
         "ingredients_include": [],
         "ingredients_exclude": [],
+        "ingredients_any": [],
         "diet_must": [],
         "allergens_exclude": [],
         "health_any": [],
@@ -558,6 +616,20 @@ def parse(text: str):
     filters["price_max"] = parse_price(tn, plan)
     filters["eta_max"] = parse_eta(tn, plan)
     filters["rating_min"] = parse_rating(text, plan)
+
+    def add_ingredient_any(tokens: List[str]) -> None:
+        if not tokens:
+            return
+        filters.setdefault("ingredients_any", [])
+        extend_unique_list(filters["ingredients_any"], tokens)
+
+    if "popeye" in tn:
+        extend_unique_list(filters.setdefault("ingredients_include", []), ["espinaca"])
+        plan.append("Referencia cultural: Popeye -> incluir espinaca.")
+    if "bugs bunny" in tn or "conejo" in tn:
+        add_ingredient_any(["zanahoria", "espinaca", "calabaza"])
+        extend_unique_list(hints, ["veggie"])
+        plan.append("Referencia cultural: Bugs Bunny -> priorizar zanahoria/espinaca/calabaza.")
 
     ranking_overrides = {
         "boost_tags": boost,
@@ -740,6 +812,45 @@ def parse(text: str):
     elif llm_enabled_flag and llm_info.get("status") not in {"error"}:
         llm_info["status"] = "no_data"
 
+    def _enforce_course_preferences() -> None:
+        nonlocal filters
+        categories = filters.get("category_any") or []
+        dessert_terms = re.compile(r"\b(postre|postres|dulce|helado|dessert)\b")
+        wants_dessert = bool(dessert_terms.search(text_soft))
+        meal_terms = re.compile(r"\b(almuerzo|almorzar|cena|cenar|comida|plato|juntada|gamer|oficina|trabajo|express|rapido|almuerz[ao]|cenit[oa])\b")
+        wants_meal = bool(meal_terms.search(text_soft) or filters.get("meal_moments_any"))
+        savory_defaults = [
+            "platos principales",
+            "parrilla",
+            "wok",
+            "bowls",
+            "ensalada",
+            "pasta",
+            "pizza",
+            "sandwich",
+            "combos",
+            "empanadas",
+            "burger",
+            "sopas",
+        ]
+
+        if wants_dessert and not wants_meal:
+            if not categories or categories == ["postres"]:
+                filters["category_any"] = ["postres"]
+                plan.append("Categoría inferida: postres.")
+            return
+
+        if categories:
+            filtered = [c for c in categories if c != "postres"]
+            if wants_meal and len(filtered) != len(categories):
+                filters["category_any"] = filtered or savory_defaults
+                plan.append("Se removieron postres para priorizar platos principales.")
+        elif wants_meal:
+            filters["category_any"] = savory_defaults
+            plan.append("Categorías inferidas (plato principal): platos principales, parrilla, wok, bowls, ensalada, pasta, pizza.")
+
+    _enforce_course_preferences()
+
     extra_meal_tags: List[str] = []
     meal_any = filters.get("meal_moments_any") or []
     if meal_any:
@@ -821,6 +932,15 @@ def parse_meal_moments(text_norm: str, plan: List[str]):
                 break
     if mm:
         plan.append(f"Meal moments: {sorted(set(mm))}")
+    extra = []
+    if "oficina" in text_norm or "trabajo" in text_norm or "contra reloj" in text_norm:
+        extra.append("almuerzo")
+    if "cena" in text_norm or "noche" in text_norm:
+        extra.append("cena")
+    if extra:
+        combined = sorted(set(mm + extra))
+        plan.append(f"Meal moments inferidos: {combined}")
+        return combined
     return sorted(set(mm))
 def _build_synonym_lookup(source: Dict[str, Any]) -> Dict[str, str]:
     lookup: Dict[str, str] = {}

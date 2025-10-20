@@ -487,6 +487,14 @@ function parseCategory(textNorm, plan) {
       if (!normalizedSyn) continue;
       const regex = new RegExp(`\\b${escapeRegex(normalizedSyn)}\\b`, "i");
       if (regex.test(textNorm)) {
+        const negative = new RegExp(
+          `(sin|evitar|alergia|alergias|intolerancia|intolerancias|no\\s+quiero)(?:\\s+\\w+){0,5}\\s+${escapeRegex(normalizedSyn)}`,
+          "i"
+        );
+        if (negative.test(textNorm)) {
+          plan.push(`Categoría omitida por contexto negativo: ${cat}`);
+          continue;
+        }
         cats.push(cat);
         break;
       }
@@ -530,7 +538,15 @@ function parseCuisines(textRaw, plan) {
     } else {
       const regex = new RegExp(`\\b${escapeRegex(cNorm)}\\b`, "i");
       if (regex.test(textNorm)) {
-        selected.push(c);
+        const negative = new RegExp(
+          `(sin|evitar|alergia|alergias|intolerancia|intolerancias|no\\s+quiero)(?:\\s+\\w+){0,5}\\s+${escapeRegex(cNorm)}`,
+          "i"
+        );
+        if (negative.test(textNorm)) {
+          plan.push(`Cocina omitida por contexto negativo: ${c}`);
+        } else {
+          selected.push(c);
+        }
       }
     }
   });
@@ -551,7 +567,14 @@ function parseMealMoments(textNorm, plan) {
       }
     }
   }
-  const unique = Array.from(new Set(mm)).sort();
+  const extra = [];
+  if (/\b(oficina|trabajo|contra reloj)\b/i.test(textNorm)) {
+    extra.push("almuerzo");
+  }
+  if (/\b(noche|cena)\b/i.test(textNorm)) {
+    extra.push("cena");
+  }
+  const unique = Array.from(new Set([...mm, ...extra])).sort();
   if (unique.length) {
     plan.push(`Meal moments: ${JSON.stringify(unique)}`);
   }
@@ -610,66 +633,50 @@ function extractIncludeExclude(textNorm, plan) {
     });
   }
 
-  const buildPattern = (syn) => new RegExp(`\\b${escapeRegex(syn)}(?:s|es|ito|itos|ita|itas)?\\b`, "i");
+  const buildPattern = (syn) => `\\b${escapeRegex(syn)}(?:s|es|ito|itos|ita|itas)?\\b`;
 
-  // Detectar ingredientes en contextos de exclusión
-  // Buscar "sin" seguido de una lista de ingredientes
-  const sinContextMatch = textNorm.match(/\bsin\s+([^,]+(?:,\s*[^,]+)*)/);
-  if (sinContextMatch) {
-    // Extraer la lista de ingredientes después de "sin"
-    const ingredientsList = sinContextMatch[1];
-    // Buscar cada ingrediente en la lista
-    for (const [syn, token] of ingredientMap.entries()) {
-      const pattern = buildPattern(syn);
-      if (pattern.test(ingredientsList)) {
-        exclude.add(token);
-      }
-    }
-    for (const [syn, token] of allergenMap.entries()) {
-      const pattern = buildPattern(syn);
-      if (pattern.test(ingredientsList)) {
-        allergensExclude.add(token);
-      }
-    }
-  }
-  
-  // También buscar patrones "ni X" independientes
-  for (const [syn, token] of ingredientMap.entries()) {
-    const niPattern = new RegExp(`\\bni\\s+${buildPattern(syn).source}\\b`, "i");
-    if (niPattern.test(textNorm)) {
+  const negativePrefixes = [
+    /\bsin/i,
+    /\bni/i,
+    /\bodio/i,
+    /\bno\s+quiero/i,
+    /\bevito/i,
+    /\bevitar/i,
+    /\balergia/i,
+    /\balergias/i,
+    /\bintolerancia/i,
+    /\bintolerancias/i,
+    /\bnada\s+de/i,
+    /\bnada\s+con/i,
+  ];
+
+  const inNegativeContext = (pattern) =>
+    negativePrefixes.some((prefix) => {
+      const base = `${prefix.source}(?:\\s+\\w+){0,5}\\s+${pattern}`;
+      return new RegExp(base, "i").test(textNorm);
+    });
+
+  ingredientMap.forEach((token, syn) => {
+    const pattern = buildPattern(syn);
+    if (inNegativeContext(pattern)) {
       exclude.add(token);
     }
-  }
-  for (const [syn, token] of allergenMap.entries()) {
-    const niPattern = new RegExp(`\\bni\\s+${buildPattern(syn).source}\\b`, "i");
-    if (niPattern.test(textNorm)) {
+  });
+
+  allergenMap.forEach((token, syn) => {
+    const pattern = buildPattern(syn);
+    if (inNegativeContext(pattern)) {
       allergensExclude.add(token);
     }
-  }
+  });
 
-  for (const [syn, token] of ingredientMap.entries()) {
-    const pattern = new RegExp(`\\bcon\\s+${buildPattern(syn).source}`, "i");
-    if (pattern.test(textNorm)) {
-      if (!(lowSodiumHit && syn === "sal")) {
-        include.add(token);
-      }
-    }
-  }
-
-  // Solo incluir ingredientes que aparecen explícitamente con "con" o en contextos positivos
-  // NO incluir ingredientes que aparecen en contextos de exclusión
-  for (const [syn, token] of ingredientMap.entries()) {
-    if (syn === "sal" && lowSodiumHit) continue;
-    const basePattern = buildPattern(syn);
-    const negPattern = new RegExp(`\\bsin\\s+${basePattern.source}`, "i");
-    const conPattern = new RegExp(`\\bcon\\s+${basePattern.source}`, "i");
-    
-    // Solo incluir si aparece con "con" o en contextos claramente positivos
-    // NO incluir si aparece con "sin" o en contextos de exclusión
-    if (conPattern.test(textNorm) && !negPattern.test(textNorm)) {
+  ingredientMap.forEach((token, syn) => {
+    if (syn === "sal" && lowSodiumHit) return;
+    const pattern = new RegExp(`\\bcon\\s+${buildPattern(syn)}`, "i");
+    if (pattern.test(textNorm) && !inNegativeContext(buildPattern(syn))) {
       include.add(token);
     }
-  }
+  });
 
   if (include.size) {
     plan.push(`Incluir ingredientes: ${JSON.stringify(Array.from(include).sort())}`);
@@ -859,6 +866,48 @@ function normalizePriceLimit(limit) {
   return null;
 }
 
+function enforceCoursePreferences(text, filters, plan) {
+  const soft = normalizeSoft(text || "");
+  const dessertRegex = /(postre|postres|dulce|helado|dessert)/i;
+  const mealRegex = /(almuerzo|almorzar|cena|cenar|comida|plato|juntada|gamer|oficina|trabajo|express|rapido)/i;
+  const wantsDessert = dessertRegex.test(soft);
+  const wantsMeal = mealRegex.test(soft) || (filters.meal_moments_any || []).length > 0;
+  const savoryDefaults = [
+    "platos principales",
+    "parrilla",
+    "wok",
+    "bowls",
+    "ensalada",
+    "pasta",
+    "pizza",
+    "sandwich",
+    "combos",
+    "empanadas",
+    "burger",
+    "sopas",
+  ];
+
+  if (wantsDessert && !wantsMeal) {
+    if (!filters.category_any?.length || filters.category_any.includes("postres")) {
+      filters.category_any = ["postres"];
+      plan.push("Categoría inferida: postres.");
+    }
+    return;
+  }
+
+  const currentCats = filters.category_any || [];
+  if (currentCats.length) {
+    const filtered = currentCats.filter((c) => c !== "postres");
+    if (wantsMeal && filtered.length !== currentCats.length) {
+      filters.category_any = filtered.length ? filtered : savoryDefaults;
+      plan.push("Se removieron postres de las categorías para priorizar platos principales.");
+    }
+  } else if (wantsMeal) {
+    filters.category_any = savoryDefaults;
+    plan.push("Categorías inferidas para plato principal: platos principales, parrilla, wok, bowls, ensalada y más.");
+  }
+}
+
 function applyConversationScenarios(text, filters, rankingOverrides, hints, plan) {
   const summaries = [];
   const scenarioTags = [];
@@ -922,8 +971,54 @@ function applyConversationScenarios(text, filters, rankingOverrides, hints, plan
     extendUnique(rankingOverrides.boost_tags, ["quick_lunch", "sandwich", "wrap", "express"]);
     rankingOverrides.weights.eta = Math.max(rankingOverrides.weights.eta || 0.1, 0.22);
     rankingOverrides.weights.dist = Math.max(rankingOverrides.weights.dist || 0.1, 0.12);
-    note("almuerzo rápido", "limitar tiempos de entrega y priorizar formatos express");
+    const mainCats = ["ensalada", "bowls", "wok", "platos principales", "parrilla", "pasta", "sandwich"];
+    const currentCats = filters.category_any || [];
+    const filteredCats = currentCats.filter((c) => c !== "postres");
+    filters.category_any = filteredCats.length ? filteredCats : mainCats;
+    note("almuerzo rápido", "limitar tiempos de entrega, priorizar platos livianos y evitar postres.");
     summaries.push("Configuré filtros para almuerzos rápidos con entregas cortas y platos listos al paso.");
+  }
+
+  const gamerPatterns = [/juntada/i, /gamer/i, /amigos/i, /maraton\s+de\s+juego/i, /maraton\s+de\s+series/i];
+  if (gamerPatterns.some((re) => re.test(soft))) {
+    scenarioTags.push("friends_gathering");
+    const mm = new Set(filters.meal_moments_any || []);
+    mm.add("cena");
+    filters.meal_moments_any = Array.from(mm).sort();
+    extendUnique(rankingOverrides.boost_tags, ["portion_large", "combos", "friends_gathering"]);
+    extendUnique(hints, ["friends"]);
+    const mainCats = [
+      "platos principales",
+      "parrilla",
+      "wok",
+      "bowls",
+      "ensalada",
+      "pasta",
+      "pizza",
+      "sandwich",
+      "combos",
+      "burger",
+    ];
+    const currentCats = filters.category_any || [];
+    const filteredCats = currentCats.filter((c) => c !== "postres");
+    filters.category_any = filteredCats.length ? filteredCats : mainCats;
+    note("plan con amigos", "priorizar platos abundantes y dejar los postres para pedidos explícitos.");
+    summaries.push("Ajusté la búsqueda a platos principales abundantes y promociones para compartir.");
+  }
+
+  const familyPatterns = [/familia/i, /familiar/i, /chicos/i, /nenes?/i, /hijos?/i];
+  if (familyPatterns.some((re) => re.test(soft))) {
+    scenarioTags.push("family_sharing");
+    const mm = new Set(filters.meal_moments_any || []);
+    mm.add("cena");
+    filters.meal_moments_any = Array.from(mm).sort();
+    extendUnique(rankingOverrides.boost_tags, ["family_sharing", "combos"]);
+    const mainCats = ["platos principales", "parrilla", "bowls", "pasta", "pizza", "sandwich", "combos"];
+    const currentCats = filters.category_any || [];
+    const filteredCats = currentCats.filter((c) => c !== "postres");
+    filters.category_any = filteredCats.length ? filteredCats : mainCats;
+    note("plan familiar", "priorizar platos rendidores y seguros para compartir.");
+    summaries.push("Configuré filtros para porciones rendidoras y opciones pensadas para la familia.");
   }
 
   const dedup = Array.from(new Set(scenarioTags));
@@ -942,6 +1037,7 @@ function parseText(text) {
     restaurant_any: restHits.length ? restHits : [],
     ingredients_include: [],
     ingredients_exclude: [],
+    ingredients_any: [],
     diet_must: [],
     allergens_exclude: [],
     health_any: [],
@@ -963,6 +1059,26 @@ function parseText(text) {
   filters.eta_max = parseEta(tn, plan);
   filters.rating_min = parseRating(text || "", plan);
 
+  const addIngredientsAny = (tokens = []) => {
+    if (!tokens.length) return;
+    if (!Array.isArray(filters.ingredients_any)) filters.ingredients_any = [];
+    tokens.forEach((token) => {
+      if (token && !filters.ingredients_any.includes(token)) {
+        filters.ingredients_any.push(token);
+      }
+    });
+  };
+
+  if (tn.includes("popeye")) {
+    extendUnique(filters.ingredients_include, ["espinaca"]);
+    plan.push("Referencia cultural: Popeye -> incluir espinaca.");
+  }
+  if (tn.includes("bugs bunny") || tn.includes("conejo")) {
+    addIngredientsAny(["zanahoria", "espinaca", "calabaza"]);
+    extendUnique(health.hints, ["veggie"]);
+    plan.push("Referencia cultural: Bugs Bunny -> priorizar zanahoria/espinaca/calabaza.");
+  }
+
   const rankingOverrides = {
     boost_tags: health.boost,
     penalize_tags: health.penal,
@@ -980,6 +1096,7 @@ function parseText(text) {
   }
 
   const scenario = applyConversationScenarios(text || "", filters, rankingOverrides, health.hints, plan);
+  enforceCoursePreferences(text || "", filters, plan);
   const advisorSummary = scenario.summaries.join(" ").trim() || null;
 
   return {

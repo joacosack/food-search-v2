@@ -1286,6 +1286,53 @@ function tiny(obj) {
   return `<pre class="tiny">${typeof obj === "string" ? obj : JSON.stringify(obj, null, 2)}</pre>`;
 }
 
+function renderLLMDebug(panel, statusEl, rawEl, filtersEl, overridesEl, finalEl, metadata, query) {
+  if (!panel || !rawEl || !filtersEl || !overridesEl || !finalEl) return;
+  const llmMeta = metadata?.llm || {};
+  const raw = metadata?.llm_raw;
+  const baseFilters = metadata?.llm_filters_base;
+  const applied = metadata?.llm_filters_applied;
+  const overrides = metadata?.llm_overrides_applied;
+  const finalFilters = metadata?.llm_filters_final || query?.filters;
+  const shouldShowPanel =
+    raw ||
+    (applied && Object.keys(applied).length) ||
+    (overrides && Object.keys(overrides).length) ||
+    (llmMeta && llmMeta.status && llmMeta.status !== "disabled");
+
+  if (!shouldShowPanel) {
+    panel.hidden = true;
+    if (statusEl) statusEl.textContent = "";
+    rawEl.textContent = "";
+    filtersEl.textContent = "";
+    overridesEl.textContent = "";
+    finalEl.textContent = "";
+    return;
+  }
+
+  panel.hidden = false;
+  if (statusEl) {
+    const provider = llmMeta.provider || "local";
+    const status = llmMeta.status || "sin datos";
+    const notes =
+      Array.isArray(llmMeta.notes) && llmMeta.notes.length ? ` · Notas: ${llmMeta.notes.join(" · ")}` : "";
+    statusEl.textContent = `Estado: ${status} · Proveedor: ${provider}${notes}`;
+  }
+  rawEl.textContent = raw ? JSON.stringify(raw, null, 2) : "Sin payload de IA (modo heurístico).";
+  const filtersToShow =
+    (applied && Object.keys(applied).length && applied) ||
+    (raw && raw.filters) ||
+    baseFilters ||
+    {};
+  filtersEl.textContent = JSON.stringify(filtersToShow || {}, null, 2);
+  const overridesToShow =
+    (overrides && Object.keys(overrides).length && overrides) ||
+    (raw && raw.ranking_overrides) ||
+    {};
+  overridesEl.textContent = JSON.stringify(overridesToShow || {}, null, 2);
+  finalEl.textContent = JSON.stringify(finalFilters || {}, null, 2);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const q = document.getElementById("q");
   const btn = document.getElementById("btn");
@@ -1298,6 +1345,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const advisorDetails = document.getElementById("advisor-details");
   const advisorNotes = document.getElementById("advisor-notes");
   const advisorStatus = document.getElementById("advisor-status");
+  const llmDebugPanel = document.getElementById("llm-debug");
+  const llmDebugStatus = document.getElementById("llm-debug-status");
+  const llmDebugRaw = document.getElementById("llm-debug-raw");
+  const llmDebugFilters = document.getElementById("llm-debug-filters");
+  const llmDebugOverrides = document.getElementById("llm-debug-overrides");
+  const llmDebugFinal = document.getElementById("llm-debug-final");
   const sampleSelect = document.getElementById("prompt-samples");
   const useSampleBtn = document.getElementById("use-sample");
   const showAllBtn = document.getElementById("show-all");
@@ -1334,6 +1387,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const resetAdvisor = () => {
     renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorStatus, "", [], null);
+    renderLLMDebug(
+      llmDebugPanel,
+      llmDebugStatus,
+      llmDebugRaw,
+      llmDebugFilters,
+      llmDebugOverrides,
+      llmDebugFinal,
+      null,
+      null
+    );
   };
 
   async function runSearch(trigger = "user") {
@@ -1375,6 +1438,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       structuredEl.textContent = JSON.stringify(parsed.query, null, 2);
       planEl.textContent = JSON.stringify(parsed.plan, null, 2);
+      renderLLMDebug(
+        llmDebugPanel,
+        llmDebugStatus,
+        llmDebugRaw,
+        llmDebugFilters,
+        llmDebugOverrides,
+        llmDebugFinal,
+        parsed.status,
+        parsed.query
+      );
 
       let searched;
       if (usedBackend) {
@@ -1431,6 +1504,16 @@ document.addEventListener("DOMContentLoaded", () => {
       results.innerHTML = '<p class="error">No pudimos completar la búsqueda.</p>' + tiny(errorDetails);
       resetAdvisor();
       updateStatusBanner(statusBanner, null, null);
+      renderLLMDebug(
+        llmDebugPanel,
+        llmDebugStatus,
+        llmDebugRaw,
+        llmDebugFilters,
+        llmDebugOverrides,
+        llmDebugFinal,
+        null,
+        null
+      );
     } finally {
       btn.disabled = false;
     }

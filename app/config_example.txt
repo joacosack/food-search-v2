@@ -5,7 +5,7 @@
 export LLM_PROVIDER=groq
 
 # API Key para Groq (https://console.groq.com/)
-export GROQ_API_KEY=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
+export GROQ_API_KEY=tu_api_key
 
 # O usar LLM_API_KEY como alternativa
 # export LLM_API_KEY=tu_api_key_aqui

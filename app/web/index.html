@@ -29,11 +29,26 @@
           <span class="llm-box__badge">IA</span>
           <h2>Asistente de delivery</h2>
         </div>
+        <p id="advisor-status" class="llm-status"></p>
         <h3 id="advisor-headline"></h3>
         <p id="advisor-details"></p>
         <ul id="advisor-notes"></ul>
       </div>
       <div id="status-banner" class="status" aria-live="polite"></div>
+      <details id="llm-debug" class="panel" hidden open>
+        <summary>Debug: Respuesta detallada de la IA</summary>
+        <div class="debug-content">
+          <p id="llm-debug-status" class="llm-debug-status"></p>
+          <h4>Payload crudo</h4>
+          <pre id="llm-debug-raw"></pre>
+          <h4>Filtros sugeridos por la IA</h4>
+          <pre id="llm-debug-filters"></pre>
+          <h4>Overrides de ranking sugeridos</h4>
+          <pre id="llm-debug-overrides"></pre>
+          <h4>Consulta final enviada al backend</h4>
+          <pre id="llm-debug-final"></pre>
+        </div>
+      </details>
       <details class="panel" id="debug-panel" open>
         <summary>Debug: Consulta estructurada y Plan de búsqueda</summary>
         <div class="debug-content">

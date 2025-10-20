@@ -1,2 +1,8 @@
 __pycache__/
 *.py[cod]
+.env
+.env.*
+app/.env
+app/.env.*
+!.env.example
+!app/.env.example

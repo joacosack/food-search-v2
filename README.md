@@ -46,17 +46,31 @@ uvicorn server.main:app --host 0.0.0.0 --port 8000
 
 ## 🔧 Configuración de IA
 
-La IA está configurada y funcionando con Groq:
+La integración con Groq se maneja mediante variables de entorno. Para evitar exponer credenciales en el repositorio:
+
+1. Copiá `app/.env.example` a `app/.env.local` (este nombre ya está ignorado por git).
+2. Completá los valores necesarios:
 
 ```bash
-# Variables ya configuradas
-export LLM_PROVIDER=groq
-export GROQ_API_KEY=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
-export LLM_MODEL=llama-3.3-70b-versatile
-
-# O usar el script de inicio
-./app/start_server.sh
+cp app/.env.example app/.env.local
 ```
+
+Editá `app/.env.local`:
+
+```bash
+LLM_PROVIDER=groq
+GROQ_API_KEY="tu_api_key"
+LLM_MODEL=llama-3.3-70b-versatile
+```
+
+3. Ejecutá el backend cargando esa configuración:
+
+```bash
+cd app
+./start_server.sh
+```
+
+El script detecta automáticamente `.env.local`, exporta las variables y lanza el servidor. Si preferís hacerlo manualmente, exportá las variables en tu shell antes de iniciar `uvicorn`. Nunca subas tu `.env.local` ni la clave real al repositorio.
 
 ## 📁 Estructura del Proyecto
 

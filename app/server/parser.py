@@ -2,6 +2,7 @@
 import json, re
 from pathlib import Path
 from typing import Dict, Any, List, Iterable, Optional
+from copy import deepcopy
 from .schema import ParsedQuery, ParseFilters, RankingOverrides
 from . import llm
 
@@ -36,6 +37,7 @@ CATALOG_FACETS = {
     "health_tags": sorted(HEALTH["tags"].keys()),
     "neighborhoods": NEIGHBORHOODS,
     "cuisines": CUISINES,
+    "ingredients": sorted(INGREDIENTS.keys()),
 }
 
 # Cargar nombres de restaurantes desde el catálogo para detectar coincidencias exactas en la consulta
@@ -545,6 +547,7 @@ def parse(text: str):
         "rating_min": None,
         "available_only": True
     }
+    filters_before_llm = deepcopy(filters)
     auto_constraints: List[str] = []
     inc, exc, allerg_exc = extract_include_exclude(tn, plan)
     filters["ingredients_include"] = inc
@@ -583,6 +586,9 @@ def parse(text: str):
         plan.append("LLM deshabilitado: se utilizan únicamente reglas locales.")
 
     enrichment: Dict[str, Any] = {}
+    llm_raw_snapshot: Dict[str, Any] = {}
+    llm_applied_filters: Dict[str, Any] = {}
+    llm_overrides_applied: Dict[str, Any] = {}
     if llm_enabled_flag:
         try:
             enrichment = llm.enrich_query(
@@ -604,6 +610,7 @@ def parse(text: str):
             plan.append(f"❌ {error_msg}")
 
     if enrichment:
+        llm_raw_snapshot = deepcopy(enrichment)
         llm_info["status"] = "used"
         notes = enrichment.get("notes") or []
         if notes:
@@ -615,7 +622,7 @@ def parse(text: str):
             "eta_max": filters.get("eta_max") is not None,
             "rating_min": filters.get("rating_min") is not None,
         }
-        applied_filters: Dict[str, Any] = {}
+        llm_applied_filters = {}
         list_keys = {
             "category_any",
             "meal_moments_any",
@@ -631,12 +638,25 @@ def parse(text: str):
         for key in list_keys:
             if key not in llm_filters:
                 continue
+            sanitized_values = _sanitize_llm_list_values(key, llm_filters[key])
+            if not sanitized_values:
+                continue
             existing_values = filters.get(key) or []
-            allow_merge = bool(existing_values) or key == "intent_tags_any"
+            allow_merge = bool(existing_values) or key in {
+                "intent_tags_any",
+                "ingredients_include",
+                "ingredients_exclude",
+                "diet_must",
+                "allergens_exclude",
+                "health_any",
+            }
             if not allow_merge:
                 continue
-            if _merge_list_field(filters, key, llm_filters[key]):
-                applied_filters[key] = filters[key]
+            before = list(existing_values)
+            filters.setdefault(key, [])
+            extend_unique_list(filters[key], sanitized_values)
+            if filters[key] != before:
+                llm_applied_filters[key] = filters[key]
         if "price_max" in llm_filters and user_defined_constraints.get("price_max"):
             merged = _merge_max_limit(filters.get("price_max"), llm_filters["price_max"], _price_value)
             if merged != filters.get("price_max"):
@@ -656,17 +676,19 @@ def parse(text: str):
             new_val = bool(llm_filters["available_only"])
             if new_val != filters.get("available_only", True):
                 filters["available_only"] = new_val
-                applied_filters["available_only"] = filters["available_only"]
-        if applied_filters:
-            plan.append(f"LLM filtros combinados: {json.dumps(applied_filters, ensure_ascii=False)}")
+                llm_applied_filters["available_only"] = filters["available_only"]
+        if llm_filters:
+            plan.append(f"LLM filtros sugeridos (raw): {json.dumps(llm_filters, ensure_ascii=False)}")
+        if llm_applied_filters:
+            plan.append(f"LLM filtros combinados: {json.dumps(llm_applied_filters, ensure_ascii=False)}")
 
         overrides = enrichment.get("ranking_overrides") or {}
-        overrides_applied: Dict[str, Any] = {}
+        llm_overrides_applied = {}
         if overrides:
             if _merge_list_field(ranking_overrides, "boost_tags", overrides.get("boost_tags")):
-                overrides_applied["boost_tags"] = ranking_overrides["boost_tags"]
+                llm_overrides_applied["boost_tags"] = ranking_overrides["boost_tags"]
             if _merge_list_field(ranking_overrides, "penalize_tags", overrides.get("penalize_tags")):
-                overrides_applied["penalize_tags"] = ranking_overrides["penalize_tags"]
+                llm_overrides_applied["penalize_tags"] = ranking_overrides["penalize_tags"]
             weight_updates = overrides.get("weights") or {}
             if isinstance(weight_updates, dict) and weight_updates:
                 ranking_overrides.setdefault("weights", {})
@@ -676,9 +698,11 @@ def parse(text: str):
                     if val is not None:
                         ranking_overrides["weights"][wk] = val
                 if ranking_overrides["weights"] != before:
-                    overrides_applied["weights"] = ranking_overrides["weights"]
-        if overrides_applied:
-            plan.append(f"LLM ranking overrides: {json.dumps(overrides_applied, ensure_ascii=False)}")
+                    llm_overrides_applied["weights"] = ranking_overrides["weights"]
+        if overrides:
+            plan.append(f"LLM overrides sugeridos (raw): {json.dumps(overrides, ensure_ascii=False)}")
+        if llm_overrides_applied:
+            plan.append(f"LLM ranking overrides: {json.dumps(llm_overrides_applied, ensure_ascii=False)}")
 
         if _merge_into_list(hints, enrichment.get("hints")):
             plan.append(f"LLM hints añadidos: {json.dumps(hints, ensure_ascii=False)}")
@@ -762,16 +786,22 @@ def parse(text: str):
         dedup_notes = list(dict.fromkeys(llm_notes_accum))
         llm_info["notes"] = dedup_notes
 
+    final_filters_model = ParseFilters(**filters)
     metadata = {
         "llm": llm_info,
         "auto_constraints": auto_constraints,
         "restaurant_hits": rest_hits,
         "llm_notes": list(dict.fromkeys(llm_notes_accum)) if llm_notes_accum else [],
+        "llm_raw": llm_raw_snapshot or None,
+        "llm_filters_base": filters_before_llm,
+        "llm_filters_applied": llm_applied_filters or {},
+        "llm_overrides_applied": llm_overrides_applied or {},
+        "llm_filters_final": final_filters_model.dict(),
     }
     return {
         "query": ParsedQuery(
             q=text,
-            filters=ParseFilters(**filters),
+            filters=final_filters_model,
             hints=hints,
             ranking_overrides=RankingOverrides(**ranking_overrides),
             advisor_summary=combined_advisor,
@@ -792,3 +822,61 @@ def parse_meal_moments(text_norm: str, plan: List[str]):
     if mm:
         plan.append(f"Meal moments: {sorted(set(mm))}")
     return sorted(set(mm))
+def _build_synonym_lookup(source: Dict[str, Any]) -> Dict[str, str]:
+    lookup: Dict[str, str] = {}
+    for canonical, data in source.items():
+        tokens = [canonical]
+        if isinstance(data, dict):
+            tokens.extend(data.get("synonyms") or [])
+        for token in tokens:
+            norm = normalize(token)
+            if norm:
+                lookup[norm] = canonical
+    return lookup
+
+
+INGREDIENT_LOOKUP = _build_synonym_lookup(INGREDIENTS)
+ALLERGEN_LOOKUP = _build_synonym_lookup(ALLERGENS)
+DIET_LOOKUP = _build_synonym_lookup(DIETS)
+HEALTH_LOOKUP = _build_synonym_lookup(HEALTH.get("tags", {}))
+def _sanitize_llm_list_values(key: str, values: Any) -> List[str]:
+    raw_values = [v for v in _as_list(values) if v]
+    if not raw_values:
+        return []
+
+    def canon_from_lookup(token: str, lookup: Dict[str, str]) -> Optional[str]:
+        norm = normalize(token)
+        if not norm:
+            return None
+        return lookup.get(norm)
+
+    if key in {"ingredients_include", "ingredients_exclude"}:
+        sanitized = []
+        for token in raw_values:
+            canonical = canon_from_lookup(token, INGREDIENT_LOOKUP)
+            if canonical:
+                sanitized.append(canonical)
+        return sanitized
+    if key == "diet_must":
+        sanitized = []
+        for token in raw_values:
+            canonical = canon_from_lookup(token, DIET_LOOKUP)
+            if canonical:
+                sanitized.append(canonical)
+        return sanitized
+    if key == "allergens_exclude":
+        sanitized = []
+        for token in raw_values:
+            canonical = canon_from_lookup(token, ALLERGEN_LOOKUP)
+            if canonical:
+                sanitized.append(canonical)
+        return sanitized
+    if key == "health_any":
+        sanitized = []
+        for token in raw_values:
+            canonical = canon_from_lookup(token, HEALTH_LOOKUP)
+            if canonical:
+                sanitized.append(canonical)
+        return sanitized
+    return [str(v) for v in raw_values if v]
+

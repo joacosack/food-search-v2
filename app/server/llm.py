@@ -66,7 +66,8 @@ def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, s
         "No inventes restaurantes específicos fuera del catálogo. "
         "No agregues filtros nuevos (barrios, rating mínimo, precio máximo, tiempo de entrega, dietas, etc.) a menos que la persona los haya pedido explícitamente. "
         "Podés sugerir ideas en 'details' o 'notes', pero los campos de 'filters' deben reflejar únicamente restricciones ya presentes. "
-        "El campo 'details' debe describir explícitamente los pasos de razonamiento y mencionar si se mantienen exactamente los filtros solicitados. "
+        "El campo 'details' debe describir explícitamente los pasos de razonamiento y mencionar si se mantienen exactamente los filtros solicitados. Incluí una sección final 'Filtros aplicados:' donde listás cada filtro del objeto 'filters' con sus valores exactos y explicás si descartás alguno de los filtros base. "
+        "Interpretá también referencias indirectas o culturales y convertílas en filtros canónicos usando los valores provistos en catalog_facets (por ejemplo, si la consulta menciona a Popeye, agregá 'espinaca' dentro de ingredients_include). "
         "Cuando el usuario nombre un plato o restaurante, devolvé esa referencia textual en 'details' para favorecer coincidencias exactas."
     )
     user_payload = {

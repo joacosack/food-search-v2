@@ -68,6 +68,9 @@ def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, s
         "Podés sugerir ideas en 'details' o 'notes', pero los campos de 'filters' deben reflejar únicamente restricciones ya presentes. "
         "El campo 'details' debe describir explícitamente los pasos de razonamiento y mencionar si se mantienen exactamente los filtros solicitados. Incluí una sección final 'Filtros aplicados:' donde listás cada filtro del objeto 'filters' con sus valores exactos y explicás si descartás alguno de los filtros base. "
         "Interpretá también referencias indirectas o culturales y convertílas en filtros canónicos usando los valores provistos en catalog_facets (por ejemplo, si la consulta menciona a Popeye, agregá 'espinaca' dentro de ingredients_include). "
+        "Si detectás ingredientes fuertes como 'odio la cebolla' o 'alergia a maní' asegurate de agregarlos en ingredients_exclude/ allergens_exclude y NO los agregues como categorías o inclusiones. "
+        "Cuando se mencionen platos principales implícitos (juntada, almuerzo, cena) favorecé categorías y platos salados, evitando postres a menos que la persona los pida. "
+        "Podés usar el campo `filters.ingredients_any` para representar ingredientes deseados como una lista OR, y `filters.ingredients_include` cuando se requiere que todos estén presentes. "
         "Cuando el usuario nombre un plato o restaurante, devolvé esa referencia textual en 'details' para favorecer coincidencias exactas."
     )
     user_payload = {

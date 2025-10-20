@@ -623,7 +623,7 @@ def parse(text: str):
             "rating_min": filters.get("rating_min") is not None,
         }
         llm_applied_filters = {}
-        list_keys = {
+        for key in {
             "category_any",
             "meal_moments_any",
             "neighborhood_any",
@@ -634,8 +634,8 @@ def parse(text: str):
             "allergens_exclude",
             "health_any",
             "intent_tags_any",
-        }
-        for key in list_keys:
+            "ingredients_any",
+        }:
             if key not in llm_filters:
                 continue
             sanitized_values = _sanitize_llm_list_values(key, llm_filters[key])
@@ -879,4 +879,3 @@ def _sanitize_llm_list_values(key: str, values: Any) -> List[str]:
                 sanitized.append(canonical)
         return sanitized
     return [str(v) for v in raw_values if v]
-

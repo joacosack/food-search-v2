@@ -19,24 +19,36 @@ const API_BASE =
 
 const PROMPT_SAMPLES = [
   {
-    label: "Cita romántica elegante con envío gratis",
-    value: "cita romántica con plato elegante, vino y envío gratis en Palermo",
+    label: "Favorito de Popeye exprés",
+    value: "cena improvisada digna del marinero Popeye antes del gym",
   },
   {
-    label: "Partido con amigos, porciones grandes",
-    value: "combo abundante para ver el partido con amigos, porciones grandes y buena promo",
+    label: "Maratón mañana, comida liviana",
+    value: "mañana corro mi maratón y necesito un almuerzo que no me caiga pesado ni se demore",
   },
   {
-    label: "Almuerzo saludable sin gluten ni nueces",
-    value: "almuerzo saludable sin gluten ni nueces para la oficina que llegue en menos de 25 minutos",
+    label: "Cita romántica sin frutos secos",
+    value: "noche romántica especial, ambiente íntimo y cero frutos secos porque hay alergia",
   },
   {
-    label: "Postre con descuento y mismo precio",
-    value: "helado artesanal con descuento y mismo precio que en el local para postre después de cenar",
+    label: "Juntada gamer con promos",
+    value: "juntada gamer larga con amigos, quiero que rinda y convenga con promos",
   },
   {
-    label: "Sushi vegano express",
-    value: "sushi vegano express con costo de envío bajo y restaurantes bien calificados",
+    label: "Contra reloj en la oficina",
+    value: "estoy contra reloj en la oficina y odio cuando la comida trae cebolla",
+  },
+  {
+    label: "Brunch vegetal estilo Bugs Bunny",
+    value: "almuerzo vegetariano digno de Bugs Bunny sin nada de lácteos",
+  },
+  {
+    label: "Cena saludable y económica",
+    value: "cena saludable que cuide el presupuesto, nada frito y que sea apta veganos",
+  },
+  {
+    label: "Plan familiar sin alergias",
+    value: "plan familiar con chicos y hay alergia fuerte a maní y mariscos, que alcance para todos",
   },
 ];
 

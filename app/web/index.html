@@ -8,25 +8,39 @@
   </head>
   <body>
     <div class="container">
-      <h1>Buscador gastronómico inteligente</h1>
-      <p class="subtitle">Escribí lo que querés comer. Ejemplo: "algo ultra barato apto celíacos y de porción grande porque estoy con hambre" <span class="subtitle-version">· Versión <span id="app-version" class="version-badge" aria-live="polite"></span></span></p>
+      <h1>PedidosHome AI Concierge</h1>
+      <p class="subtitle">Descubrí qué pedir en PedidosYa con ayuda de IA. Ejemplo: "pizza vegana con envío gratis y rápida" <span class="subtitle-version">· Versión <span id="app-version" class="version-badge" aria-live="polite"></span></span></p>
+      <div class="prompt-bar">
+        <label for="prompt-samples">Probar con:</label>
+        <select id="prompt-samples" aria-label="Prompts de ejemplo">
+          <option value="">Elegí un ejemplo...</option>
+        </select>
+        <button id="use-sample" type="button">Cargar</button>
+      </div>
       <div class="row">
         <input id="q" type="text" placeholder="Escribí lo que querés comer..." />
         <button id="btn">Buscar</button>
       </div>
-      <div class="grid">
-        <div>
-          <h2>Consulta estructurada</h2>
-          <pre id="structured"></pre>
+      <div id="llm-box" class="llm-box" aria-live="polite" hidden>
+        <div class="llm-box__header">
+          <span class="llm-box__badge">IA</span>
+          <h2>Asistente de delivery</h2>
         </div>
-      <div>
-        <h2>Plan de búsqueda</h2>
-        <pre id="plan"></pre>
+        <h3 id="advisor-headline"></h3>
+        <p id="advisor-details"></p>
+        <ul id="advisor-notes"></ul>
       </div>
-    </div>
-    <div id="advisor" class="advisor" aria-live="polite"></div>
-    <h2>Resultados</h2>
-    <div id="results"></div>
+      <div id="status-banner" class="status" aria-live="polite"></div>
+      <details class="panel" id="structured-panel">
+        <summary>Consulta estructurada</summary>
+        <pre id="structured"></pre>
+      </details>
+      <details class="panel" id="plan-panel">
+        <summary>Plan de búsqueda</summary>
+        <pre id="plan"></pre>
+      </details>
+      <h2>Platos sugeridos</h2>
+      <div id="results"></div>
     </div>
     <script type="module" src="app.js"></script>
   </body>

@@ -14,6 +14,45 @@ DICT_DIR = DATA_DIR / "dictionaries"
 
 CATALOG: List[Dict[str, Any]] = json.loads((DATA_DIR / "catalog.json").read_text(encoding="utf-8"))
 
+ROMANTIC_CATEGORIES = {"pasta", "sushi", "parrilla", "wok", "postres"}
+FRIENDS_CATEGORIES = {"pizza", "hamburguesas", "tacos", "sandwiches", "empanadas"}
+FAMILY_CATEGORIES = {"parrilla", "pasta", "sopas", "bowls"}
+HEALTH_CATEGORIES = {"ensaladas", "bowls", "wok"}
+
+
+def augment_catalog_intents() -> None:
+    for dish in CATALOG:
+        tags = set(dish.get("intent_tags") or dish.get("experience_tags") or [])
+        tags.add("delivery_dining")
+        categories = {c.lower() for c in dish.get("categories", [])}
+        cuisine = _norm_str(dish.get("restaurant", {}).get("cuisines", ""))
+        rating = dish.get("restaurant", {}).get("rating", 0)
+        price = dish.get("price_ars", 0)
+        eta = dish.get("restaurant", {}).get("eta_min", 60)
+        health_tags = set(_norm_str(t) for t in dish.get("health_tags", []))
+
+        if rating >= 4.4 and (categories & ROMANTIC_CATEGORIES or cuisine in {"italiana", "sushi", "parrilla"}):
+            tags.update({"romantic_evening", "date_night"})
+        if categories & FRIENDS_CATEGORIES:
+            tags.update({"friends_gathering", "movie_night"})
+        if categories & FAMILY_CATEGORIES:
+            tags.add("family_sharing")
+        if categories & HEALTH_CATEGORIES or health_tags & {"no_fry", "low_sodium"}:
+            tags.add("healthy_choice")
+        if price <= 6000:
+            tags.add("budget_friendly")
+        if eta <= 25:
+            tags.update({"express_delivery", "quick_lunch"})
+        if rating >= 4.7:
+            tags.add("top_rated")
+        if "postres" in categories:
+            tags.add("sweet_treat")
+
+        dish["intent_tags"] = sorted(tags)
+
+
+augment_catalog_intents()
+
 def load_ingredient_synonyms() -> Dict[str, str]:
     mapping: Dict[str, str] = {}
     try:
@@ -49,14 +88,20 @@ def norm(val, vmin, vmax):
         return 0.0
     return max(0.0, min(1.0, (val - vmin) / (vmax - vmin)))
 
+BASE_WEIGHTS = {"rating":0.25,"price":0.2,"eta":0.1,"pop":0.1,"dist":0.1,"lex":0.1,"promo":0.1,"fee":0.05}
+
 def build_indexes():
     prices = [d["price_ars"] for d in CATALOG]
     etas = [d["restaurant"]["eta_min"] for d in CATALOG]
     ratings = [d["restaurant"]["rating"] for d in CATALOG]
+    fees = [d.get("delivery_fee", 0) for d in CATALOG]
+    discounts = [d.get("discount_pct", 0) for d in CATALOG]
     return {
         "price_min": min(prices), "price_max": max(prices),
         "eta_min": min(etas), "eta_max": max(etas),
         "rating_min": min(ratings), "rating_max": max(ratings),
+        "fee_min": min(fees), "fee_max": max(fees),
+        "discount_min": min(discounts), "discount_max": max(discounts),
         "prices_sorted": sorted(prices)
     }
 
@@ -153,6 +198,11 @@ def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]
     ha = f.get("health_any") or []
     if ha and not any(h in d.get("health_tags", []) for h in ha):
         return False, [f"No coincide salud {ha}"]
+    intent_any = f.get("intent_tags_any") or []
+    if intent_any:
+        dish_intents = d.get("intent_tags") or d.get("experience_tags") or []
+        if not any(tag in dish_intents for tag in intent_any):
+            return False, [f"No coincide intención {intent_any}"]
     # price max
     pm = f.get("price_max")
     if isinstance(pm, str) and pm and pm.startswith("p"):
@@ -163,7 +213,11 @@ def apply_filters(d: Dict[str, Any], f: Dict[str, Any]) -> Tuple[bool, List[str]
         return False, [f"Precio mayor a limite"]
     # eta max
     em = f.get("eta_max")
-    if em is not None and d["restaurant"]["eta_min"] > em:
+    eta_value = min(
+        d.get("delivery_eta_min", float("inf")),
+        d["restaurant"].get("eta_min", float("inf"))
+    )
+    if em is not None and eta_value > em:
         return False, [f"ETA mayor a limite"]
     # rating min
     rm = f.get("rating_min")
@@ -179,7 +233,7 @@ def distance_score(d: Dict[str, Any], f: Dict[str, Any]) -> float:
     return 1.0 if d["restaurant"]["neighborhood"] in nhs else 0.0
 
 def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tuple[float, List[str]]:
-    weights = {"rating":0.3,"price":0.3,"eta":0.1,"pop":0.1,"dist":0.1,"lex":0.1}
+    weights = dict(BASE_WEIGHTS)
     weights.update(q.get("weights", {}))
     weights.update((q.get("ranking_overrides") or {}).get("weights", {}))
     # normalize
@@ -190,13 +244,19 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
     pop_n = d.get("popularity", 0) / 100.0
     dist_n = distance_score(d, q.get("filters", {}))
     lex_n = lex_score(q.get("q",""), d, q.get("filters", {}))
+    discount = d.get("discount_pct", 0)
+    promo_n = norm(discount, IDX["discount_min"], IDX["discount_max"])
+    fee = d.get("delivery_fee", IDX["fee_max"])
+    fee_n = norm(fee, IDX["fee_min"], IDX["fee_max"])
     score = (
         weights["rating"] * rating_n +
         weights["price"] * (1 - price_n) +
         weights["eta"]   * (1 - eta_n) +
         weights["pop"]   * pop_n +
         weights["dist"]  * dist_n +
-        weights["lex"]   * lex_n
+        weights["lex"]   * lex_n +
+        weights["promo"] * promo_n +
+        weights["fee"]   * (1 - fee_n)
     )
     reasons = [
         f"rating:{rating_n:.2f}",
@@ -204,7 +264,9 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
         f"eta_inv:{1-eta_n:.2f}",
         f"pop:{pop_n:.2f}",
         f"dist:{dist_n:.2f}",
-        f"lex:{lex_n:.2f}"
+        f"lex:{lex_n:.2f}",
+        f"promo:{promo_n:.2f}",
+        f"fee_inv:{1-fee_n:.2f}"
     ]
     # boosts and penalties
     ro = (q.get("ranking_overrides") or {})
@@ -219,27 +281,45 @@ def compute_score(d: Dict[str, Any], f: Dict[str, Any], q: Dict[str, Any]) -> Tu
         reasons.append("penal")
     return score, reasons
 
-def search(req: Dict[str, Any]) -> Dict[str, Any]:
-    q = req.get("query") or {"filters": req.get("filters", {})}
-    filters = q.get("filters", {})
+def _effective_weights_snapshot(query: Dict[str, Any]) -> Dict[str, float]:
+    weights = dict(BASE_WEIGHTS)
+    weights.update(query.get("weights") or {})
+    ro_weights = (query.get("ranking_overrides") or {}).get("weights") or {}
+    weights.update(ro_weights)
+    return weights
+
+
+def _run_single_search(query: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, Any]]:
+    filters = query.get("filters", {}) or {}
     results: List[Dict[str, Any]] = []
-    rejected = []
+    rejected: List[Dict[str, Any]] = []
     for d in CATALOG:
         ok, why_not = apply_filters(d, filters)
         if not ok:
             rejected.append({"id": d["id"], "why": why_not})
             continue
-        s, reasons = compute_score(d, filters, q)
+        s, reasons = compute_score(d, filters, query)
         results.append({"item": d, "score": s, "reasons": reasons})
     results.sort(key=lambda x: x["score"], reverse=True)
     plan = {
         "hard_filters": filters,
-        "ranking_weights": {**{"rating":0.3,"price":0.3,"eta":0.1,"pop":0.1,"dist":0.1,"lex":0.1}, **(q.get("weights") or {}), **((q.get("ranking_overrides") or {}).get("weights") or {})},
+        "ranking_weights": _effective_weights_snapshot(query),
         "explain": "Se aplicaron filtros duros y luego orden ponderado. Boosts y penalizaciones consideradas.",
         "rejected_sample": rejected[:10]
     }
-    if q.get("advisor_summary"):
-        plan["advisor_summary"] = q.get("advisor_summary")
-    if q.get("scenario_tags"):
-        plan["scenario_tags"] = q.get("scenario_tags")
+    if query.get("advisor_summary"):
+        plan["advisor_summary"] = query.get("advisor_summary")
+    if query.get("scenario_tags"):
+        plan["scenario_tags"] = query.get("scenario_tags")
+    return results, rejected, plan
+
+
+def search(req: Dict[str, Any]) -> Dict[str, Any]:
+    q = req.get("query") or {"filters": req.get("filters", {})}
+    results, rejected, plan = _run_single_search(q)
+    metadata = q.get("metadata") or {}
+    if metadata.get("llm"):
+        plan["llm_status"] = metadata["llm"]
+    if metadata.get("strategies"):
+        plan.setdefault("llm_strategies", metadata["strategies"])
     return {"results": results, "plan": plan}

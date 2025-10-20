@@ -44,8 +44,12 @@ def test_rapido_eta_25():
 
 def test_porcion_grande_barata():
     pq, res = _run("porcion grande barata")
-    # expect some portion_large pizzas or combos in top results with reasonable price
-    assert any("portion_large" in r["item"]["health_tags"] for r in res["results"][:10])
+    # expect algunos platos marcados como porciones grandes
+    assert any(
+        "portion_large" in (r["item"].get("intent_tags") or [])
+        or "portion_large" in (r["item"].get("experience_tags") or [])
+        for r in res["results"][:10]
+    )
 
 def test_buen_rating_prioriza():
     pq1, res1 = _run("pasta con buen rating")
@@ -69,7 +73,11 @@ def test_cita_romantica_activa_asesor():
     assert "romantic_date" in pq["query"].get("scenario_tags", [])
     assert pq["query"].get("advisor_summary")
     assert pq["query"]["filters"]["rating_min"] >= 4.4
-    romantic_hits = [r for r in res["results"][:5] if "romantic" in (r["item"].get("experience_tags") or [])]
+    assert "romantic_evening" in pq["query"]["filters"].get("intent_tags_any", [])
+    assert res["results"]
+    romantic_hits = [
+        r for r in res["results"][:5] if "romantic_evening" in (r["item"].get("intent_tags") or [])
+    ]
     assert romantic_hits
 
 def test_presupuesto_ajustado_limita_precio():
@@ -99,14 +107,67 @@ def test_llm_stub_merges_filters(monkeypatch):
                 "ranking_overrides": {"boost_tags": ["romantic"]},
                 "hints": ["llm_hint"],
                 "scenario_tags": ["llm_defined"],
+                "strategies": [
+                    {
+                        "label": "Plan romántico ahorro",
+                        "summary": "Mantener precio bajo sin perder ambiente romántico.",
+                        "filters": {"price_max": 3200},
+                        "ranking_overrides": {"boost_tags": ["romantic", "budget_friendly"]},
+                        "hints": ["alt_hint"],
+                    }
+                ],
             }
         ),
     )
     pq = parse("busco algo romantico con carne")
     filters = pq["query"]["filters"]
     assert "Parrilla" in filters["category_any"]
-    assert filters["price_max"] == 3500
+    assert filters["price_max"] is None
     assert "romantic" in pq["query"]["ranking_overrides"]["boost_tags"]
     assert "llm_hint" in pq["query"]["hints"]
     assert "llm_defined" in pq["query"]["scenario_tags"]
+    assert pq["query"].get("metadata", {}).get("llm", {}).get("status") == "used"
     assert any("LLM" in step for step in pq["plan"])
+
+
+def test_llm_strategies_merge_results(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "stub")
+    monkeypatch.setenv(
+        "LLM_STUB_RESPONSE",
+        json.dumps(
+            {
+                "headline": "Plan balanceado",
+                "details": "Buscaré algo romántico pero económico y también exploración vegetariana.",
+                "filters": {"category_any": ["Parrilla"], "price_max": 3800},
+                "ranking_overrides": {"boost_tags": ["romantic"]},
+                "hints": [],
+                "scenario_tags": ["romantic_date"],
+                "strategies": [
+                    {
+                        "label": "Veggie elegante",
+                        "summary": "Evaluar platos vegetarianos con buen rating.",
+                        "filters": {"diet_must": ["vegetarian"], "rating_min": 4.0},
+                        "ranking_overrides": {"boost_tags": ["vegetariano"]},
+                        "hints": ["veg_alt"],
+                    }
+                ],
+            }
+        ),
+    )
+    pq = parse("cita romantica barata")
+    res = do_search(pq)
+    assert res["plan"].get("llm_strategies")
+    assert res["plan"].get("llm_status", {}).get("status") == "used"
+
+
+def test_extract_json_payload_handles_fences(monkeypatch):
+    from app.server.llm import _extract_json_payload
+
+    payload = """```json
+    {
+      "headline": "Demo",
+      "details": "Prueba"
+    }
+    ```"""
+    extracted = _extract_json_payload(payload)
+    assert json.loads(extracted)["headline"] == "Demo"

@@ -1,9 +1,32 @@
 import { CATALOG } from "./data/catalog.js";
 import { CATEGORIES, INGREDIENTS, DIETS, ALLERGENS, HEALTH } from "./data/dictionaries.js";
 
-const APP_VERSION = "v2.2.0";
+const APP_VERSION = "v2.3.0";
 const BACKEND_TIMEOUT_MS = 8000;
 let backendAvailable = null;
+
+const PROMPT_SAMPLES = [
+  {
+    label: "Cita romántica elegante con envío gratis",
+    value: "cita romántica con plato elegante, vino y envío gratis en Palermo",
+  },
+  {
+    label: "Partido con amigos, porciones grandes",
+    value: "combo abundante para ver el partido con amigos, porciones grandes y buena promo",
+  },
+  {
+    label: "Almuerzo saludable sin gluten ni nueces",
+    value: "almuerzo saludable sin gluten ni nueces para la oficina que llegue en menos de 25 minutos",
+  },
+  {
+    label: "Postre con descuento y mismo precio",
+    value: "helado artesanal con descuento y mismo precio que en el local para postre después de cenar",
+  },
+  {
+    label: "Sushi vegano express",
+    value: "sushi vegano express con costo de envío bajo y restaurantes bien calificados",
+  },
+];
 
 function shouldUseBackend() {
   if (window.DISABLE_BACKEND) return false;
@@ -44,6 +67,129 @@ async function callBackend(path, payload, options = {}) {
 const parseViaBackend = (text) => callBackend("/parse", { text });
 const searchViaBackend = (query) => callBackend("/search", { query });
 
+function resolveStrategies(source) {
+  if (!source) return [];
+  if (Array.isArray(source)) return source;
+  if (Array.isArray(source.llm_strategies)) return source.llm_strategies;
+  return [];
+}
+
+function buildStatusMessage(parseStatus, searchPlan) {
+  const lines = [];
+  const llmInfo = (searchPlan && searchPlan.llm_status) || (parseStatus && parseStatus.llm);
+  if (llmInfo) {
+    const provider = llmInfo.provider || "IA";
+    switch (llmInfo.status) {
+      case "used": {
+        let base = `Modo IA (${provider}) activo: combinando heurísticas y modelos.`;
+        if (Array.isArray(llmInfo.notes) && llmInfo.notes.length) {
+          base += ` ${llmInfo.notes.join(" ")}`;
+        }
+        if (typeof llmInfo.strategies === "number" && llmInfo.strategies > 1) {
+          base += ` Se planificaron ${llmInfo.strategies} estrategias coordinadas.`;
+        }
+        lines.push(base);
+        break;
+      }
+      case "disabled":
+        lines.push("Modo offline: reglas determinísticas locales sin LLM.");
+        break;
+      case "error":
+        lines.push(`LLM no disponible (${provider}): ${llmInfo.message || "se usó modo fallback."}`);
+        break;
+      case "no_data":
+        lines.push(`LLM (${provider}) sin respuesta útil. Se mantienen filtros locales.`);
+        break;
+      default:
+        lines.push(`Estado LLM (${provider}): ${llmInfo.status}`);
+    }
+  }
+
+  if (searchPlan && searchPlan.backend_warning) {
+    lines.push(`Fallback local: ${searchPlan.backend_warning}`);
+  }
+
+  const rawStrategies = [
+    ...resolveStrategies(searchPlan && (searchPlan.strategies || searchPlan.llm_strategies)),
+    ...resolveStrategies(parseStatus && parseStatus.strategies),
+  ];
+  const seenStrategies = new Set();
+  const summaries = [];
+  rawStrategies.forEach((s) => {
+    if (!s) return;
+    const key = `${s.label || ""}::${s.summary || ""}`;
+    if (seenStrategies.has(key)) return;
+    seenStrategies.add(key);
+    const label = s.label || "Estrategia";
+    if (s.summary) {
+      summaries.push(`${label}: ${s.summary}`);
+    } else if (s.filters && Object.keys(s.filters).length) {
+      summaries.push(`${label}: filtros ${JSON.stringify(s.filters)}`);
+    } else {
+      summaries.push(label);
+    }
+  });
+  if (summaries.length) {
+    lines.push(`Estrategias activas:\n- ${summaries.join("\n- ")}`);
+  }
+
+  return lines.join("\n");
+}
+
+function updateStatusBanner(banner, parseStatus, searchPlan) {
+  if (!banner) return;
+  const message = buildStatusMessage(parseStatus, searchPlan);
+  if (message) {
+    banner.textContent = message;
+    banner.classList.add("visible");
+  } else {
+    banner.textContent = "";
+    banner.classList.remove("visible");
+  }
+}
+
+function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
+  if (!box || !headlineEl || !detailsEl || !notesEl) return;
+  const cleanSummary = typeof summary === "string" ? summary.trim() : "";
+  const parts = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
+  const headline = parts.shift() || "";
+  const detailText = parts.join(" ");
+  const noteItems = Array.isArray(notes) ? notes.filter(Boolean) : [];
+
+  if (!headline && !detailText && noteItems.length === 0) {
+    box.classList.remove("visible");
+    headlineEl.textContent = "";
+    detailsEl.textContent = "";
+    notesEl.innerHTML = "";
+    return;
+  }
+
+  headlineEl.textContent = headline || "Plan del asistente";
+  if (detailText) {
+    detailsEl.textContent = detailText;
+    detailsEl.style.display = "block";
+  } else {
+    detailsEl.textContent = "";
+    detailsEl.style.display = "none";
+  }
+
+  notesEl.innerHTML = "";
+  if (noteItems.length) {
+    const frag = document.createDocumentFragment();
+    noteItems.forEach((note) => {
+      const li = document.createElement("li");
+      li.textContent = note;
+      frag.appendChild(li);
+    });
+    notesEl.appendChild(frag);
+    notesEl.style.display = "block";
+  } else {
+    notesEl.style.display = "none";
+  }
+
+  box.classList.add("visible");
+}
+
 function stripAccents(text = "") {
   return text
     .normalize("NFD")
@@ -72,6 +218,62 @@ function normBasic(text = "") {
 function wordSet(text = "") {
   return new Set((text.match(/\w+/g) || []).map((w) => w));
 }
+
+function augmentLocalCatalogIntents() {
+  const romanticCats = new Set(["pasta", "sushi", "parrilla", "postres", "wok"]);
+  const romanticCuisines = new Set(["italiana", "sushi", "parrilla"]);
+  const friendsCats = new Set(["pizza", "burger", "tacos", "empanadas", "sandwich", "combos"]);
+  const familyCats = new Set(["parrilla", "pizza", "pollo", "combos"]);
+  const healthyCats = new Set(["ensalada", "vegano", "wok", "bowls"]);
+
+  CATALOG.forEach((dish) => {
+    const tags = new Set(dish.intent_tags || dish.experience_tags || []);
+    tags.add("delivery_dining");
+    const categories = new Set((dish.categories || []).map((c) => normBasic(c)));
+    const cuisine = normBasic(dish.restaurant?.cuisines || "");
+    const rating = dish.restaurant?.rating ?? 0;
+    const price = dish.price_ars ?? 0;
+    const eta = dish.delivery_eta_min ?? dish.restaurant?.eta_min ?? 60;
+
+    const hasCategory = (set) => {
+      for (const value of set) {
+        if (categories.has(value)) return true;
+      }
+      return false;
+    };
+
+    if (rating >= 4.4 && (hasCategory(romanticCats) || romanticCuisines.has(cuisine))) {
+      tags.add("romantic_evening");
+      tags.add("date_night");
+    }
+    if (hasCategory(friendsCats)) {
+      tags.add("friends_gathering");
+      tags.add("movie_night");
+    }
+    if (hasCategory(familyCats)) {
+      tags.add("family_sharing");
+    }
+    if (hasCategory(healthyCats)) {
+      tags.add("healthy_choice");
+    }
+    if (price <= 6000) {
+      tags.add("budget_friendly");
+    }
+    if (eta <= 25) {
+      tags.add("express_delivery");
+    }
+    if (rating >= 4.7) {
+      tags.add("top_rated");
+    }
+    if (categories.has("postres")) {
+      tags.add("sweet_treat");
+    }
+
+    dish.intent_tags = Array.from(tags);
+  });
+}
+
+augmentLocalCatalogIntents();
 
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -784,6 +986,13 @@ function applyFilters(dish, filters) {
   if (healthAny.length && !(dish.health_tags || []).some((tag) => healthAny.includes(tag))) {
     return { ok: false, reasons: [`No coincide salud ${JSON.stringify(healthAny)}`] };
   }
+  const intentAny = filters.intent_tags_any || [];
+  if (
+    intentAny.length &&
+    !(dish.intent_tags || dish.experience_tags || []).some((tag) => intentAny.includes(tag))
+  ) {
+    return { ok: false, reasons: [`No coincide intención ${JSON.stringify(intentAny)}`] };
+  }
   let priceLimit = filters.price_max;
   if (typeof priceLimit === "string" && priceLimit.startsWith("p")) {
     priceLimit = percentilePrice(priceLimit);
@@ -792,7 +1001,11 @@ function applyFilters(dish, filters) {
     return { ok: false, reasons: ["Precio mayor a limite"] };
   }
   const etaMax = filters.eta_max;
-  if (etaMax != null && dish.restaurant?.eta_min > etaMax) {
+  const etaValue = Math.min(
+    dish.delivery_eta_min ?? Infinity,
+    dish.restaurant?.eta_min ?? Infinity
+  );
+  if (etaMax != null && etaValue > etaMax) {
     return { ok: false, reasons: ["ETA mayor a limite"] };
   }
   const ratingMin = filters.rating_min;
@@ -803,12 +1016,14 @@ function applyFilters(dish, filters) {
 }
 
 const DEFAULT_WEIGHTS = {
-  rating: 0.3,
-  price: 0.3,
+  rating: 0.25,
+  price: 0.2,
   eta: 0.1,
   pop: 0.1,
   dist: 0.1,
   lex: 0.1,
+  promo: 0.1,
+  fee: 0.05,
 };
 
 function norm(value, min, max) {
@@ -820,6 +1035,8 @@ const IDX = (() => {
   const prices = CATALOG.map((d) => d.price_ars);
   const etas = CATALOG.map((d) => d.restaurant?.eta_min ?? 0);
   const ratings = CATALOG.map((d) => d.restaurant?.rating ?? 0);
+  const fees = CATALOG.map((d) => d.delivery_fee ?? 0);
+  const discounts = CATALOG.map((d) => d.discount_pct ?? 0);
   return {
     price_min: Math.min(...prices),
     price_max: Math.max(...prices),
@@ -827,6 +1044,10 @@ const IDX = (() => {
     eta_max: Math.max(...etas),
     rating_min: Math.min(...ratings),
     rating_max: Math.max(...ratings),
+    fee_min: Math.min(...fees),
+    fee_max: Math.max(...fees),
+    discount_min: Math.min(...discounts),
+    discount_max: Math.max(...discounts),
     prices_sorted: [...prices].sort((a, b) => a - b),
     etas_sorted: [...etas].sort((a, b) => a - b),
     ratings_sorted: [...ratings].sort((a, b) => a - b),
@@ -883,6 +1104,8 @@ function computeScore(dish, filters, query) {
   const priceN = norm(dish.price_ars, IDX.price_min, IDX.price_max);
   const etaN = norm(dish.restaurant?.eta_min ?? 0, IDX.eta_min, IDX.eta_max);
   const popN = (dish.popularity || 0) / 100;
+  const discountN = norm(dish.discount_pct ?? 0, IDX.discount_min, IDX.discount_max);
+  const feeN = norm(dish.delivery_fee ?? 0, IDX.fee_min, IDX.fee_max);
   const distN = distanceScore(dish, filters);
   const lexN = lexScore(query.q || "", dish, filters);
   let score =
@@ -891,7 +1114,9 @@ function computeScore(dish, filters, query) {
     weights.eta * (1 - etaN) +
     weights.pop * popN +
     weights.dist * distN +
-    weights.lex * lexN;
+    weights.lex * lexN +
+    weights.promo * discountN +
+    weights.fee * (1 - feeN);
   const reasons = [
     `rating:${ratingN.toFixed(2)}`,
     `price_inv:${(1 - priceN).toFixed(2)}`,
@@ -899,6 +1124,8 @@ function computeScore(dish, filters, query) {
     `pop:${popN.toFixed(2)}`,
     `dist:${distN.toFixed(2)}`,
     `lex:${lexN.toFixed(2)}`,
+    `promo:${discountN.toFixed(2)}`,
+    `fee_inv:${(1 - feeN).toFixed(2)}`,
   ];
   const boost = query.ranking_overrides?.boost_tags || [];
   const penal = query.ranking_overrides?.penalize_tags || [];
@@ -919,7 +1146,15 @@ function computeScore(dish, filters, query) {
   return { score, reasons };
 }
 
-function searchCatalog(query) {
+function localEffectiveWeights(query) {
+  return {
+    ...DEFAULT_WEIGHTS,
+    ...(query.weights || {}),
+    ...((query.ranking_overrides && query.ranking_overrides.weights) || {}),
+  };
+}
+
+function runLocalSearchOnce(query) {
   const filters = (query && query.filters) || {};
   const results = [];
   const rejected = [];
@@ -938,11 +1173,7 @@ function searchCatalog(query) {
 
   const plan = {
     hard_filters: filters,
-    ranking_weights: {
-      ...DEFAULT_WEIGHTS,
-      ...(query.weights || {}),
-      ...((query.ranking_overrides && query.ranking_overrides.weights) || {}),
-    },
+    ranking_weights: localEffectiveWeights(query),
     explain:
       "Se aplicaron filtros duros y luego orden ponderado. Boosts y penalizaciones consideradas.",
     rejected_sample: rejected.slice(0, 10),
@@ -954,6 +1185,18 @@ function searchCatalog(query) {
     plan.scenario_tags = query.scenario_tags;
   }
 
+  return { results, rejected, plan };
+}
+
+function searchCatalog(query) {
+  const base = runLocalSearchOnce(query);
+  const { results, plan } = base;
+  if (query.metadata?.llm) {
+    plan.llm_status = query.metadata.llm;
+  }
+  if (query.metadata?.strategies) {
+    plan.llm_strategies = query.metadata.strategies;
+  }
   return { results, plan };
 }
 
@@ -964,21 +1207,57 @@ function tiny(obj) {
 document.addEventListener("DOMContentLoaded", () => {
   const q = document.getElementById("q");
   const btn = document.getElementById("btn");
-  const structured = document.getElementById("structured");
-  const plan = document.getElementById("plan");
-  const advisor = document.getElementById("advisor");
+  const structuredEl = document.getElementById("structured");
+  const planEl = document.getElementById("plan");
+  const statusBanner = document.getElementById("status-banner");
   const results = document.getElementById("results");
+  const advisorBox = document.getElementById("llm-box");
+  const advisorHeadline = document.getElementById("advisor-headline");
+  const advisorDetails = document.getElementById("advisor-details");
+  const advisorNotes = document.getElementById("advisor-notes");
+  const sampleSelect = document.getElementById("prompt-samples");
+  const useSampleBtn = document.getElementById("use-sample");
 
-  async function runSearch() {
+  if (sampleSelect) {
+    PROMPT_SAMPLES.forEach((sample, index) => {
+      const option = document.createElement("option");
+      option.value = sample.value;
+      option.textContent = `${index + 1}. ${sample.label}`;
+      sampleSelect.appendChild(option);
+    });
+  }
+
+  if (sampleSelect) {
+    sampleSelect.addEventListener("change", () => {
+      if (sampleSelect.value) q.value = sampleSelect.value;
+    });
+  }
+
+  if (useSampleBtn) {
+    useSampleBtn.addEventListener("click", () => {
+      if (!sampleSelect || !sampleSelect.value) return;
+      q.value = sampleSelect.value;
+      runSearch("sample");
+    });
+  }
+
+  const versionBadge = document.getElementById("app-version");
+  if (versionBadge) versionBadge.textContent = APP_VERSION;
+
+  const resetAdvisor = () => {
+    renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, "", []);
+  };
+
+  async function runSearch(trigger = "user") {
+    resetAdvisor();
+    updateStatusBanner(statusBanner, null, null);
     const text = q.value.trim();
     if (!text) {
-      structured.textContent = "";
-      plan.textContent = "";
-      if (advisor) {
-        advisor.textContent = "";
-        advisor.classList.remove("visible");
-      }
-      results.innerHTML = '<p class="error">Ingresá una descripción de lo que querés comer para iniciar la búsqueda.</p>';
+      structuredEl.textContent = "";
+      planEl.textContent = "";
+      results.innerHTML = '<p class="error">Ingresá una descripción de lo que querés comer.</p>';
+      statusBanner.textContent = "";
+      statusBanner.classList.remove("visible");
       q.focus();
       return;
     }
@@ -1005,17 +1284,10 @@ document.addEventListener("DOMContentLoaded", () => {
           parsed.plan.push("Backend no disponible: se usó el parser local.");
         }
       }
-      structured.textContent = JSON.stringify(parsed.query, null, 2);
-      plan.textContent = JSON.stringify(parsed.plan, null, 2);
-      if (advisor) {
-        if (parsed.query?.advisor_summary) {
-          advisor.textContent = parsed.query.advisor_summary;
-          advisor.classList.add("visible");
-        } else {
-          advisor.textContent = "";
-          advisor.classList.remove("visible");
-        }
-      }
+
+      structuredEl.textContent = JSON.stringify(parsed.query, null, 2);
+      planEl.textContent = JSON.stringify(parsed.plan, null, 2);
+
       let searched;
       if (usedBackend) {
         try {
@@ -1036,7 +1308,22 @@ document.addEventListener("DOMContentLoaded", () => {
             "Backend no disponible en este momento. Se muestran resultados locales.";
         }
       }
+
+      if (!searched.plan) searched.plan = {};
+      if (!searched.plan.llm_status && parsed.status?.llm) {
+        searched.plan.llm_status = parsed.status.llm;
+      }
+      if (!searched.plan.llm_strategies && parsed.status?.strategies) {
+        searched.plan.llm_strategies = parsed.status.strategies;
+      }
+
       renderResults(results, searched);
+
+      const advisorSummary = searched.plan?.advisor_summary || parsed.query?.advisor_summary || "";
+      const llmNotes =
+        searched.plan?.llm_status?.notes || parsed.status?.llm?.notes || parsed.plan?.llm_notes || [];
+      renderAdvisor(advisorBox, advisorHeadline, advisorDetails, advisorNotes, advisorSummary, llmNotes);
+      updateStatusBanner(statusBanner, parsed.status, searched.plan);
     } catch (err) {
       console.error("Error al buscar", err);
       const errorDetails = {
@@ -1048,21 +1335,34 @@ document.addEventListener("DOMContentLoaded", () => {
         timestamp: new Date().toISOString(),
       };
       results.innerHTML = '<p class="error">No pudimos completar la búsqueda.</p>' + tiny(errorDetails);
-      if (advisor) {
-        advisor.textContent = "";
-        advisor.classList.remove("visible");
-      }
+      resetAdvisor();
+      updateStatusBanner(statusBanner, null, null);
     } finally {
       btn.disabled = false;
     }
   }
 
-  btn.addEventListener("click", runSearch);
+  btn.addEventListener("click", () => runSearch());
   q.addEventListener("keydown", (e) => {
     if (e.key === "Enter") runSearch();
   });
-  const versionBadge = document.getElementById("app-version");
-  if (versionBadge) versionBadge.textContent = APP_VERSION;
+
+  const renderInitialCatalog = () => {
+    const catalogResults = CATALOG.map((item) => ({ item, score: 0, reasons: ["catálogo inicial"] }));
+    const planData = {
+      hard_filters: {},
+      explain: "Catálogo completo sin filtros.",
+      ranking_weights: DEFAULT_WEIGHTS,
+    };
+    renderResults(results, { results: catalogResults, plan: planData });
+    structuredEl.textContent = JSON.stringify({ nota: "Sin filtros aplicados" }, null, 2);
+    planEl.textContent = JSON.stringify(planData, null, 2);
+    statusBanner.textContent = `Vista general: ${catalogResults.length} platos disponibles.`;
+    statusBanner.classList.add("visible");
+    resetAdvisor();
+  };
+
+  renderInitialCatalog();
 });
 
 function renderResults(container, data) {
@@ -1071,8 +1371,34 @@ function renderResults(container, data) {
     container.innerHTML = "<p>No hay resultados. Ajustá tu consulta.</p>" + tiny(data.plan);
     return;
   }
-  data.results.slice(0, 30).forEach((r, idx) => {
+  data.results.forEach((r, idx) => {
     const d = r.item;
+    const etaMin = d.delivery_eta_min ?? d.restaurant?.eta_min ?? 0;
+    const etaMax = d.delivery_eta_max ?? d.restaurant?.eta_max ?? etaMin;
+    const deliveryFee = d.delivery_fee ?? 0;
+    const feeLabel = deliveryFee === 0 ? "gratis" : `$${deliveryFee}`;
+    const badgeSet = new Set();
+    if ((d.discount_pct ?? 0) > 0) badgeSet.add(`${d.discount_pct}% OFF`);
+    if (deliveryFee === 0) badgeSet.add("Envío gratis");
+    if (d.same_price_as_local) badgeSet.add("Mismo precio que en el local");
+    if (d.is_new) badgeSet.add("Nuevo ingreso");
+    (d.promotion_tags || []).forEach((tag) => badgeSet.add(tag));
+    const badgeHtml = Array.from(badgeSet)
+      .map((tag) => `<span>${tag}</span>`)
+      .join("");
+    const tags = [
+      ...(d.categories || []),
+      ...(d.health_tags || []),
+      ...(d.intent_tags || []),
+      ...(d.experience_tags || []),
+    ];
+    const tagHtml = tags.map((tag) => `<span>${tag}</span>`).join("");
+    const metaParts = [
+      `Rating ${d.restaurant?.rating?.toFixed(1) ?? "–"}`,
+      `ETA ${etaMin}-${etaMax} min`,
+      `Envío ${feeLabel}`,
+      `Score ${r.score.toFixed(3)}`,
+    ];
     const debug = {
       id: d.id,
       categories: d.categories,
@@ -1081,17 +1407,27 @@ function renderResults(container, data) {
       allergens: d.allergens,
       diet_flags: d.diet_flags,
       health_tags: d.health_tags,
+      intent_tags: d.intent_tags,
       experience_tags: d.experience_tags,
+      promotion_tags: d.promotion_tags,
+      delivery_fee: d.delivery_fee,
+      discount_pct: d.discount_pct,
+      delivery_eta_min: d.delivery_eta_min,
+      delivery_eta_max: d.delivery_eta_max,
       restaurant: d.restaurant,
     };
     const el = document.createElement("div");
     el.className = "card";
     el.innerHTML = `
-      <div class="title">${idx + 1}. ${d.dish_name} <span class="price">$${d.price_ars}</span></div>
+      <div class="title">
+        <span>${idx + 1}. ${d.dish_name}</span>
+        <span class="price">$${d.price_ars}</span>
+      </div>
       <div class="sub">${d.restaurant.name} · ${d.restaurant.neighborhood} · ${d.restaurant.cuisines}</div>
-      <div class="meta">Rating ${d.restaurant.rating} · ETA ${d.restaurant.eta_min} min · Score ${r.score.toFixed(3)}</div>
+      <div class="meta">${metaParts.map((part) => `<span>${part}</span>`).join("")}</div>
+      ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ""}
       <div class="desc">${d.description}</div>
-      <div class="tags">Tags: ${[...d.categories, ...d.health_tags, ...(d.experience_tags || [])].join(", ")}</div>
+      ${tagHtml ? `<div class="tags"><strong>Tags:</strong>${tagHtml}</div>` : ""}
       <div class="reasons">Razones: ${r.reasons.join(", ")}</div>
       <details>
         <summary>Debug</summary>
@@ -1100,16 +1436,6 @@ function renderResults(container, data) {
     `;
     container.appendChild(el);
   });
-  const plan = document.getElementById("plan");
-  if (plan) plan.textContent = JSON.stringify(data.plan, null, 2);
-  const advisor = document.getElementById("advisor");
-  if (advisor) {
-    if (data.plan?.advisor_summary) {
-      advisor.textContent = data.plan.advisor_summary;
-      advisor.classList.add("visible");
-    } else {
-      advisor.textContent = "";
-      advisor.classList.remove("visible");
-    }
-  }
+  const planEl = document.getElementById("plan");
+  if (planEl) planEl.textContent = JSON.stringify(data.plan, null, 2);
 }

@@ -1,7 +1,7 @@
 
-# Buscador inteligente v2 de platos y restaurantes
+# Buscador inteligente v2 para delivery
 
-Aplicación completa y funcional para buscar platos tipo food delivery de Buenos Aires. Usa reglas determinísticas, diccionarios y parsing con expresiones regulares, y opcionalmente puede delegar la interpretación de la intención a un LLM gratuito (Groq u otro endpoint compatible con OpenAI). Incluye backend FastAPI, frontend HTML CSS JS, dataset de 150 platos y tests con Pytest. La UI detecta automáticamente el backend y cae a modo offline si no está disponible.
+Aplicación completa y funcional para encontrar platos de delivery en Buenos Aires (pensada para experiencias tipo PedidosYa). Usa reglas determinísticas, diccionarios y parsing con expresiones regulares, y opcionalmente puede delegar la interpretación de la intención a un LLM gratuito (Groq u otro endpoint compatible con OpenAI). Incluye backend FastAPI, frontend HTML CSS JS, dataset de 150 platos etiquetados con intenciones (romántico, amigos, familia, etc.) y tests con Pytest. La UI detecta automáticamente el backend y cae a modo offline si no está disponible.
 
 ## Estructura
 
@@ -62,7 +62,7 @@ Si corrés sin backend, abrí `app/web/index.html` en el navegador. Si levantast
    ```bash
    export LLM_PROVIDER=groq
    export GROQ_API_KEY="tu_api_key"
-   export LLM_MODEL="llama3-8b-8192"   # opcional, por defecto usa ese modelo
+   export LLM_MODEL="grok-code-fast-1-0825"   # opcional, por defecto usa ese modelo
    # Alternativa genérica:
    # export LLM_PROVIDER=openai
    # export LLM_API_KEY="token"
@@ -73,9 +73,11 @@ Si corrés sin backend, abrí `app/web/index.html` en el navegador. Si levantast
    - `LLM_TIMEOUT=15` ajusta el timeout (en segundos) del request al LLM.
 3. Iniciá FastAPI con `uvicorn`. El parser combinará heurísticas locales con las sugerencias del modelo para enriquecer filtros, boosts y el resumen asesor. La UI mostrará el titular y detalle generados por el LLM. Si el backend o el modelo fallan, todo vuelve automáticamente al modo offline con filtros determinísticos.
 
+Cuando el backend está encendido, la interfaz muestra un banner de estado que indica si el LLM respondió, si se usó el modo fallback o si hubo un error. El modelo puede sugerir *strategies* adicionales (por ejemplo, "romántico y económico" + "vegano elegante"), que se muestran en el plan para guiar el razonamiento, pero la búsqueda final siempre se ejecuta con un único conjunto de filtros enriquecidos.
+
 ## Pipeline
 
-1. **Parser**: transforma texto libre a consulta estructurada usando diccionarios en `app/data/dictionaries`. Detecta categorías, barrios, cocinas, dietas, alérgenos, ingredientes a incluir y excluir, precio, rating, velocidad, salud, y genera hints y overrides.
+1. **Parser**: transforma texto libre a consulta estructurada usando diccionarios en `app/data/dictionaries`. Detecta categorías, barrios, cocinas, dietas, alérgenos, ingredientes a incluir y excluir, precio, rating, velocidad, tags promocionales, salud, y genera hints, tags de intención (`intent_tags_any`) y overrides.
 2. **Filtros duros**: se aplican sobre el catálogo. Si `price_max` viene como percentil, el buscador traduce la etiqueta a un valor real con la distribución de precios.
 3. **Orden fino**: score ponderado
 ```
@@ -83,7 +85,12 @@ score = w_rating*norm(rating) + w_price*(1-norm(price)) + w_eta*(1-norm(eta)) + 
 ```
 Con boosts y penalizaciones según `ranking_overrides` y tags de salud y categoría.
 
-4. **Plan de búsqueda**: el backend devuelve `plan` con filtros aplicados, pesos y ejemplos de rechazados.
+4. **Plan de búsqueda**: el backend devuelve `plan` con filtros aplicados, pesos, notas del LLM y una explicación del razonamiento (incluye promociones, tiempos de envío y reglas de bolsillo para delivery).
+
+## Catálogo
+
+- `app/data/catalog.json` incluye 5.000 platos sintéticos curados para delivery, con campos de PedidosYa/Food Home: `delivery_eta_min`, `delivery_eta_max`, `delivery_fee`, `discount_pct`, `same_price_as_local`, `is_new`, `promotion_tags` e `intent_tags`.
+- Los tags de intención (`romantic_evening`, `friends_gathering`, `express_delivery`, etc.) se generan automáticamente en backend y frontend para que las búsquedas por contexto no dependan de filtros rígidos.
 
 ## Diccionarios
 

@@ -5,7 +5,8 @@
     "vacio",
     "entrana",
     "matambre",
-    "costillas"
+    "costillas",
+    "bbq argentina"
   ],
   "pasta": [
     "pasta",
@@ -17,26 +18,31 @@
   ],
   "ensalada": [
     "ensalada",
-    "salad"
+    "salad",
+    "verde"
   ],
   "wok": [
     "wok",
-    "salteado"
+    "salteado",
+    "stir fry"
   ],
   "pizza": [
     "pizza",
     "muzza",
-    "napolitana"
+    "napolitana",
+    "fugazzeta"
   ],
   "burger": [
     "hamburguesa",
-    "burger"
+    "burger",
+    "cheeseburger"
   ],
   "sandwich": [
     "sandwich",
-    "sandiwch",
+    "sandwiches",
     "sanguches",
-    "lomito"
+    "lomito",
+    "baguette"
   ],
   "arabe": [
     "arabe",
@@ -49,7 +55,8 @@
   "sushi": [
     "sushi",
     "roll",
-    "nigiri"
+    "nigiri",
+    "uramaki"
   ],
   "milanesa": [
     "milanesa",
@@ -58,25 +65,29 @@
   "tacos": [
     "taco",
     "tacos",
-    "burrito"
+    "burrito",
+    "quesadilla"
   ],
   "sopas": [
     "sopa",
     "sopas",
     "caldo",
-    "ramen"
+    "ramen",
+    "pho"
   ],
   "postres": [
     "postre",
-    "helado",
     "flan",
     "tiramisu",
-    "cheesecake"
+    "cheesecake",
+    "brownie",
+    "torta"
   ],
   "bowls": [
     "bowl",
     "poke",
-    "buddha"
+    "buddha",
+    "grain bowl"
   ],
   "empanadas": [
     "empanada",
@@ -84,7 +95,69 @@
   ],
   "combos": [
     "combo",
-    "para compartir",
-    "menu para dos"
+    "menu para dos",
+    "menu familiar"
+  ],
+  "helado": [
+    "helado",
+    "gelato",
+    "paleta"
+  ],
+  "wraps": [
+    "wrap",
+    "wraps",
+    "tortilla enrollada"
+  ],
+  "poke": [
+    "poke",
+    "poke bowl"
+  ],
+  "pollo": [
+    "pollo",
+    "fried chicken",
+    "alitas",
+    "tenders"
+  ],
+  "vegano": [
+    "vegano",
+    "plant based"
+  ],
+  "desayuno": [
+    "desayuno",
+    "brunch",
+    "avena"
+  ],
+  "arepas": [
+    "arepa",
+    "arepas"
+  ],
+  "peruana": [
+    "peruana",
+    "ceviche",
+    "lomo saltado"
+  ],
+  "india": [
+    "india",
+    "curry",
+    "masala"
+  ],
+  "thai": [
+    "thai",
+    "pad thai",
+    "curry thai"
+  ],
+  "mediterranea": [
+    "mediterranea",
+    "mezze",
+    "greek"
+  ],
+  "mariscos": [
+    "mariscos",
+    "seafood"
+  ],
+  "cafeteria": [
+    "cafe",
+    "cafeteria",
+    "latte"
   ]
 }

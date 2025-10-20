@@ -19,9 +19,15 @@ INTENTS = load_json("intents.json")
 
 NEIGHBORHOODS = [
     "Palermo","Belgrano","Colegiales","Recoleta","Chacarita","Villa Crespo","Almagro",
-    "Caballito","Núñez","Boedo","San Telmo","Microcentro","Balvanera","Devoto","Saavedra"
+    "Caballito","Núñez","Boedo","San Telmo","Microcentro","Balvanera","Devoto","Saavedra",
+    "Puerto Madero","Villa Urquiza","Flores","Parque Chas","Barracas","Parque Patricios"
 ]
-CUISINES = ["Argentina","Parrilla","Italiana","Pizzería","Empanadas","Ensaladas","Wok","Árabe","Japonesa","Mexicana","Hamburguesas","Vegana","Vegetariana","Sushi","Tacos","Sandwiches","Bowls","Sopas","Postres"]
+CUISINES = [
+    "Argentina","Parrilla","Italiana","Pizzería","Empanadas","Ensaladas","Wok","Árabe",
+    "Japonesa","Mexicana","Hamburguesas","Vegana","Vegetariana","Sushi","Tacos","Sandwiches",
+    "Bowls","Sopas","Postres","Heladería","Peruana","India","Thai","Mediterránea","Cafetería",
+    "Mariscos","Pollo","Wraps","Poke","Veggie"
+]
 
 CATALOG_FACETS = {
     "categories": sorted(CATEGORIES.keys()),
@@ -410,7 +416,7 @@ def extend_unique_list(lst: List[str], values: List[str]) -> List[str]:
             existing.add(v)
     return lst
 
-def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_overrides: Dict[str, Any], hints: List[str], plan: List[str]):
+def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_overrides: Dict[str, Any], hints: List[str], intent_tags: List[str], plan: List[str]):
     summaries: List[str] = []
     scenario_tags: List[str] = []
     text_soft = normalize_soft(text)
@@ -426,6 +432,7 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
         scenario_tags.append("romantic_date")
         filters["rating_min"] = tighten_min_limit(filters.get("rating_min"), 4.4)
         filters["available_only"] = True
+        extend_unique_list(intent_tags, ["romantic_evening", "date_night"])
         extend_unique_list(hints, ["date", "special_evening"])
         extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["romantic", "date-night", "vino", "intimo"])
         weights = ranking_overrides.setdefault("weights", {})
@@ -447,6 +454,7 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
             target_price = min(target_price, 4500)
         current = normalize_percentile_limit(filters.get("price_max"))
         filters["price_max"] = tighten_max_limit(current, target_price)
+        extend_unique_list(intent_tags, ["budget_friendly"])
         extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["budget_friendly", "ahorro", "combo"])
         weights = ranking_overrides.setdefault("weights", {})
         weights["price"] = max(weights.get("price", 0.3), 0.45)
@@ -463,6 +471,7 @@ def apply_conversation_scenarios(text: str, filters: Dict[str, Any], ranking_ove
         target_eta = eta_from_percentile(0.35) or 20
         filters["eta_max"] = tighten_max_limit(filters.get("eta_max"), target_eta)
         filters["meal_moments_any"] = sorted(set((filters.get("meal_moments_any") or []) + ["almuerzo"]))
+        extend_unique_list(intent_tags, ["quick_lunch"])
         extend_unique_list(ranking_overrides.setdefault("boost_tags", []), ["quick_lunch", "sandwich", "wrap", "express"])
         weights = ranking_overrides.setdefault("weights", {})
         weights["eta"] = max(weights.get("eta", 0.1), 0.22)
@@ -492,6 +501,7 @@ def parse(text: str):
         "diet_must": [],
         "allergens_exclude": [],
         "health_any": [],
+        "intent_tags_any": [],
         "meal_moments_any": parse_meal_moments(tn, plan),
         "price_max": None,
         "eta_max": None,
@@ -514,88 +524,186 @@ def parse(text: str):
         "weights": parse_weights(tn, plan)
     }
 
-    scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, plan)
+    intent_tags_local: List[str] = []
+    scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, intent_tags_local, plan)
+    if intent_tags_local:
+        filters["intent_tags_any"] = sorted(set((filters.get("intent_tags_any") or []) + intent_tags_local))
     advisor_summary = " ".join(scenario_summaries).strip() or None
 
     llm_headline = None
     llm_details = None
-    if llm.llm_enabled():
+    strategies_meta: List[Dict[str, Any]] = []
+    llm_info: Dict[str, Any]
+    llm_provider = llm.provider_name()
+    llm_enabled_flag = llm.llm_enabled()
+    if llm_enabled_flag:
+        llm_info = {"status": "pending", "provider": llm_provider or "desconocido"}
+    else:
+        llm_info = {"status": "disabled"}
+        plan.append("LLM deshabilitado: se utilizan únicamente reglas locales.")
+
+    enrichment: Dict[str, Any] = {}
+    if llm_enabled_flag:
         try:
-            enrichment = llm.enrich_query(text, {
-                "filters": filters,
-                "hints": hints,
-                "scenario_tags": scenario_tags,
-                "catalog_facets": CATALOG_FACETS
-            }) or {}
+            enrichment = llm.enrich_query(
+                text,
+                {
+                    "filters": filters,
+                    "hints": hints,
+                    "scenario_tags": scenario_tags,
+                    "catalog_facets": CATALOG_FACETS,
+                },
+            ) or {}
         except llm.LLMError as exc:
+            llm_info = {"status": "error", "provider": llm_provider or "desconocido", "message": str(exc)}
             plan.append(f"LLM error: {exc}")
-            enrichment = {}
         except Exception as exc:
+            llm_info = {"status": "error", "provider": llm_provider or "desconocido", "message": str(exc)}
             plan.append(f"LLM error inesperado: {exc}")
-            enrichment = {}
-        if enrichment:
-            plan.append("LLM activado: se combinaron sugerencias con heurísticas.")
-            llm_filters = enrichment.get("filters") or {}
-            applied_filters = {}
-            list_keys = {
-                "category_any","meal_moments_any","neighborhood_any","cuisines_any",
-                "ingredients_include","ingredients_exclude","diet_must","allergens_exclude","health_any"
-            }
-            for key in list_keys:
-                if key in llm_filters and _merge_list_field(filters, key, llm_filters[key]):
-                    applied_filters[key] = filters[key]
-            if "price_max" in llm_filters:
-                merged = _merge_max_limit(filters.get("price_max"), llm_filters["price_max"], _price_value)
-                if merged != filters.get("price_max"):
-                    filters["price_max"] = merged
-                    applied_filters["price_max"] = filters["price_max"]
-            if "eta_max" in llm_filters:
-                merged = _merge_max_limit(filters.get("eta_max"), llm_filters["eta_max"], _numeric_value)
-                if merged != filters.get("eta_max"):
-                    filters["eta_max"] = merged
-                    applied_filters["eta_max"] = filters["eta_max"]
-            if "rating_min" in llm_filters:
-                merged = _merge_min_limit(filters.get("rating_min"), llm_filters["rating_min"], _numeric_value)
-                if merged != filters.get("rating_min"):
-                    filters["rating_min"] = merged
-                    applied_filters["rating_min"] = filters["rating_min"]
-            if "available_only" in llm_filters:
-                new_val = bool(llm_filters["available_only"])
-                if new_val != filters.get("available_only", True):
-                    filters["available_only"] = new_val
-                    applied_filters["available_only"] = filters["available_only"]
-            if applied_filters:
-                plan.append(f"LLM filtros combinados: {json.dumps(applied_filters, ensure_ascii=False)}")
 
-            overrides = enrichment.get("ranking_overrides") or {}
-            overrides_applied = {}
-            if overrides:
-                if _merge_list_field(ranking_overrides, "boost_tags", overrides.get("boost_tags")):
-                    overrides_applied["boost_tags"] = ranking_overrides["boost_tags"]
-                if _merge_list_field(ranking_overrides, "penalize_tags", overrides.get("penalize_tags")):
-                    overrides_applied["penalize_tags"] = ranking_overrides["penalize_tags"]
-                weight_updates = overrides.get("weights") or {}
-                if isinstance(weight_updates, dict) and weight_updates:
-                    ranking_overrides.setdefault("weights", {})
-                    before = dict(ranking_overrides["weights"])
-                    for wk, wv in weight_updates.items():
-                        val = _numeric_value(wv)
-                        if val is not None:
-                            ranking_overrides["weights"][wk] = val
-                    if ranking_overrides["weights"] != before:
-                        overrides_applied["weights"] = ranking_overrides["weights"]
-            if overrides_applied:
-                plan.append(f"LLM ranking overrides: {json.dumps(overrides_applied, ensure_ascii=False)}")
+    if enrichment:
+        llm_info["status"] = "used"
+        llm_info["strategies"] = len(enrichment.get("strategies") or [])
+        notes = enrichment.get("notes") or []
+        if notes:
+            llm_info["notes"] = notes
+        plan.append("LLM activado: se combinaron sugerencias con heurísticas.")
+        llm_filters = enrichment.get("filters") or {}
+        user_defined_constraints = {
+            "price_max": filters.get("price_max") is not None,
+            "eta_max": filters.get("eta_max") is not None,
+            "rating_min": filters.get("rating_min") is not None,
+        }
+        applied_filters: Dict[str, Any] = {}
+        list_keys = {
+            "category_any",
+            "meal_moments_any",
+            "neighborhood_any",
+            "cuisines_any",
+            "ingredients_include",
+            "ingredients_exclude",
+            "diet_must",
+            "allergens_exclude",
+            "health_any",
+            "intent_tags_any",
+        }
+        for key in list_keys:
+            if key in llm_filters and _merge_list_field(filters, key, llm_filters[key]):
+                applied_filters[key] = filters[key]
+        if "price_max" in llm_filters and user_defined_constraints.get("price_max"):
+            merged = _merge_max_limit(filters.get("price_max"), llm_filters["price_max"], _price_value)
+            if merged != filters.get("price_max"):
+                filters["price_max"] = merged
+                applied_filters["price_max"] = filters["price_max"]
+        if "eta_max" in llm_filters and user_defined_constraints.get("eta_max"):
+            merged = _merge_max_limit(filters.get("eta_max"), llm_filters["eta_max"], _numeric_value)
+            if merged != filters.get("eta_max"):
+                filters["eta_max"] = merged
+                applied_filters["eta_max"] = filters["eta_max"]
+        if "rating_min" in llm_filters and user_defined_constraints.get("rating_min"):
+            merged = _merge_min_limit(filters.get("rating_min"), llm_filters["rating_min"], _numeric_value)
+            if merged != filters.get("rating_min"):
+                filters["rating_min"] = merged
+                applied_filters["rating_min"] = filters["rating_min"]
+        if "available_only" in llm_filters:
+            new_val = bool(llm_filters["available_only"])
+            if new_val != filters.get("available_only", True):
+                filters["available_only"] = new_val
+                applied_filters["available_only"] = filters["available_only"]
+        if applied_filters:
+            plan.append(f"LLM filtros combinados: {json.dumps(applied_filters, ensure_ascii=False)}")
 
-            if _merge_into_list(hints, enrichment.get("hints")):
-                plan.append(f"LLM hints añadidos: {json.dumps(hints, ensure_ascii=False)}")
-            if _merge_into_list(scenario_tags, enrichment.get("scenario_tags")):
-                plan.append(f"LLM escenarios extendidos: {json.dumps(scenario_tags, ensure_ascii=False)}")
+        overrides = enrichment.get("ranking_overrides") or {}
+        overrides_applied: Dict[str, Any] = {}
+        if overrides:
+            if _merge_list_field(ranking_overrides, "boost_tags", overrides.get("boost_tags")):
+                overrides_applied["boost_tags"] = ranking_overrides["boost_tags"]
+            if _merge_list_field(ranking_overrides, "penalize_tags", overrides.get("penalize_tags")):
+                overrides_applied["penalize_tags"] = ranking_overrides["penalize_tags"]
+            weight_updates = overrides.get("weights") or {}
+            if isinstance(weight_updates, dict) and weight_updates:
+                ranking_overrides.setdefault("weights", {})
+                before = dict(ranking_overrides["weights"])
+                for wk, wv in weight_updates.items():
+                    val = _numeric_value(wv)
+                    if val is not None:
+                        ranking_overrides["weights"][wk] = val
+                if ranking_overrides["weights"] != before:
+                    overrides_applied["weights"] = ranking_overrides["weights"]
+        if overrides_applied:
+            plan.append(f"LLM ranking overrides: {json.dumps(overrides_applied, ensure_ascii=False)}")
 
-            llm_headline = enrichment.get("headline")
-            llm_details = enrichment.get("details")
-            for note in enrichment.get("notes", []) or []:
-                plan.append(f"LLM nota: {note}")
+        if _merge_into_list(hints, enrichment.get("hints")):
+            plan.append(f"LLM hints añadidos: {json.dumps(hints, ensure_ascii=False)}")
+        if _merge_into_list(scenario_tags, enrichment.get("scenario_tags")):
+            plan.append(f"LLM escenarios extendidos: {json.dumps(scenario_tags, ensure_ascii=False)}")
+
+        llm_headline = enrichment.get("headline")
+        llm_details = enrichment.get("details")
+        for note in enrichment.get("notes", []) or []:
+            plan.append(f"LLM nota: {note}")
+
+        strategies = enrichment.get("strategies") or []
+        for idx, strategy in enumerate(strategies):
+            label = strategy.get("label") or strategy.get("headline") or f"Estrategia {idx + 1}"
+            summary = strategy.get("summary") or strategy.get("details") or strategy.get("explanation")
+            strategy_filters = strategy.get("filters") or {}
+            strategy_overrides = strategy.get("ranking_overrides") or {}
+            strategy_hints = strategy.get("hints") or []
+
+            strategies_meta.append(
+                {
+                    "label": label,
+                    "summary": summary,
+                    "filters": strategy_filters,
+                    "ranking_overrides": strategy_overrides,
+                    "hints": strategy_hints,
+                }
+            )
+            plan.append(f"Estrategia LLM '{label}': {summary or 'sin resumen adicional.'}")
+
+            if strategy_filters.get("intent_tags_any"):
+                extend_unique_list(filters["intent_tags_any"], [str(v) for v in _as_list(strategy_filters["intent_tags_any"])])
+            if strategy_hints:
+                extend_unique_list(hints, [str(v) for v in _as_list(strategy_hints)])
+            if strategy_overrides.get("boost_tags"):
+                _merge_list_field(ranking_overrides, "boost_tags", strategy_overrides.get("boost_tags"))
+            if strategy_overrides.get("penalize_tags"):
+                _merge_list_field(ranking_overrides, "penalize_tags", strategy_overrides.get("penalize_tags"))
+            if isinstance(strategy_overrides.get("weights"), dict):
+                ranking_overrides.setdefault("weights", {})
+                for wk, wv in strategy_overrides["weights"].items():
+                    val = _numeric_value(wv)
+                    if val is not None:
+                        ranking_overrides["weights"][wk] = val
+    elif llm_enabled_flag and llm_info.get("status") not in {"error"}:
+        llm_info["status"] = "no_data"
+
+    extra_meal_tags: List[str] = []
+    meal_any = filters.get("meal_moments_any") or []
+    if meal_any:
+        valid_meals = set(MEAL_MOMENTS.keys())
+        kept = []
+        for token in meal_any:
+            if token in valid_meals:
+                kept.append(token)
+            else:
+                extra_meal_tags.append(token)
+        filters["meal_moments_any"] = kept
+    if extra_meal_tags:
+        extend_unique_list(filters["intent_tags_any"], extra_meal_tags)
+        plan.append(f"Tokens de escenario convertidos a tags de intención: {extra_meal_tags}")
+    if filters.get("intent_tags_any"):
+        filters["intent_tags_any"] = sorted(set(filters["intent_tags_any"]))
+
+    catalog_min_price = None
+    prices_snapshot = CATALOG_METRICS.get("prices") or []
+    if prices_snapshot:
+        catalog_min_price = prices_snapshot[0]
+    price_filter_value = _numeric_value(filters.get("price_max"))
+    if catalog_min_price is not None and price_filter_value is not None and price_filter_value < catalog_min_price:
+        filters["price_max"] = catalog_min_price
+        plan.append(f"Precio máximo ajustado al mínimo disponible del catálogo ({catalog_min_price}).")
 
     advisor_parts = []
     if llm_headline:
@@ -612,6 +720,10 @@ def parse(text: str):
         if "wok" in joined:
             filters["category_any"] = [c for c in (filters.get("category_any") or []) if c != "wok"]
             filters["cuisines_any"] = [c for c in (filters.get("cuisines_any") or []) if c.lower() != "wok"]
+    metadata = {
+        "llm": llm_info,
+        "strategies": strategies_meta,
+    }
     return {
         "query": ParsedQuery(
             q=text,
@@ -619,9 +731,11 @@ def parse(text: str):
             hints=hints,
             ranking_overrides=RankingOverrides(**ranking_overrides),
             advisor_summary=combined_advisor,
-            scenario_tags=scenario_tags
+            scenario_tags=scenario_tags,
+            metadata=metadata,
         ).dict(),
-        "plan": plan
+        "plan": plan,
+        "status": metadata
     }
 
 def parse_meal_moments(text_norm: str, plan: List[str]):

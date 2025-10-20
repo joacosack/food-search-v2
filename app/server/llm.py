@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, Optional, List
 
 import httpx
 
@@ -9,7 +10,7 @@ class LLMError(RuntimeError):
     """LLM interaction failure."""
 
 
-DEFAULT_MODEL = os.getenv("LLM_MODEL", "llama3-8b-8192")
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "grok-code-fast-1-0825")
 DEFAULT_TIMEOUT_SEC = float(os.getenv("LLM_TIMEOUT", "15"))
 
 
@@ -29,6 +30,10 @@ def llm_enabled() -> bool:
     return bool(os.getenv("LLM_API_KEY"))
 
 
+def provider_name() -> str:
+    return _provider()
+
+
 def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, str]]:
     system_prompt = (
         "Sos un planificador gastronómico de Buenos Aires. "
@@ -36,7 +41,7 @@ def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, s
         "El JSON debe seguir este esquema:\n"
         "{\n"
         '  "headline": string,  # resumen breve inspirador\n'
-        '  "details": string,   # explicación extendida con sugerencias\n'
+        '  "details": string,   # explicación extendida con sugerencias y razonamiento detallado paso a paso\n'
         '  "filters": {         # claves opcionales: category_any, cuisines_any, neighborhood_any, '
         'ingredients_include, ingredients_exclude, diet_must, allergens_exclude, health_any, meal_moments_any, '
         'price_max, eta_max, rating_min, available_only }\n'
@@ -47,11 +52,21 @@ def _build_messages(user_text: str, context: Dict[str, Any]) -> list[Dict[str, s
         "  },\n"
         '  "hints": string[],\n'
         '  "scenario_tags": string[],\n'
-        '  "notes": string[]  # opcional, con insights relevantes\n'
+        '  "notes": string[],  # opcional, con insights relevantes\n'
+        '  "strategies": [     # opcional, para búsquedas múltiples coordinadas\n'
+        '     {\n'
+        '       "label": string,\n'
+        '       "summary": string,\n'
+        '       "filters": { ... },\n'
+        '       "ranking_overrides": { ... },\n'
+        '       "hints": string[]\n'
+        "     }\n"
+        "  ]\n"
         "}\n"
         "Respetá los nombres de campo y usá valores concretos. "
         "Si no tenés información para un campo, devolvé un array vacío, objeto vacío o null según corresponda. "
         "No inventes restaurantes específicos fuera del catálogo. "
+        "El campo 'details' debe describir explícitamente los pasos de razonamiento: qué variables considerás, qué filtros aplicarás y cómo combinarás estrategias."
     )
     user_payload = {
         "user_request": user_text,
@@ -83,6 +98,15 @@ def _stub_response() -> Dict[str, Any]:
         "hints": [],
         "scenario_tags": [],
         "notes": ["Respuesta generada localmente sin LLM."],
+        "strategies": [
+            {
+                "label": "Plan principal",
+                "summary": "Exploraré opciones variadas usando las reglas locales.",
+                "filters": {},
+                "ranking_overrides": {},
+                "hints": [],
+            }
+        ],
     }
 
 
@@ -157,7 +181,8 @@ def request_plan(user_text: str, context: Dict[str, Any]) -> Dict[str, Any]:
     else:
         content = _generic_request(messages, model)
     try:
-        return json.loads(content)
+        payload = _extract_json_payload(content)
+        return json.loads(payload)
     except json.JSONDecodeError as exc:
         raise LLMError(f"Respuesta del LLM no es JSON válido: {content}") from exc
 
@@ -166,3 +191,31 @@ def enrich_query(user_text: str, context: Dict[str, Any]) -> Optional[Dict[str, 
     if not llm_enabled():
         return None
     return request_plan(user_text, context)
+
+
+def _extract_json_payload(raw: str) -> str:
+    """
+    Extrae el primer objeto JSON válido encontrado en el texto.
+    Maneja respuestas envueltas en fences Markdown como ```json ... ```.
+    """
+    if not raw:
+        raise LLMError("Respuesta del LLM vacía.")
+    text = raw.strip()
+    fence_match = re.search(r"```(?:json)?\s*(.*)```", text, re.DOTALL | re.IGNORECASE)
+    if fence_match:
+        text = fence_match.group(1).strip()
+    # Buscar primer objeto JSON balanceado
+    start = text.find("{")
+    while start != -1:
+        depth = 0
+        for idx in range(start, len(text)):
+            ch = text[idx]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    candidate = text[start : idx + 1]
+                    return candidate
+        start = text.find("{", start + 1)
+    raise LLMError(f"Respuesta del LLM no contiene JSON válido: {raw}")

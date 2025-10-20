@@ -36,6 +36,7 @@ class ParseFilters(BaseModel):
     diet_must: List[str] = Field(default_factory=list)
     allergens_exclude: List[str] = Field(default_factory=list)
     health_any: List[str] = Field(default_factory=list)
+    intent_tags_any: List[str] = Field(default_factory=list)
     price_max: Optional[Any] = None  # number or percentile label like "p20"
     eta_max: Optional[int] = None
     rating_min: Optional[float] = None
@@ -54,6 +55,7 @@ class ParsedQuery(BaseModel):
     ranking_overrides: RankingOverrides = Field(default_factory=RankingOverrides)
     advisor_summary: Optional[str] = None
     scenario_tags: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 class SearchRequest(BaseModel):
     query: Optional[ParsedQuery] = None

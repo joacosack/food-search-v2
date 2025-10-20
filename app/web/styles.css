@@ -22,7 +22,6 @@ button.secondary:hover { background: #c7d2fe; }
 .llm-box__badge { background: #1d64f2; color: #fff; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 .llm-box h2 { margin: 0; font-size: 20px; color: #0f1e49; }
 .llm-box h3 { margin: 0 0 8px; font-size: 18px; color: #101828; }
-.llm-status { margin: 0 0 8px; font-size: 13px; color: #1d4ed8; font-weight: 600; }
 .llm-box p { margin: 0 0 10px; line-height: 1.55; }
 .llm-box ul { margin: 6px 0 0 18px; padding: 0; color: #344054; }
 .llm-box li { margin-bottom: 4px; }

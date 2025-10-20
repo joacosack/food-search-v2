@@ -7,28 +7,24 @@ let backendAvailable = null;
 
 const PROMPT_SAMPLES = [
   {
-    label: "Combo para el partido con envío gratis",
-    value: "combo gigante para ver el partido con amigos y envío gratis",
+    label: "Cita romántica elegante con envío gratis",
+    value: "cita romántica con plato elegante, vino y envío gratis en Palermo",
   },
   {
-    label: "Ensalada vegana express con promo",
-    value: "ensalada vegana sin gluten con descuento y entrega rápida",
+    label: "Partido con amigos, porciones grandes",
+    value: "combo abundante para ver el partido con amigos, porciones grandes y buena promo",
   },
   {
-    label: "Postre artesanal mismo precio",
-    value: "postre artesanal con mismo precio que en el local",
+    label: "Almuerzo saludable sin gluten ni nueces",
+    value: "almuerzo saludable sin gluten ni nueces para la oficina que llegue en menos de 25 minutos",
   },
   {
-    label: "Sushi premium con promo y envío gratis",
-    value: "sushi premium con promo y envío gratis",
+    label: "Postre con descuento y mismo precio",
+    value: "helado artesanal con descuento y mismo precio que en el local para postre después de cenar",
   },
   {
-    label: "Brunch saludable con café",
-    value: "brunch saludable con café y postre",
-  },
-  {
-    label: "Pollo crispy para compartir",
-    value: "pollo crispy para compartir con niños",
+    label: "Sushi vegano express",
+    value: "sushi vegano express con costo de envío bajo y restaurantes bien calificados",
   },
 ];
 
@@ -155,56 +151,20 @@ function updateStatusBanner(banner, parseStatus, searchPlan) {
   }
 }
 
-function renderAdvisor(box, headlineEl, detailsEl, notesEl, statusEl, summary, notes, llmStatus) {
-  if (!box || !headlineEl || !detailsEl || !notesEl || !statusEl) return;
+function renderAdvisor(box, headlineEl, detailsEl, notesEl, summary, notes) {
+  if (!box || !headlineEl || !detailsEl || !notesEl) return;
   const cleanSummary = typeof summary === "string" ? summary.trim() : "";
-  const partsRaw = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
-  const seenParts = new Set();
-  const parts = [];
-  partsRaw.forEach((p) => {
-    if (!seenParts.has(p)) {
-      seenParts.add(p);
-      parts.push(p);
-    }
-  });
+  const parts = cleanSummary ? cleanSummary.split(/\n+\s*/).filter(Boolean) : [];
   const headline = parts.shift() || "";
   const detailText = parts.join(" ");
-  const noteItemsRaw = Array.isArray(notes) ? notes.filter(Boolean) : [];
-  const noteSeen = new Set();
-  const noteItems = [];
-  noteItemsRaw.forEach((n) => {
-    if (!noteSeen.has(n)) {
-      noteSeen.add(n);
-      noteItems.push(n);
-    }
-  });
+  const noteItems = Array.isArray(notes) ? notes.filter(Boolean) : [];
 
-  const statusText = (() => {
-    if (!llmStatus || typeof llmStatus !== "object") return "";
-    const status = llmStatus.status || "";
-    if (status === "used") {
-      const provider = llmStatus.provider || "IA";
-      return `Modo IA (${provider}) activo.`;
-    }
-    if (status === "disabled") {
-      return "IA desactivada: usando reglas locales.";
-    }
-    if (status === "error") {
-      return `IA sin conexión: ${llmStatus.message || "se usan reglas locales"}.`;
-    }
-    if (status === "no_data") {
-      return "IA sin respuesta útil: se mantienen reglas locales.";
-    }
-    return "";
-  })();
-
-  if (!headline && !detailText && noteItems.length === 0 && !statusText) {
+  if (!headline && !detailText && noteItems.length === 0) {
     box.classList.remove("visible");
     box.hidden = true;
     headlineEl.textContent = "";
     detailsEl.textContent = "";
     notesEl.innerHTML = "";
-    statusEl.textContent = "";
     return;
   }
 
@@ -230,9 +190,6 @@ function renderAdvisor(box, headlineEl, detailsEl, notesEl, statusEl, summary, n
   } else {
     notesEl.style.display = "none";
   }
-
-  statusEl.textContent = statusText;
-  statusEl.style.display = statusText ? "block" : "none";
 
   box.classList.add("visible");
   box.hidden = false;

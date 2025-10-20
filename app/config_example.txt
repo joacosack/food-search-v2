@@ -1,0 +1,17 @@
+# Configuración de IA para Food Search v2
+# Configura estas variables de entorno antes de ejecutar el servidor
+
+# Proveedor de IA (groq, openai, stub, none)
+export LLM_PROVIDER=groq
+
+# API Key para Groq (https://console.groq.com/)
+export GROQ_API_KEY=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
+
+# O usar LLM_API_KEY como alternativa
+# export LLM_API_KEY=tu_api_key_aqui
+
+# Modelo a usar (por defecto: llama-3.3-70b-versatile)
+export LLM_MODEL=llama-3.3-70b-versatile
+
+# Timeout en segundos (por defecto: 15)
+export LLM_TIMEOUT=15

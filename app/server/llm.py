@@ -10,18 +10,24 @@ class LLMError(RuntimeError):
     """LLM interaction failure."""
 
 
-DEFAULT_MODEL = os.getenv("LLM_MODEL", "grok-code-fast-1-0825")
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
 DEFAULT_TIMEOUT_SEC = float(os.getenv("LLM_TIMEOUT", "15"))
 
 
 def _provider() -> str:
-    return (os.getenv("LLM_PROVIDER") or "").strip().lower()
+    provider = os.getenv("LLM_PROVIDER", "").strip().lower()
+    if not provider:
+        # Por defecto usar Groq si hay API key disponible
+        if os.getenv("GROQ_API_KEY") or os.getenv("LLM_API_KEY"):
+            return "groq"
+    return provider
 
 
 def llm_enabled() -> bool:
     provider = _provider()
     if not provider or provider in {"none", "off"}:
-        return False
+        # Por defecto, intentar usar Groq si hay API key
+        return bool(os.getenv("GROQ_API_KEY") or os.getenv("LLM_API_KEY"))
     if provider == "stub":
         return True
     if provider == "groq":

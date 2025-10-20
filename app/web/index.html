@@ -34,13 +34,14 @@
         <ul id="advisor-notes"></ul>
       </div>
       <div id="status-banner" class="status" aria-live="polite"></div>
-      <details class="panel" id="structured-panel">
-        <summary>Consulta estructurada</summary>
-        <pre id="structured"></pre>
-      </details>
-      <details class="panel" id="plan-panel">
-        <summary>Plan de búsqueda</summary>
-        <pre id="plan"></pre>
+      <details class="panel" id="debug-panel" open>
+        <summary>Debug: Consulta estructurada y Plan de búsqueda</summary>
+        <div class="debug-content">
+          <h4>Consulta estructurada</h4>
+          <pre id="structured"></pre>
+          <h4>Plan de búsqueda</h4>
+          <pre id="plan"></pre>
+        </div>
       </details>
       <h2>Platos sugeridos</h2>
       <div id="results"></div>

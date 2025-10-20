@@ -315,12 +315,26 @@ def extract_include_exclude(text_norm: str, plan: List[str]):
     def pat(syn):
         return rf"\b{re.escape(syn)}(?:s|es|ito|itos|ita|itas)?\b"
 
-    # "sin X"
+    # Detectar ingredientes en contextos de exclusión
+    # Buscar "sin" seguido de una lista de ingredientes
+    sin_context = re.search(r'\bsin\s+([^,]+(?:,\s*[^,]+)*)', text_norm)
+    if sin_context:
+        # Extraer la lista de ingredientes después de "sin"
+        ingredients_list = sin_context.group(1)
+        # Buscar cada ingrediente en la lista
+        for syn_norm, token in ing_map.items():
+            if re.search(pat(syn_norm), ingredients_list):
+                exclude.append(token)
+        for syn_norm, token in allerg_map.items():
+            if re.search(pat(syn_norm), ingredients_list):
+                allergens_ex.append(token)
+    
+    # También buscar patrones "ni X" independientes
     for syn_norm, token in ing_map.items():
-        if re.search(rf"\bsin\s+{pat(syn_norm)}", text_norm):
+        if re.search(rf"\bni\s+{pat(syn_norm)}\b", text_norm):
             exclude.append(token)
     for syn_norm, token in allerg_map.items():
-        if re.search(rf"\bsin\s+{pat(syn_norm)}", text_norm):
+        if re.search(rf"\bni\s+{pat(syn_norm)}\b", text_norm):
             allergens_ex.append(token)
 
     # "con X"
@@ -329,11 +343,13 @@ def extract_include_exclude(text_norm: str, plan: List[str]):
             if not (low_sodium_hit and syn_norm == "sal"):
                 include.append(token)
 
-    # Bare mentions as soft include if not excluded
+    # Solo incluir ingredientes que aparecen explícitamente con "con" o en contextos positivos
+    # NO incluir ingredientes que aparecen en contextos de exclusión
     for syn_norm, token in ing_map.items():
         if syn_norm == "sal" and low_sodium_hit:
             continue
-        if re.search(pat(syn_norm), text_norm) and not re.search(rf"\bsin\s+{pat(syn_norm)}", text_norm):
+        # Solo incluir si aparece con "con" y no con "sin"
+        if re.search(rf"\bcon\s+{pat(syn_norm)}", text_norm) and not re.search(rf"\bsin\s+{pat(syn_norm)}", text_norm):
             include.append(token)
 
     include = sorted(set(include))
@@ -579,11 +595,13 @@ def parse(text: str):
                 },
             ) or {}
         except llm.LLMError as exc:
-            llm_info = {"status": "error", "provider": llm_provider or "desconocido", "message": str(exc)}
-            plan.append(f"LLM error: {exc}")
+            error_msg = f"Error de IA ({llm_provider or 'Groq'}): {str(exc)}"
+            llm_info = {"status": "error", "provider": llm_provider or "Groq", "message": error_msg}
+            plan.append(f"❌ {error_msg}")
         except Exception as exc:
-            llm_info = {"status": "error", "provider": llm_provider or "desconocido", "message": str(exc)}
-            plan.append(f"LLM error inesperado: {exc}")
+            error_msg = f"Error inesperado de IA ({llm_provider or 'Groq'}): {str(exc)}"
+            llm_info = {"status": "error", "provider": llm_provider or "Groq", "message": error_msg}
+            plan.append(f"❌ {error_msg}")
 
     if enrichment:
         llm_info["status"] = "used"

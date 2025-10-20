@@ -593,16 +593,37 @@ function extractIncludeExclude(textNorm, plan) {
 
   const buildPattern = (syn) => new RegExp(`\\b${escapeRegex(syn)}(?:s|es|ito|itos|ita|itas)?\\b`, "i");
 
+  // Detectar ingredientes en contextos de exclusión
+  // Buscar "sin" seguido de una lista de ingredientes
+  const sinContextMatch = textNorm.match(/\bsin\s+([^,]+(?:,\s*[^,]+)*)/);
+  if (sinContextMatch) {
+    // Extraer la lista de ingredientes después de "sin"
+    const ingredientsList = sinContextMatch[1];
+    // Buscar cada ingrediente en la lista
+    for (const [syn, token] of ingredientMap.entries()) {
+      const pattern = buildPattern(syn);
+      if (pattern.test(ingredientsList)) {
+        exclude.add(token);
+      }
+    }
+    for (const [syn, token] of allergenMap.entries()) {
+      const pattern = buildPattern(syn);
+      if (pattern.test(ingredientsList)) {
+        allergensExclude.add(token);
+      }
+    }
+  }
+  
+  // También buscar patrones "ni X" independientes
   for (const [syn, token] of ingredientMap.entries()) {
-    const pattern = new RegExp(`\\bsin\\s+${buildPattern(syn).source}`, "i");
-    if (pattern.test(textNorm)) {
+    const niPattern = new RegExp(`\\bni\\s+${buildPattern(syn).source}\\b`, "i");
+    if (niPattern.test(textNorm)) {
       exclude.add(token);
     }
   }
-
   for (const [syn, token] of allergenMap.entries()) {
-    const pattern = new RegExp(`\\bsin\\s+${buildPattern(syn).source}`, "i");
-    if (pattern.test(textNorm)) {
+    const niPattern = new RegExp(`\\bni\\s+${buildPattern(syn).source}\\b`, "i");
+    if (niPattern.test(textNorm)) {
       allergensExclude.add(token);
     }
   }
@@ -616,11 +637,17 @@ function extractIncludeExclude(textNorm, plan) {
     }
   }
 
+  // Solo incluir ingredientes que aparecen explícitamente con "con" o en contextos positivos
+  // NO incluir ingredientes que aparecen en contextos de exclusión
   for (const [syn, token] of ingredientMap.entries()) {
     if (syn === "sal" && lowSodiumHit) continue;
     const basePattern = buildPattern(syn);
     const negPattern = new RegExp(`\\bsin\\s+${basePattern.source}`, "i");
-    if (basePattern.test(textNorm) && !negPattern.test(textNorm)) {
+    const conPattern = new RegExp(`\\bcon\\s+${basePattern.source}`, "i");
+    
+    // Solo incluir si aparece con "con" o en contextos claramente positivos
+    // NO incluir si aparece con "sin" o en contextos de exclusión
+    if (conPattern.test(textNorm) && !negPattern.test(textNorm)) {
       include.add(token);
     }
   }

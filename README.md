@@ -72,6 +72,28 @@ cd app
 
 El script detecta automáticamente `.env.local`, exporta las variables y lanza el servidor. Si preferís hacerlo manualmente, exportá las variables en tu shell antes de iniciar `uvicorn`. Nunca subas tu `.env.local` ni la clave real al repositorio.
 
+### Backend gratuito (Render)
+
+El archivo [`render.yaml`](./render.yaml) deja listo el despliegue del backend en [Render](https://render.com), que ofrece un plan gratuito para servicios web (dormirá tras unos minutos de inactividad, pero se reactiva solo).
+
+1. Subí el repo a GitHub sin la API key.
+2. En Render: **New → Blueprint** y seleccioná el repo. Render toma las instrucciones de `render.yaml`.
+3. Durante la creación, cargá las variables:
+   - `GROQ_API_KEY` (marcada como secreto, no queda en el repo).
+   - `LLM_PROVIDER=groq`, `LLM_MODEL=llama-3.3-70b-versatile` ya vienen preconfiguradas.
+4. Tras el deploy, Render expone una URL como `https://food-search-backend.onrender.com`.
+
+Para usar la LLM desde GitHub Pages u otro hosting estático, agregá antes del `<script type="module" src="app.js">` en `app/web/index.html`:
+
+```html
+<script>
+  window.ENABLE_BACKEND = true;
+  window.BACKEND_URL = "https://food-search-backend.onrender.com";
+</script>
+```
+
+Luego ejecutá `python build_static.py` y publicá la carpeta `web_static` generada; la UI consumirá `/parse` y `/search` del backend seguro sin exponer la key.
+
 ## 📁 Estructura del Proyecto
 
 ```

@@ -12,6 +12,11 @@ if (STATIC_MODE) {
   backendAvailable = false;
 }
 
+const API_BASE =
+  typeof window !== "undefined" && window.BACKEND_URL
+    ? String(window.BACKEND_URL).replace(/\/+$/, "")
+    : "";
+
 const PROMPT_SAMPLES = [
   {
     label: "Cita romántica elegante con envío gratis",
@@ -38,6 +43,7 @@ const PROMPT_SAMPLES = [
 function shouldUseBackend() {
   if (window.DISABLE_BACKEND) return false;
   if (backendAvailable === false) return false;
+  if (API_BASE) return true;
   return true;
 }
 
@@ -46,7 +52,8 @@ async function callBackend(path, payload, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
-    const response = await fetch(path, {
+    const url = API_BASE ? `${API_BASE}${path}` : path;
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

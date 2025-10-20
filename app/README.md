@@ -1,7 +1,7 @@
 
 # Buscador inteligente v2 de platos y restaurantes
 
-Aplicación completa y funcional para buscar platos tipo food delivery de Buenos Aires sin LLM en runtime. Usa reglas determinísticas, diccionarios y parsing con expresiones regulares. Incluye backend FastAPI, frontend HTML CSS JS, dataset de 150 platos, y tests con Pytest.
+Aplicación completa y funcional para buscar platos tipo food delivery de Buenos Aires. Usa reglas determinísticas, diccionarios y parsing con expresiones regulares, y opcionalmente puede delegar la interpretación de la intención a un LLM gratuito (Groq u otro endpoint compatible con OpenAI). Incluye backend FastAPI, frontend HTML CSS JS, dataset de 150 platos y tests con Pytest. La UI detecta automáticamente el backend y cae a modo offline si no está disponible.
 
 ## Estructura
 
@@ -45,8 +45,33 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Abrir el frontend
-Abrí `app/web/index.html` en el navegador. Toda la lógica de parseo y ranking corre en el navegador con los datos locales.
+3. (Opcional) Levantar el backend (requerido para el modo LLM)
+```
+uvicorn app.server.main:app --reload
+```
+
+4. Abrir el frontend  
+Si corrés sin backend, abrí `app/web/index.html` en el navegador. Si levantaste FastAPI, podés usar `http://localhost:8000/web/index.html`; la interfaz detecta el servidor y enviará las consultas a `/parse` y `/search`.
+
+## Modo IA con LLM gratuito (Groq / OpenAI compatible)
+
+1. Conseguí una API key:
+   - [Groq](https://console.groq.com/) ofrece un plan gratuito. Creá una cuenta y generá una API key.
+   - Para otro endpoint compatible con OpenAI/LLaMA, asegurate de tener la URL base y el token.
+2. Exportá las variables de entorno antes de iniciar el backend:
+   ```bash
+   export LLM_PROVIDER=groq
+   export GROQ_API_KEY="tu_api_key"
+   export LLM_MODEL="llama3-8b-8192"   # opcional, por defecto usa ese modelo
+   # Alternativa genérica:
+   # export LLM_PROVIDER=openai
+   # export LLM_API_KEY="token"
+   # export LLM_BASE_URL="https://tu-endpoint/openai/v1"
+   ```
+   Extras útiles:
+   - `LLM_STUB_RESPONSE='{"headline":"Demo","details":"Sin red","filters":{}}'` fuerza una respuesta estática para depurar sin red.
+   - `LLM_TIMEOUT=15` ajusta el timeout (en segundos) del request al LLM.
+3. Iniciá FastAPI con `uvicorn`. El parser combinará heurísticas locales con las sugerencias del modelo para enriquecer filtros, boosts y el resumen asesor. La UI mostrará el titular y detalle generados por el LLM. Si el backend o el modelo fallan, todo vuelve automáticamente al modo offline con filtros determinísticos.
 
 ## Pipeline
 

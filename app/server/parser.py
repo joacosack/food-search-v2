@@ -1,8 +1,9 @@
 
 import json, re
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Iterable, Optional
 from .schema import ParsedQuery, ParseFilters, RankingOverrides
+from . import llm
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "dictionaries"
 
@@ -21,6 +22,15 @@ NEIGHBORHOODS = [
     "Caballito","Núñez","Boedo","San Telmo","Microcentro","Balvanera","Devoto","Saavedra"
 ]
 CUISINES = ["Argentina","Parrilla","Italiana","Pizzería","Empanadas","Ensaladas","Wok","Árabe","Japonesa","Mexicana","Hamburguesas","Vegana","Vegetariana","Sushi","Tacos","Sandwiches","Bowls","Sopas","Postres"]
+
+CATALOG_FACETS = {
+    "categories": sorted(CATEGORIES.keys()),
+    "diets": sorted(DIETS.keys()),
+    "allergens": sorted(ALLERGENS.keys()),
+    "health_tags": sorted(HEALTH["tags"].keys()),
+    "neighborhoods": NEIGHBORHOODS,
+    "cuisines": CUISINES,
+}
 
 # Cargar nombres de restaurantes desde el catálogo para detectar coincidencias exactas en la consulta
 CATALOG_PATH = Path(__file__).resolve().parent.parent / "data" / "catalog.json"
@@ -119,6 +129,77 @@ def normalize_percentile_limit(limit):
     if isinstance(limit, (int, float)):
         return float(limit)
     return None
+
+def _as_list(values: Any) -> List[str]:
+    if values is None:
+        return []
+    if isinstance(values, str):
+        return [values]
+    if isinstance(values, Iterable):
+        return [str(v) for v in values if v]
+    return []
+
+def _price_value(limit: Any) -> Optional[float]:
+    if limit is None:
+        return None
+    if isinstance(limit, str):
+        limit = limit.strip()
+        if limit.lower().startswith("p"):
+            return normalize_percentile_limit(limit.lower())
+        try:
+            return float(limit.replace(",", "."))
+        except ValueError:
+            return None
+    if isinstance(limit, (int, float)):
+        return float(limit)
+    return None
+
+def _numeric_value(value: Any) -> Optional[float]:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", "."))
+        except ValueError:
+            return None
+    return None
+
+def _merge_max_limit(current: Any, candidate: Any, converter) -> Any:
+    cand_val = converter(candidate)
+    if cand_val is None:
+        return current
+    current_val = converter(current)
+    if current_val is None or cand_val < current_val:
+        return candidate
+    return current
+
+def _merge_min_limit(current: Any, candidate: Any, converter) -> Any:
+    cand_val = converter(candidate)
+    if cand_val is None:
+        return current
+    current_val = converter(current)
+    if current_val is None or cand_val > current_val:
+        return candidate
+    return current
+
+def _merge_list_field(target: Dict[str, List[str]], key: str, addition: Any) -> bool:
+    values = [str(v) for v in _as_list(addition) if v]
+    if not values:
+        return False
+    target.setdefault(key, [])
+    before = list(target[key])
+    extend_unique_list(target[key], values)
+    return target[key] != before
+
+def _merge_into_list(target: List[str], addition: Any) -> bool:
+    values = [str(v) for v in _as_list(addition) if v]
+    if not values:
+        return False
+    before = list(target)
+    extend_unique_list(target, values)
+    return target != before
 
 def parse_price(text_norm: str, plan: List[str]):
     PRICE_WORDS = {
@@ -435,6 +516,96 @@ def parse(text: str):
 
     scenario_summaries, scenario_tags = apply_conversation_scenarios(text, filters, ranking_overrides, hints, plan)
     advisor_summary = " ".join(scenario_summaries).strip() or None
+
+    llm_headline = None
+    llm_details = None
+    if llm.llm_enabled():
+        try:
+            enrichment = llm.enrich_query(text, {
+                "filters": filters,
+                "hints": hints,
+                "scenario_tags": scenario_tags,
+                "catalog_facets": CATALOG_FACETS
+            }) or {}
+        except llm.LLMError as exc:
+            plan.append(f"LLM error: {exc}")
+            enrichment = {}
+        except Exception as exc:
+            plan.append(f"LLM error inesperado: {exc}")
+            enrichment = {}
+        if enrichment:
+            plan.append("LLM activado: se combinaron sugerencias con heurísticas.")
+            llm_filters = enrichment.get("filters") or {}
+            applied_filters = {}
+            list_keys = {
+                "category_any","meal_moments_any","neighborhood_any","cuisines_any",
+                "ingredients_include","ingredients_exclude","diet_must","allergens_exclude","health_any"
+            }
+            for key in list_keys:
+                if key in llm_filters and _merge_list_field(filters, key, llm_filters[key]):
+                    applied_filters[key] = filters[key]
+            if "price_max" in llm_filters:
+                merged = _merge_max_limit(filters.get("price_max"), llm_filters["price_max"], _price_value)
+                if merged != filters.get("price_max"):
+                    filters["price_max"] = merged
+                    applied_filters["price_max"] = filters["price_max"]
+            if "eta_max" in llm_filters:
+                merged = _merge_max_limit(filters.get("eta_max"), llm_filters["eta_max"], _numeric_value)
+                if merged != filters.get("eta_max"):
+                    filters["eta_max"] = merged
+                    applied_filters["eta_max"] = filters["eta_max"]
+            if "rating_min" in llm_filters:
+                merged = _merge_min_limit(filters.get("rating_min"), llm_filters["rating_min"], _numeric_value)
+                if merged != filters.get("rating_min"):
+                    filters["rating_min"] = merged
+                    applied_filters["rating_min"] = filters["rating_min"]
+            if "available_only" in llm_filters:
+                new_val = bool(llm_filters["available_only"])
+                if new_val != filters.get("available_only", True):
+                    filters["available_only"] = new_val
+                    applied_filters["available_only"] = filters["available_only"]
+            if applied_filters:
+                plan.append(f"LLM filtros combinados: {json.dumps(applied_filters, ensure_ascii=False)}")
+
+            overrides = enrichment.get("ranking_overrides") or {}
+            overrides_applied = {}
+            if overrides:
+                if _merge_list_field(ranking_overrides, "boost_tags", overrides.get("boost_tags")):
+                    overrides_applied["boost_tags"] = ranking_overrides["boost_tags"]
+                if _merge_list_field(ranking_overrides, "penalize_tags", overrides.get("penalize_tags")):
+                    overrides_applied["penalize_tags"] = ranking_overrides["penalize_tags"]
+                weight_updates = overrides.get("weights") or {}
+                if isinstance(weight_updates, dict) and weight_updates:
+                    ranking_overrides.setdefault("weights", {})
+                    before = dict(ranking_overrides["weights"])
+                    for wk, wv in weight_updates.items():
+                        val = _numeric_value(wv)
+                        if val is not None:
+                            ranking_overrides["weights"][wk] = val
+                    if ranking_overrides["weights"] != before:
+                        overrides_applied["weights"] = ranking_overrides["weights"]
+            if overrides_applied:
+                plan.append(f"LLM ranking overrides: {json.dumps(overrides_applied, ensure_ascii=False)}")
+
+            if _merge_into_list(hints, enrichment.get("hints")):
+                plan.append(f"LLM hints añadidos: {json.dumps(hints, ensure_ascii=False)}")
+            if _merge_into_list(scenario_tags, enrichment.get("scenario_tags")):
+                plan.append(f"LLM escenarios extendidos: {json.dumps(scenario_tags, ensure_ascii=False)}")
+
+            llm_headline = enrichment.get("headline")
+            llm_details = enrichment.get("details")
+            for note in enrichment.get("notes", []) or []:
+                plan.append(f"LLM nota: {note}")
+
+    advisor_parts = []
+    if llm_headline:
+        advisor_parts.append(llm_headline)
+    if advisor_summary and advisor_summary not in advisor_parts:
+        advisor_parts.append(advisor_summary)
+    if llm_details:
+        advisor_parts.append(llm_details)
+    combined_advisor = "\n\n".join([p for p in advisor_parts if p]).strip() or None
+
     if rest_hits:
         # Si el nombre de restaurante contiene "wok", no generes categoría/cocina por esa palabra
         joined = " ".join(rest_hits).lower()
@@ -447,7 +618,7 @@ def parse(text: str):
             filters=ParseFilters(**filters),
             hints=hints,
             ranking_overrides=RankingOverrides(**ranking_overrides),
-            advisor_summary=advisor_summary,
+            advisor_summary=combined_advisor,
             scenario_tags=scenario_tags
         ).dict(),
         "plan": plan

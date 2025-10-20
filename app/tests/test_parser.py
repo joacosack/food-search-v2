@@ -85,3 +85,28 @@ def test_almuerzo_rapido_prioriza_eta():
     assert pq["query"]["filters"]["eta_max"] <= 25
     quick_hits = [r for r in res["results"][:8] if "quick_lunch" in (r["item"].get("experience_tags") or [])]
     assert quick_hits
+
+
+def test_llm_stub_merges_filters(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "stub")
+    monkeypatch.setenv(
+        "LLM_STUB_RESPONSE",
+        json.dumps(
+            {
+                "headline": "Asistente LLM",
+                "details": "Preferencias detectadas automáticamente.",
+                "filters": {"category_any": ["Parrilla"], "price_max": 3500},
+                "ranking_overrides": {"boost_tags": ["romantic"]},
+                "hints": ["llm_hint"],
+                "scenario_tags": ["llm_defined"],
+            }
+        ),
+    )
+    pq = parse("busco algo romantico con carne")
+    filters = pq["query"]["filters"]
+    assert "Parrilla" in filters["category_any"]
+    assert filters["price_max"] == 3500
+    assert "romantic" in pq["query"]["ranking_overrides"]["boost_tags"]
+    assert "llm_hint" in pq["query"]["hints"]
+    assert "llm_defined" in pq["query"]["scenario_tags"]
+    assert any("LLM" in step for step in pq["plan"])

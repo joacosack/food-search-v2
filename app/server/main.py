@@ -9,7 +9,7 @@ from .schema import SearchRequest
 import json
 from pathlib import Path
 
-app = FastAPI(title="Food Search v2", version="0.1.1")
+app = FastAPI(title="Food Search v2", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,

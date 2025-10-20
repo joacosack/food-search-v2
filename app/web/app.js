@@ -1,7 +1,48 @@
 import { CATALOG } from "./data/catalog.js";
 import { CATEGORIES, INGREDIENTS, DIETS, ALLERGENS, HEALTH } from "./data/dictionaries.js";
 
-const APP_VERSION = "v2.1.0";
+const APP_VERSION = "v2.2.0";
+const BACKEND_TIMEOUT_MS = 8000;
+let backendAvailable = null;
+
+function shouldUseBackend() {
+  if (window.DISABLE_BACKEND) return false;
+  if (backendAvailable === false) return false;
+  return true;
+}
+
+async function callBackend(path, payload, options = {}) {
+  const timeout = options.timeout ?? BACKEND_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      const err = new Error(`HTTP ${response.status}`);
+      err.status = response.status;
+      err.body = await response.text().catch(() => null);
+      if (response.status >= 500) backendAvailable = false;
+      throw err;
+    }
+    backendAvailable = true;
+    return await response.json();
+  } catch (err) {
+    if (err.name === "AbortError" || err instanceof TypeError) {
+      backendAvailable = false;
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const parseViaBackend = (text) => callBackend("/parse", { text });
+const searchViaBackend = (query) => callBackend("/search", { query });
 
 function stripAccents(text = "") {
   return text
@@ -944,11 +985,30 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.disabled = true;
     results.innerHTML = "<p>Buscando resultados...</p>";
     try {
-      const parsed = parseText(text);
+      let parsed;
+      let usedBackend = false;
+      if (shouldUseBackend()) {
+        try {
+          parsed = await parseViaBackend(text);
+          usedBackend = true;
+        } catch (backendErr) {
+          console.warn("Fallo parser backend; se usa fallback local.", backendErr);
+          parsed = parseText(text);
+          if (!Array.isArray(parsed.plan)) parsed.plan = [];
+          parsed.plan.push("Backend no disponible: se usó el parser local.");
+        }
+      }
+      if (!parsed) {
+        parsed = parseText(text);
+        if (!Array.isArray(parsed.plan)) parsed.plan = [];
+        if (backendAvailable === false) {
+          parsed.plan.push("Backend no disponible: se usó el parser local.");
+        }
+      }
       structured.textContent = JSON.stringify(parsed.query, null, 2);
       plan.textContent = JSON.stringify(parsed.plan, null, 2);
       if (advisor) {
-        if (parsed.query.advisor_summary) {
+        if (parsed.query?.advisor_summary) {
           advisor.textContent = parsed.query.advisor_summary;
           advisor.classList.add("visible");
         } else {
@@ -956,7 +1016,26 @@ document.addEventListener("DOMContentLoaded", () => {
           advisor.classList.remove("visible");
         }
       }
-      const searched = searchCatalog(parsed.query);
+      let searched;
+      if (usedBackend) {
+        try {
+          searched = await searchViaBackend(parsed.query);
+        } catch (backendErr) {
+          console.warn("Fallo búsqueda backend; se usa ranking local.", backendErr);
+          searched = searchCatalog(parsed.query);
+          searched.plan = searched.plan || {};
+          searched.plan.backend_warning =
+            "Backend no disponible en este momento. Se muestran resultados locales.";
+        }
+      }
+      if (!searched) {
+        searched = searchCatalog(parsed.query);
+        searched.plan = searched.plan || {};
+        if (backendAvailable === false) {
+          searched.plan.backend_warning =
+            "Backend no disponible en este momento. Se muestran resultados locales.";
+        }
+      }
       renderResults(results, searched);
     } catch (err) {
       console.error("Error al buscar", err);

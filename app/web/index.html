@@ -35,27 +35,27 @@
         <ul id="advisor-notes"></ul>
       </div>
       <div id="status-banner" class="status" aria-live="polite"></div>
-      <details id="llm-debug" class="panel" hidden open>
-        <summary>Debug: Respuesta detallada de la IA</summary>
+      <details class="panel" id="debug-panel">
+        <summary>Debug: Respuesta de la IA y consulta estructurada</summary>
         <div class="debug-content">
-          <p id="llm-debug-status" class="llm-debug-status"></p>
-          <h4>Payload crudo</h4>
-          <pre id="llm-debug-raw"></pre>
-          <h4>Filtros sugeridos por la IA</h4>
-          <pre id="llm-debug-filters"></pre>
-          <h4>Overrides de ranking sugeridos</h4>
-          <pre id="llm-debug-overrides"></pre>
-          <h4>Consulta final enviada al backend</h4>
-          <pre id="llm-debug-final"></pre>
-        </div>
-      </details>
-      <details class="panel" id="debug-panel" open>
-        <summary>Debug: Consulta estructurada y Plan de búsqueda</summary>
-        <div class="debug-content">
-          <h4>Consulta estructurada</h4>
-          <pre id="structured"></pre>
-          <h4>Plan de búsqueda</h4>
-          <pre id="plan"></pre>
+          <section id="llm-debug" hidden>
+            <h4>Respuesta detallada de la IA</h4>
+            <p id="llm-debug-status" class="llm-debug-status"></p>
+            <h5>Payload crudo</h5>
+            <pre id="llm-debug-raw"></pre>
+            <h5>Filtros sugeridos por la IA</h5>
+            <pre id="llm-debug-filters"></pre>
+            <h5>Overrides de ranking sugeridos</h5>
+            <pre id="llm-debug-overrides"></pre>
+            <h5>Consulta final enviada al backend</h5>
+            <pre id="llm-debug-final"></pre>
+          </section>
+          <section>
+            <h4>Consulta estructurada</h4>
+            <pre id="structured"></pre>
+            <h4>Plan de búsqueda</h4>
+            <pre id="plan"></pre>
+          </section>
         </div>
       </details>
       <h2>Platos sugeridos</h2>

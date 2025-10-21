@@ -1,7 +1,7 @@
 import { CATALOG } from "./data/catalog.js";
 import { CATEGORIES, INGREDIENTS, DIETS, ALLERGENS, HEALTH } from "./data/dictionaries.js";
 
-const APP_VERSION = "v2.3.0";
+const APP_VERSION = "v3.0.0";
 const BACKEND_TIMEOUT_MS = 8000;
 let backendAvailable = null;
 
@@ -70,6 +70,7 @@ async function callBackend(path, payload, options = {}) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
       signal: controller.signal,
+      ...options.fetchOptions,
     });
     if (!response.ok) {
       const err = new Error(`HTTP ${response.status}`);
@@ -83,11 +84,24 @@ async function callBackend(path, payload, options = {}) {
   } catch (err) {
     if (err.name === "AbortError" || err instanceof TypeError) {
       backendAvailable = false;
+      if (!options.silent) showBackendError(err);
     }
     throw err;
   } finally {
     clearTimeout(timer);
   }
+}
+
+function showBackendError(err) {
+  const statusBanner = document.getElementById("status-banner");
+  if (!statusBanner) return;
+  const alerts = [
+    "LLM inalcanzable (backend): se usó modo offline.",
+    `Detalles: ${err?.message ?? err}`,
+  ];
+  statusBanner.textContent = alerts.join("\n");
+  statusBanner.classList.remove("warning");
+  statusBanner.classList.add("visible", "error");
 }
 
 const parseViaBackend = (text) => callBackend("/parse", { text });
@@ -176,7 +190,7 @@ function updateStatusBanner(banner, parseStatus, searchPlan) {
     banner.classList.add("visible");
   } else {
     banner.textContent = "";
-    banner.classList.remove("visible");
+    banner.classList.remove("visible", "error", "warning");
   }
 }
 
@@ -1535,7 +1549,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   };
 
-  async function runSearch(trigger = "user") {
+async function runSearch(trigger = "user") {
     resetAdvisor();
     updateStatusBanner(statusBanner, null, null);
     const text = q.value.trim();
@@ -1559,9 +1573,11 @@ document.addEventListener("DOMContentLoaded", () => {
           usedBackend = true;
         } catch (backendErr) {
           console.warn("Fallo parser backend; se usa fallback local.", backendErr);
+          backendAvailable = false;
+          showBackendError(backendErr);
           parsed = parseText(text);
           if (!Array.isArray(parsed.plan)) parsed.plan = [];
-          parsed.plan.push("Backend no disponible: se usó el parser local.");
+          parsed.plan.push(`❌ Backend parse: ${backendErr?.message ?? backendErr}`);
         }
       }
       if (!parsed) {
@@ -1591,10 +1607,12 @@ document.addEventListener("DOMContentLoaded", () => {
           searched = await searchViaBackend(parsed.query);
         } catch (backendErr) {
           console.warn("Fallo búsqueda backend; se usa ranking local.", backendErr);
+          backendAvailable = false;
+          showBackendError(backendErr);
           searched = searchCatalog(parsed.query);
           searched.plan = searched.plan || {};
           searched.plan.backend_warning =
-            "Backend no disponible en este momento. Se muestran resultados locales.";
+            `Backend no disponible en este momento. Se muestran resultados locales. (${backendErr?.message ?? backendErr})`;
         }
       }
       if (!searched) {
@@ -1733,7 +1751,6 @@ function renderResults(container, data) {
       `Rating ${d.restaurant?.rating?.toFixed(1) ?? "–"}`,
       `ETA ${etaMin}-${etaMax} min`,
       `Envío ${feeLabel}`,
-      `Score ${r.score.toFixed(3)}`,
     ];
     const debug = {
       id: d.id,
@@ -1753,9 +1770,16 @@ function renderResults(container, data) {
       restaurant: d.restaurant,
     };
     const reasonsHtml = `<div class="reasons">Razones: ${r.reasons.join(", ")}</div>`;
+    const scoreHtml = `<p class="meta-detail"><strong>Score interno:</strong> ${r.score.toFixed(3)}</p>`;
+    const detailTagsHtml =
+      tagHtml && tagHtml.length
+        ? `<div class="tags"><strong>Tags:</strong>${tagHtml}</div>`
+        : "";
     const detailsHtml = `
       <details class="details-block">
         <summary>Detalles y debug</summary>
+        ${scoreHtml}
+        ${detailTagsHtml}
         ${reasonsHtml}
         ${tiny(debug)}
       </details>
@@ -1771,7 +1795,6 @@ function renderResults(container, data) {
       <div class="meta">${metaParts.map((part) => `<span>${part}</span>`).join("")}</div>
       ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ""}
       <div class="desc">${d.description}</div>
-      ${tagHtml ? `<div class="tags"><strong>Tags:</strong>${tagHtml}</div>` : ""}
       ${detailsHtml}
     `;
     container.appendChild(el);

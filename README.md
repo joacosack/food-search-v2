@@ -96,30 +96,30 @@ Luego ejecutá `python build_static.py` y publicá la carpeta `web_static` gener
 
 ### Backend gratuito (Railway)
 
-Si preferís evitar el cold start de Render podés desplegar el backend en [Railway](https://railway.app). El archivo [`railway.json`](./railway.json) ya define los comandos adecuados para el entorno de Railway:
+Si querés evitar el cold start de Render, podés desplegar el backend en [Railway](https://railway.app) usando el `Dockerfile` incluido en la raíz del proyecto.
 
-1. Creá un proyecto y conectalo con este repositorio.
-2. En la pestaña **Variables** cargá:
+1. Creá un proyecto en Railway y conectalo a este repositorio (o subí el código con `railway up`).
+2. En la pestaña **Variables** definí:
    - `GROQ_API_KEY`
    - `LLM_PROVIDER=groq`
    - `LLM_MODEL=llama-3.3-70b-versatile`
-3. Railway detectará el `railway.json` y ejecutará:
-   - Build: `python3 -m pip install --upgrade pip` y `python3 -m pip install -r app/requirements.txt`
-   - Start: `cd app && python3 -m uvicorn server.main:app --host 0.0.0.0 --port $PORT`
-4. Tras el deploy, verificá el endpoint con:
+3. Railway detectará automáticamente el `Dockerfile` y construirá la imagen con:
+   - `pip install -r app/requirements.txt`
+   - Ejecución: `uvicorn server.main:app --host 0.0.0.0 --port $PORT`
+4. Tras el deploy verificá que el servicio responde:
    ```bash
    curl -X POST https://<tu-app>.up.railway.app/parse \
      -H "Content-Type: application/json" \
      -d '{"text": "hola"}'
    ```
-5. Ajustá el frontend (por ejemplo en GitHub Pages) definiendo:
+5. Ajustá el frontend (GitHub Pages o cualquier hosting estático) agregando:
    ```html
    <script>
      window.ENABLE_BACKEND = true;
      window.BACKEND_URL = "https://<tu-app>.up.railway.app";
    </script>
    ```
-6. Volvé a generar los estáticos con `python build_static.py` y publicá `web_static`.
+6. Regenerá los estáticos con `python build_static.py` y publicá la carpeta `web_static`.
 
 ## 📁 Estructura del Proyecto
 

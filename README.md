@@ -94,6 +94,33 @@ Para usar la LLM desde GitHub Pages u otro hosting estático, agregá antes del 
 
 Luego ejecutá `python build_static.py` y publicá la carpeta `web_static` generada; la UI consumirá `/parse` y `/search` del backend seguro sin exponer la key.
 
+### Backend gratuito (Railway)
+
+Si preferís evitar el cold start de Render podés desplegar el backend en [Railway](https://railway.app). El archivo [`railway.json`](./railway.json) ya define los comandos adecuados para el entorno de Railway:
+
+1. Creá un proyecto y conectalo con este repositorio.
+2. En la pestaña **Variables** cargá:
+   - `GROQ_API_KEY`
+   - `LLM_PROVIDER=groq`
+   - `LLM_MODEL=llama-3.3-70b-versatile`
+3. Railway detectará el `railway.json` y ejecutará:
+   - Build: `python3 -m pip install --upgrade pip` y `python3 -m pip install -r app/requirements.txt`
+   - Start: `cd app && python3 -m uvicorn server.main:app --host 0.0.0.0 --port $PORT`
+4. Tras el deploy, verificá el endpoint con:
+   ```bash
+   curl -X POST https://<tu-app>.up.railway.app/parse \
+     -H "Content-Type: application/json" \
+     -d '{"text": "hola"}'
+   ```
+5. Ajustá el frontend (por ejemplo en GitHub Pages) definiendo:
+   ```html
+   <script>
+     window.ENABLE_BACKEND = true;
+     window.BACKEND_URL = "https://<tu-app>.up.railway.app";
+   </script>
+   ```
+6. Volvé a generar los estáticos con `python build_static.py` y publicá `web_static`.
+
 ## 📁 Estructura del Proyecto
 
 ```
